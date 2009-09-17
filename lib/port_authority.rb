@@ -284,9 +284,14 @@ class PortAuthority
     @@no_reply_email_address = value
   end
 
-  @@admin_email_addresses = ['dev@wieck.com']
   def self.admin_email_addresses
-    @@admin_email_addresses
+    begin
+      @@admin_email_addresses
+    rescue NameError
+      @@admin_email_addresses = ["#{ENV["USER"]}@#{`hostname`.chomp}"]
+      warn "PortAuthority::admin_email_addresses not set, defaulting to #{@@admin_email_addresses.inspect}"
+      retry
+    end
   end
 
   def self.admin_email_addresses=(value)

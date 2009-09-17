@@ -14,7 +14,7 @@ end
 require "rake/gempackagetask"
 
 NAME = "port_authority"
-SUMMARY = "Port Authority: Port Authority port for Harbor"
+SUMMARY = "Port Authority: User management port for Harbor"
 GEM_VERSION = "1.0"
 
 spec = Gem::Specification.new do |s|
