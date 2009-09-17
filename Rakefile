@@ -31,7 +31,7 @@ spec = Gem::Specification.new do |s|
 
   s.add_dependency "fastercsv"
   s.add_dependency "json"
-  s.add_dependency "harbor", ">= 0.12"
+  s.add_dependency "harbor", ">= 0.12.6"
   s.add_dependency "ui", ">= 0.5.2"
   s.add_dependency "dm-core"
   s.add_dependency "dm-is-searchable"
