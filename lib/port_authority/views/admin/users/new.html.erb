@@ -1,0 +1,16 @@
+<% if @user.dirty? && !@user.valid? %>
+<ul class="message error">
+<%= @user.errors.full_messages.map { |message| "<li>#{message}.\n" } %>
+</ul>
+<% end %>
+
+<form action="/admin/users" method="post">
+  <%= render "admin/users/_form" %>
+  <div class="actions">
+    <input type="submit" class="submit" value="Create">
+    <% if !@user.errors.empty? && authorized?("Users", "override") %>
+    <label for="override" style="color: #f00; margin-left: 10px; display: inline; float: none;">Override Validation Errors?</label><input type="checkbox" value="true" name="override" id="override">
+    <% end %>
+    <a href="/admin/users" class="cancel">Cancel</a>
+  </div>
+</form>

@@ -1,0 +1,88 @@
+<% @roles = Role.all(:order => [:name.asc]) %>
+<fieldset>
+  <% @roles.each do |role| %>
+    <% checked = request.params['roles'][role.id.to_s] == '1' rescue false %>
+
+    <label for="role_<%= role.id %>"><%= role.name %></label>
+    <input type="hidden" name="roles[<%= role.id %>]" id="role_<%= role.id %>" value="0">
+    <input type="checkbox" name="roles[<%= role.id %>]" id="role_<%= role.id %>" value="1" <%= 'checked="checked"' if checked || @user.roles.any? { |r| r.name == role.name } %>>
+  <% end %>
+</fieldset>
+
+<script type="text/javascript" charset="utf-8">
+
+  <%
+    roles_hash = @roles.collect do |role|
+      permissions = role.permission_sets.collect { |set| [set.name, set.mask] }
+      ["role_#{role.id}", Hash[*permissions.flatten]]
+    end
+    roles_hash = Hash[*roles_hash.flatten]
+  %>
+  var roles = <%= roles_hash.to_json %>;
+
+  $('#roles input[type="checkbox"]').click(function() {
+    var permissions = roles[this.id]
+    for ( name in permissions ) {
+      var mask = permissions[name];
+      if ( this.checked ) {
+        grant_permissions(this.id, name, mask);
+      }
+      else {
+        revoke_permissions(this.id, name, mask);
+        $(this).siblings('input[type="checkbox"]').each(update_permissions);
+      }
+    }
+  })
+
+  <%
+    original_mask = @user.permission_sets.collect do |set|
+      [set.name, (set.mask) &~ @user.role_mask_for(set.name)]
+    end
+    original_mask = Hash[*original_mask.flatten]
+  %>
+  var original_mask = <%= original_mask.to_json %>;
+
+  function label_for(checkbox) {
+    return $(checkbox).prev().prev();
+  }
+
+  function update_permissions() {
+    var permissions = roles[this.id];
+    for ( name in permissions ) {
+      var mask = permissions[name];
+      if ( this.checked ) {
+        grant_permissions(this.id, name, mask)
+      }
+    }
+  }
+
+  function grant_permissions(role, name, mask) {
+    var permissions = $("input[id^='"+ name +"_']");
+    $.each(permissions, function(i, permission) {
+      index = 1 << i;
+      if ( (mask & index) == index ) add_permission(permissions[i], name, index);
+    });
+  }
+
+  function revoke_permissions(role, name, mask) {    
+    var permissions = $("input[id^='"+ name +"_']");
+    $.each(permissions, function(i, permission) {
+      index = 1 << i;
+      if ( (mask & index) != index ) return;
+      if ( (original_mask[name] & index ) != index ) remove_permission(permissions[i], name, index);
+    });
+  }
+
+  function add_permission(permission, name, index) {
+    if ( !permission.checked ) {
+      label_for(permission).addClass("auto_add");
+    }
+    permission.checked = true;
+  }
+
+  function remove_permission(permission, name, index) {
+    label_for(permission).removeClass("auto_add");
+    permission.checked = false;
+  }
+
+</script>

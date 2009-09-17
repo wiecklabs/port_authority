@@ -1,0 +1,10 @@
+<div class="column">
+  <h2>Places to Go</h2>
+  <ul>
+    <li><a href="/admin/users">Users</a></li>
+    <li><a href="/admin/roles">Roles</a></li>
+    <% plugin("admin/links").each do |link| %>
+    <li><%= link %></li>
+    <% end %>
+  </ul>
+</div>

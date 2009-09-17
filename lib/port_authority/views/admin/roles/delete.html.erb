@@ -1,0 +1,7 @@
+<h2>Are you sure you want to delete the '<%= @role.name %>' role?</h2>
+<p>This action cannot be undone. Press the "Delete '<%= @role.name %>" button to delete, or click "cancel" to cancel.</p>
+
+<form action="/admin/roles/<%= @role.id %>" method="post">
+  <input type="hidden" name="_method" value="delete">
+  <input type="submit" class="delete" value="Delete '<%= @role.name %>'"> <a href="/admin/roles" class="cancel" onclick="if ( $('#modalContainer').length == 1 ) { closeModal(); return false; }">cancel</a>
+</form>

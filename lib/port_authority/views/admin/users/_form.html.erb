@@ -1,0 +1,150 @@
+<script type="text/javascript" charset="utf-8">
+  function resetLoginAttempts() {
+    $("#failed_logins").attr("disabled", null);
+    $("#failed_logins").val(0);
+    $("#failed_logins").siblings("span").text("Account will be unlocked on save.");
+  };
+</script>
+
+<style type="text/css" media="screen">
+  fieldset p.note { float: left; left: 2em; margin: 0; position: relative; top: 0em; z-index: 0; }
+</style>
+
+<fieldset>
+  <legend>Account Information</legend>
+
+  <label for="email">Email Address</label>
+  <input type="text" name="user[email]" id="email" value="<%= @user.email %>">
+
+  <label for="password">Password</label>
+  <% if PortAuthority::use_crypted_passwords? %>
+  <input type="password" name="user[password]" id="password">
+  <% else %>
+  <input type="text" name="user[password]" value="<%= @user.password %>" id="password">
+  <% end %>
+
+  <% if @user.new_record? %>
+  <p class="note"><a href="#" id="generate_password">Generate a random password.</a></p>
+  <% end %>
+
+  <script type="text/javascript" charset="utf-8">
+    $('#generate_password').click(function() {
+      $.get("/admin/users/random_password", null, function(data, status) {
+        data = data.replace(/\s/g, "");
+        $("#password").val(data);
+        $("#password_confirmation").val(data);
+      })
+      return false;
+    })
+  </script>
+
+  <label for="password_confirmation">Confirm Password</label>
+  <input type="password" name="user[password_confirmation]" id="password_confirmation">
+
+  <% if PortAuthority::allow_blank_passwords? && authorized?("Users", "override") %>
+  <label for="remove_password" style="color: #f00; display: inline; float: none;">Remove Password?</label>
+  <input type="checkbox" value="true" name="remove_password" id="remove_password">
+  <% end %>
+
+  <% unless PortAuthority::allow_multiple_roles? -%>
+  <label>Role</label>
+  <select name="user[role]" id="role">
+    <%= "<option value='' selected='selected'> </option>" unless @user.roles.size > 0 %>
+    <% Role.all.each do |role| %>
+    <option value="<%= role.id %>" <%= 'selected="selected"' if @user.roles.size > 0 and @user.roles.first.id == role.id %> ><%= role.name %></option>
+  <% end %>
+  </select>
+  <% end -%>
+
+  <label for="active">Active?</label>
+  <input type="hidden" value="0" class="hidden" name="user[active]"/>
+  <input type="checkbox" name="user[active]" id="active" value="1" <%= 'checked="checked"' if @user.active? %>>
+
+  <% if PortAuthority::use_lockouts? %>
+  <label>Failed Logins</label>
+  <div style="float: left;">
+  <% if @user.locked? %>
+    <span style="color: #f00;"><%= @user.failed_logins %>: Account Locked. <a href="javascript:void(0);" onclick="resetLoginAttempts();">Reset Login Attempts</a></span>
+    <input type="hidden" name="user[failed_logins]" id="failed_logins" value="<%= @user.failed_logins %>" disabled="disabled">
+  <% else %>
+    <span><%= @user.failed_logins %>: Account Not Locked.</span>
+  <% end %>
+  </div>
+  <% end %>
+
+  <% unless @user.new_record? -%>
+  <label>Last Login</label>
+  <strong style="color: #999; float: left;"><%= @user.last_login.strftime "%Y-%m-%d" rescue "-" %></strong>
+  <% end -%>
+  
+</fieldset>
+
+<fieldset>
+  <legend>Contact Information</legend>
+
+  <label for="first_name">First name</label>
+  <input type="text" name="user[first_name]" id="first_name" value="<%= @user.first_name %>">
+
+  <label for="last_name">Last name</label>
+  <input type="text" name="user[last_name]" id="last_name" value="<%= @user.last_name %>">
+
+  <label for="organization">Organization</label>
+  <input type="text" name="user[organization]" id="organization" value="<%= @user.organization %>">
+
+  <label for="user_title">Title</label>
+  <input type="text" name="user[title]" id="user_title" value="<%= @user.title %>">
+
+  <label for="address">Address</label>
+  <input type="text" name="user[address]" id="address" value="<%= @user.address %>">
+
+  <label for="address2">Address 2</label>
+  <input type="text" name="user[address2]" id="address2" value="<%= @user.address2 %>">
+
+  <label for="city">City</label>
+  <input type="city" name="user[city]" id="city" value="<%= @user.city %>">
+
+  <label for="state">State</label>
+  <input type="state" name="user[state]" id="state" value="<%= @user.state %>">
+
+  <label for="postal_code">Postal Code</label>
+  <input type="text" name="user[postal_code]" id="postal_code" value="<%= @user.postal_code %>">
+  
+  <label for="postal_code">Country</label>
+  <input type="text" name="user[country]" id="country" value="<%= @user.country %>">
+
+  <label for="office_phone">Office Phone</label>
+  <input type="text" name="user[office_phone]" id="office_phone" value="<%= @user.office_phone %>">
+
+  <label for="mobile_phone">Mobile Phone</label>
+  <input type="text" name="user[mobile_phone]" id="mobile_phone" value="<%= @user.mobile_phone %>">
+
+  <label for="fax">Fax</label>
+  <input type="text" name="user[fax]" id="fax" value="<%= @user.fax %>">
+</fieldset>
+
+<% if User.properties(:default).has_property?(:military_rank) %>
+<fieldset id="military">
+  <legend>Military</legend>
+
+  <label class="required" for="military_rank">Rank</label>
+  <input type="text" name="user[military_rank]" id="military_rank" value="<%= @user.military_rank %>">
+
+  <label class="required" for="military_command">Ship / Command</label>
+  <input type="text" name="user[military_command]" id="military_command" value="<%= @user.military_command %>">
+</fieldset>
+<% end %>
+
+<fieldset>
+  <legend>Preferences</legend>
+  <label for="graphic_content_visible_by_default">Graphic Content Visible By Default?</label>
+  <input type="hidden" value="0" class="hidden" name="user[graphic_content_visible_by_default]"/>
+  <input type="checkbox" name="user[graphic_content_visible_by_default]" id="graphic_content_visible_by_default" value="1" <%= 'checked="checked"' if @user.graphic_content_visible_by_default? %>>
+</fieldset>
+
+<% if defined? SyndicationManagement -%>
+<fieldset>
+  <legend>Syndication Information</legend>
+  <label for="syndication_ip_address">IP Addresses</label>
+  <textarea name="user[syndication_ip_addresses]" id="syndication_ip_addresses"><%= FasterCSV.parse(@user.syndication_ip_addresses).join("\r\n") unless @user.syndication_ip_addresses.nil? %></textarea>
+</fieldset>
+<% end -%>

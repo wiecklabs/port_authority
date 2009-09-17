@@ -1,0 +1,9 @@
+<h2>Upload a vCard</h2>
+<p>You can upload a vCard using the form below. When you hit "Update," you will be brought back to your account page where you can review the changes. If the changes look correct, you can then hit "Save." Otherwise, just hit cancel, and no changes will be made.</p>
+<form action="/account/vcard" method="post" enctype="multipart/form-data">
+  <fieldset>
+    <legend>vCard</legend>
+    <input type="file" name="vcard" id="vcard_upload">
+  </fieldset>
+  <input type="submit" value="Update contact information">
+</form>

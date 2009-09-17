@@ -1,0 +1,11 @@
+BEGIN:VCARD
+VERSION:2.1
+N:<%= @user.last_name %>;<%= @user.first_name %>;;;
+FN:<%= @user.to_s %>
+ORG:<%= @user.organization %>
+TEL;WORK:<%= @user.office_phone %>
+TEL;CELL:<%= @user.mobile_phone %>
+TEL;FAX:<%= @user.fax %>
+EMAIL;INTERNET:<%= @user.email %>
+ADR: ;;<%= @user.address %><%= ('\n' + @user.address2) if @user.address2 && @user.address2 != "" %>;<%= @user.city %>;<%= @user.state %>;<%= @user.postal_code %>
+END:VCARD

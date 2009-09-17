@@ -1,0 +1,74 @@
+<div id="users_index">
+  <ul class="links">
+    <% head do %>
+    <style type="text/css" media="screen">
+      #export_options { background-color: #eee; margin: 0; padding: 0; position: absolute; z-index: 2; }
+      #export_options li { margin: 0; padding: 0.5em; }
+    </style>
+
+    <script type="text/javascript" charset="utf-8">
+      $(function() {
+        $("#export").click(function() {
+          options = $("#export_options");
+          options.toggle();
+          options.css("left", $(this).offset().left + "px");
+          return false;
+        });
+        $("#export_options a").click(function() {
+          $("#export_options").hide();
+          if ( $(this).hasClass("delete") ) return false;
+        });
+      });
+    </script>
+    <% end %>
+  </ul>
+	<div class="clear"></div>
+
+	<ul class="links" id="tabnav-left">
+		<li <%= "class='selected'" if @request.path_info =~ /^\/admin\/users$/ %>><a href="/admin/users">Active</a></li>
+		<li <%= "class='selected'" if @request.path_info =~ /^\/admin\/users\/inactive/ %>><a href="/admin/users/inactive">Inactive</a></li>
+		<% if PortAuthority::use_approvals? %>
+		<li <%= "class='selected'" if @request.path_info =~ /^\/admin\/users\/awaiting/ %>><a href="/admin/users/awaiting">Requests</a></li>
+		<% end %>
+		
+		<li class="seperator">&nbsp;</li>
+		<%=
+			(Role.all.entries - [PortAuthority.guest_role]).map do |role|
+				"<li #{"class='selected'" if @request.path_info =~ /^\/admin\/roles\/#{role.id}/} ><a href=\"/admin/roles/#{role.id}/users\">#{h(role.name)}</a></li>"
+			end
+		%>
+	</ul>
+
+	<ul class="links" id="tabnav-right">
+		<li>
+      <a id="export" href="/admin/users.vcf" class="preserve_location">Batch Export</a>
+      <ul id="export_options" style="display: none">
+        <li>Format:</li>
+        <li><a href="/admin/users.vcf">vCard</a></li>
+        <li><a href="/admin/users.csv">CSV</a></li>
+        <li><a href="javascript:void(0)" class="delete">x</a></li>
+      </ul>
+    </li>
+    <% plugin("admin/users/links").each do |link| %>
+    <li><%= link %></li>
+    <% end %>
+		<li><a href="/admin/users/new">+ New User</a></li>
+	</ul>
+
+  <form class="live_search">
+    <fieldset>
+      <label for="search_query">Live Search</label>
+      <input id="search_query" type="text" name="query">
+      <%= UI::LiveSearchBox.new(self, "users_list").to_s %>
+      <img id="spinner" src="<%= UI::Asset.new("images/spinner.gif") %>" style="display: none;">
+
+      <div class="page_count">
+        <%= UI::Pagination.new(self, 100, @search.total_count, @search.page) %>
+      </div>
+    </fieldset>
+  </form>
+
+  <%= render "admin/users/_list" %>
+</div>
+
+<div id="modal"></div>

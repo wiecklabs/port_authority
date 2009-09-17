@@ -1,0 +1,67 @@
+<% head "tabs_css" do %>
+<style type="text/css" media="screen">
+  form .tabs { list-style: none; margin: 0 0 1em; padding: 0; }
+  form .tabs li { display: inline; font-size: 1.4em; padding: 0 0.75em; }
+  form .tabs li.selected a { border-bottom: 1px solid #000; color: #000; }
+</style>
+<% end %>
+
+<% head "tabs_js" do %>
+<script type="text/javascript" charset="utf-8">
+  function select_tab(tab) {
+    tab.siblings().removeClass("selected");
+    tab.addClass("selected");
+    id = $("a", tab).attr("href").substring(1);
+    $(".column[id!='"+ id +"']").hide();
+    $("#" + id).show();
+  }
+
+  $(function () {
+    $(".column h2").hide();
+
+    // Select the first tab/
+    select_tab($("form .tabs li:first"));
+
+    // Wire up onclick events for other tabs.
+    $("form .tabs a").click(function () {
+      select_tab($(this).parent());
+      return false;
+    });
+  });
+
+
+</script>
+<% end %>
+
+<form action="/admin/roles/<%= @role.id %>" method="post">
+  <input type="hidden" name="_method" value="put">
+  <ul class="tabs">
+    <li><a href="#role">Role</a></li>
+    <li><a href="#permissions">Permissions</a></li>
+    <% plugin("role/edit/tabs").each do |tab| %>
+    <li><%= tab.link %></li>
+    <% end %>
+  </ul>
+
+  <div id="role" class="column">
+    <%= render "admin/roles/_form" %>
+  </div>
+  
+  <div id="permissions" class="column">
+    <%= render "admin/roles/_permissions" %>
+  </div>
+
+  <%= plugin("role/edit/tabs", :role => @role) %>
+
+  <div class="actions">
+    <label id="propagate_permissions" style="float: none; display: none; width: auto"><input type="checkbox" name="propagate_permissions" value="1"> Update permissions for existing users?</label>
+    <% plugin("role/edit/tabs").each do |tab| %>
+    <%= tab.propagation if tab.respond_to?(:propagation) %>
+    <% end %>
+    <input type="submit" value="Save" class="submit">
+    <a href="/admin/roles" class="cancel">Cancel</a>
+    <a class="delete" href="/admin/roles/<%= @role.id %>/delete" onclick="return modalize(this);"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
+  </div>
+</form>
+
+<div id="modal"></div>

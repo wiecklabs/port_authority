@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <style type="text/css" media="screen">
+  body { background: #ccc; font: 67.5% "Lucida Grande"; margin: 0; padding: 0; }
+  form { background: #fff; font-size: 1.2em; margin: 150px auto 0; padding: 2em; width: 300px; }
+  fieldset { border: 0; margin: 0 0 20px; padding: 0 10px 0 0; }
+  form fieldset input { display: block; width: 100%; }
+  form input { font-size: 1.2em; }
+  h2 { margin-top: 0; }
+  fieldset legend { margin: 0; padding: 0; color: #048; font-weight: bold; }
+
+  .message { background-color: #ADC96F; color: #fff; font-weight: bold; line-height: 24px; padding: 10px 20px; margin: 0 0 2em; }
+  .message.error { background-color: #CA6F6F; }
+  
+  .simpleSignOn { margin: 20px auto; width: 200px; }
+  .simpleSignOn li { margin: 2px; }
+  .simpleSignOn a { font-size: 1.4em; }
+  
+  a#signup { margin-left: 10px; }
+  </style>
+  
+  <script type="text/javascript" charset="utf-8" src="/javascripts/jquery-1.2.5.min.js"></script>
+  <%= write_head %>
+</head>
+<body>
+  <%= @content %>
+</body>
+</html>

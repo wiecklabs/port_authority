@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <script type="text/javascript" src="/javascripts/jquery-1.2.5.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="/javascripts/jquery-ui-highlight.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="/javascripts/jquery-modal.js"></script>
+  <script type="text/javascript" charset="utf-8" src="/javascripts/application.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="<%= UI::Asset.new("stylesheets/admin.css") %>" media="screen">
+	<link rel="stylesheet" type="text/css" href="<%= UI::Asset.new("stylesheets/port_authority.css") %>" media="screen">
+
+  <%= write_head %>
+</head>
+<body>
+  <div class="header">
+    <h1><a href="/admin">Port Authority - Public</a></h1>
+    <%= UI::AccountNavigation.new(self) if me %>
+  </div>
+
+  <div class="wrapper">
+    <% if @message %>
+      <p class="message"><%= @message %></p>
+    <% end %>
+    
+    <%= @content %>
+  </div>
+</body>
+</html>

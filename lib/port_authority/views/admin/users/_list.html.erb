@@ -1,0 +1,18 @@
+<%
+	user_can_edit = authorized?('Users', 'update')
+%>
+
+<% unless request.xhr? %><table id="users_list"><% end %>
+
+	<%= render "admin/users/_table_header" %>
+  <tbody>
+    <% @search.users.each do |user| %>
+			<%= render "admin/users/_table_list_item", :user => user, :render_edit_links => user_can_edit %>
+    <% end %>
+  </tbody>
+
+<% unless request.xhr? %></table><% end %>
+
+<script type="text/javascript" charset="utf-8">
+  $(".pagination_total_count").html("<%= @search.total_count %> Records")
+</script>

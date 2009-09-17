@@ -1,0 +1,15 @@
+<div class="column">
+  <ul class="links" id="tabnav-right">
+		<li><a href="/admin/roles/new">+ New Role</a></li>
+	</ul>
+
+  <form class="live_search">
+    <fieldset>
+      <label for="search_query">Live Search</label>
+      <input id="search_query" type="text" name="query">
+    </fieldset>
+  </form>
+  <%= render "admin/roles/_list" %>
+</div>
+
+<div id="modal"></div>

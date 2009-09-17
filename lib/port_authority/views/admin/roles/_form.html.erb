@@ -1,0 +1,12 @@
+<fieldset>
+	<% if @role.name == PortAuthority::default_user_role %>
+		<label for="name">Name</label>
+		<p><%= @role.name %></p>
+	<% else %>
+	  <label for="name">Name</label>
+	  <input type="text" name="role[name]" id="name" value="<%= @role.name %>">
+	<% end %>
+
+  <label for="description">Description</label>
+  <textarea name="role[description]" id="description" rows="5"><%= @role.description %></textarea>
+</fieldset>

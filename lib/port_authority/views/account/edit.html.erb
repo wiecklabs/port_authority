@@ -1,0 +1,81 @@
+<% if @user.dirty? && !@user.valid? %>
+<ul class="message error">
+<%= @user.errors.full_messages.map { |message| "<li>#{message}.\n" } %>
+</ul>
+<% end %>
+
+<form action="/account" method="post">
+  <input type="hidden" name="_method" value="put">
+  <input type="hidden" name="referrer" value="<%= h @back %>">
+  <div class="column">
+      <fieldset>
+        <legend>Account Information</legend>
+
+        <% if PortAuthority::use_logins? %>
+          <label for="login">Login</label>
+          <p><%= h(@user.login || 'Unknown') %></p>
+        <% end %>
+
+        <label for="email">Email Address</label>
+        <input type="text" name="user[email]" id="email" value="<%= @user.email %>">
+
+        <label for="password">Password</label>
+        <input type="text" name="user[password]" id="password">
+
+        <label for="password_confirmation">Confirm Password</label>
+        <input type="text" name="user[password_confirmation]" id="password_confirmation">
+      </fieldset>
+      
+      <div id="vcard" style="display: none;"></div>
+
+      <fieldset id="contact_information">
+        <legend>Contact Information (or <a href="/account/vcard" class="toggle_vcard">upload a vcard</a>)</legend>
+
+        <label for="first_name">First name</label>
+        <input type="text" name="user[first_name]" id="first_name" value="<%= @user.first_name %>">
+
+        <label for="last_name">Last name</label>
+        <input type="text" name="user[last_name]" id="last_name" value="<%= @user.last_name %>">
+
+        <label for="organization">Organization</label>
+        <input type="text" name="user[organization]" id="organization" value="<%= @user.organization %>">
+
+        <label for="address">Address</label>
+        <input type="text" name="user[address]" id="address" value="<%= @user.address %>">
+
+        <label for="address2">Address 2</label>
+        <input type="text" name="user[address2]" id="address2" value="<%= @user.address2 %>">
+
+        <label for="city">City</label>
+        <input type="city" name="user[city]" id="city" value="<%= @user.city %>">
+
+        <label for="state">State</label>
+        <input type="state" name="user[state]" id="state" value="<%= @user.state %>">
+
+        <label for="postal_code">Postal Code</label>
+        <input type="text" name="user[postal_code]" id="postal_code" value="<%= @user.postal_code %>">
+
+        <label for="office_phone">Office Phone</label>
+        <input type="text" name="user[office_phone]" id="office_phone" value="<%= @user.office_phone %>">
+
+        <label for="mobile_phone">Mobile Phone</label>
+        <input type="text" name="user[mobile_phone]" id="mobile_phone" value="<%= @user.mobile_phone %>">
+
+        <label for="fax">Fax</label>
+        <input type="text" name="user[fax]" id="fax" value="<%= @user.fax %>">
+
+      </fieldset>
+
+      <input type="submit" class="submit" value="Save">
+      <a href="<%= @back %>" class="cancel">Cancel</a>
+  </div>
+</form>
+
+<script type="text/javascript" charset="utf-8">
+  $(".toggle_vcard").click(function() {
+    modal = $("#vcard");
+    modal.load($(this).attr("href"));
+    openModal(modal);
+    return false;
+  })
+</script>

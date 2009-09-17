@@ -1,0 +1,7 @@
+<h2>Are you sure you want to delete '<%= @user %>'?</h2>
+<p>This action cannot be undone. Press the "Delete <%= @user %>" button to delete, or click "cancel" to cancel.</p>
+
+<form action="/admin/users/<%= @user.id %>" method="post">
+  <input type="hidden" name="_method" value="delete">
+  <input type="submit" class="delete" value="Delete <%= @user %>"> <a href="/admin/users" class="cancel" onclick="if ( $('#modalContainer').length == 1 ) { closeModal(); return false; }">cancel</a>
+</form>

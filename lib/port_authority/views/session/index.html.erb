@@ -1,0 +1,80 @@
+<% head("login-styles") do %>
+<style type="text/css">
+  #content form.login { margin: 120px auto 0; width: 400px; position: relative; z-index: 9999; }
+  #content .login fieldset {
+    border: solid 1px #ccc;
+    margin: 4px;
+    padding: 30px 30px 20px 45px;
+    overflow: auto;
+    z-index: 9999;
+  }
+  #content .login fieldset legend { display: none; }
+  #content .login fieldset label { clear: left; float: left; width: 9em; line-height: 1.8em; margin-bottom: 5px; }
+  #content .login fieldset input { float: left; width: 14em; line-height: 2em; margin-bottom: 10px; }
+  #content .login fieldset input.submit { width: 6em; }
+  
+  #content .login a { float: right; margin: 10px; }
+  
+  #content .simpleSignOn { margin: 40px auto 0; width: 400px; }
+</style>
+<% end %>
+<% if @error.to_s =~ /password/i; head do %>
+<script type="text/javascript" charset="utf-8">
+$(function() {$('#password').focus();});
+</script>
+<% end; end %>
+
+<form action="/session<%= request.params["referrer"] ? "?referrer=#{q request.params["referrer"]}" : nil %>" method="post" class="login">
+  <% if @message %><p class="message"><%= h(@message) %></p><% end %>
+  <% if @error %><p class="message error"><%= @error %></p><% end %>
+  <fieldset>
+    <legend>Login</legend>
+    <% if @referrer %><input type="hidden" name="referrer" value="<%= @referrer %>"><% end %>
+
+    <label for="login">Email</label>
+    <input type="text" name="login" value="<%= request.params["login"] %>" id="login">
+
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password">
+    
+  </fieldset>
+  <input class="submit" type="submit" value="Log In">
+
+<% if PortAuthority::allow_signup? -%>
+  <a id="signup" href="/account/new">Sign Up</a>
+<% end -%>
+
+<% if PortAuthority::allow_forgot_password? -%>
+  <a id="forgot_password" href="/account/password">Forgot Password</a>
+<% end -%>
+</form>
+
+<% if @users %>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+  $(".simpleSignOn a").each(function() {
+    var credentials = this.onclick();    
+    $(this).click(function() {
+      $("#login").val(credentials["login"]);
+      $("#password").val(credentials["password"]);
+      $("form").submit();
+    });
+  });
+});
+</script>
+
+<div class="simpleSignOn">
+  <h3>Login as...</h3>
+  <ul>
+    <% @users.each do |user| %>
+      <% next if user.to_s.blank? %>
+      <li>
+        <a href="javascript:void(0);"
+          onclick="return { 'login': '<%= h(PortAuthority::use_logins? ? user.login : user.email) %>', 'password': '<%= h user.password %>' };">
+          <%= user %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</div>
+<% end %>

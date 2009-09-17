@@ -1,0 +1,20 @@
+<table id="roles_list">
+  <thead>
+    <tr>
+      <th>Role</th>
+      <th>Description</th>
+      <th>Users</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @roles.each do |role| %>
+    <tr>
+      <td><a href="/admin/roles/<%= role.id %>"><%= role.name %></a></td>
+      <td><%= role.description %></td>
+      <td><%= role.users.count %></td>
+      <td><% unless role.name == PortAuthority::default_user_role %><a href="/admin/roles/<%= role.id %>/delete" class="delete" onclick="return modalize(this);"><img src="<%= UI::Asset.new("images/delete.gif") %>"></a><% end %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

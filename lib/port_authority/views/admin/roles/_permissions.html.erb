@@ -1,0 +1,44 @@
+<% head do %>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+  $(".permissions legend input").each(function() {
+    var legend = $(this).parent();
+    if(legend.siblings("input[type=checkbox]").length == legend.siblings("input[type=checkbox]:checked").length) {
+      $(this).attr("checked", "checked");
+    }
+    
+    $(this).click(function() {
+      legend.siblings("input[type=checkbox]").attr("checked", (this.checked ? "checked" : null));
+    });
+  });
+
+  $(".permissions input").change(function() {
+    $("#propagate_permissions input").attr("checked", "checked");
+    $("#propagate_permissions").show(100);
+  })
+
+});
+</script>
+<% end %>
+
+<h2>Permissions</h2>
+<% PermissionSet.permissions.sort_by { |name, permissions| name }.each do |name, permissions| %>
+<fieldset class="permissions">
+  <legend style="font-size: 1em;">
+    <label for="<%= name %>" style="margin: 0px;"><span style="color: #063A60; font-size: 1.2em; font-weight: bold;"><%= name %></span></label>
+    <input id="<%= name %>" type="checkbox">
+  </legend>
+  
+  <%
+    permissions.each do |permission|
+      set = @role.permission_sets.detect { |set| set.name == name }
+      permission_name, permission_description = permission.split(":", 2)
+      permission_description ||= Extlib::Inflection.humanize(permission_name)
+      id = "#{name}_#{permission_name}"
+  %>
+  <label for="<%= id %>"><%= permission_description %></label>
+  <input type="hidden"   name="permissions[<%= name %>][<%= permission_name %>]" value="0">
+  <input type="checkbox" name="permissions[<%= name %>][<%= permission_name %>]" id="<%= id %>" value="1" <%= 'checked="checked"' if set && set.include?(permission_name) %>>
+  <% end %>
+</fieldset>
+<% end %>

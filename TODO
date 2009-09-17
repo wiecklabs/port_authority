@@ -1,0 +1,34 @@
+TODO
+====
+
+* Remove Show Permissions, only add necessary permissions by default
+* Roles and Permissions should display green for permissions to-be-added
+* Roles and Permissions should display red for permissions to-be-removed
+* Allow batch import of users with vCards
+* Allow batch editing of users
+* Partials for admin "toolbar", ie:
+  Users: List, New   Roles: List, New
+* vCard import on /admin/users should search for the best matching user in the system and offer to merge or create a new record
+* Pagination on users and roles
+
+TODONE
+======
+* Display user's last-login-time on the edit page
+* User should not be allowed to blank email address
+* Allow vCard export for a user
+* Save/cancel etc actions should optionally appear in window-footers
+  on edit pages so they're always visible
+* Allow new users to register at /account/new
+* Forgot Password
+* Admin should be able to override validations:
+  * Removed a required field
+  * Click save
+  * Receive validation errors showing a failed update
+  * You now have a check-box next to the Save button
+    labeled "ignore validation errors", which you can
+    check, and click Save again
+* Allow batch export of users with vCards
+* Live search of users
+* Updates on /account pages should be sent to the user
+* Delete/Destroy items should work, with confirmation
+* Allow a user to upload a vCard to update their account

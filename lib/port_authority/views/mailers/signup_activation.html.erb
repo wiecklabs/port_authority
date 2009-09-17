@@ -1,0 +1,3 @@
+<p>To proceed, please visit the following URL only once to claim your account.</p>
+
+<p><a href=<%= "http://#{@mailer.host}/activate?key=#{@user.auth_key}" %>><%= "http://#{@mailer.host}/activate?key=#{@user.auth_key}" %></a></p>

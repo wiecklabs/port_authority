@@ -1,0 +1,13 @@
+pkg
+coverage
+tmp
+log
+private
+users.db
+.DS_Store
+*.backup
+index
+Gems
+lib/port_authority/public/images/buttons/*
+lib/port_authority/public/images/spinner.gif
+lib/port_authority/public/images/delete_big.png
