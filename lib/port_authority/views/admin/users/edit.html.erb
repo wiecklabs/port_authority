@@ -47,7 +47,7 @@
     <li><a href="#account">Account</a></li>
     <% if PortAuthority::allow_multiple_roles? %><li><a href="#roles">Roles</a></li><% end %>
     <% if PortAuthority::allow_user_specific_permissions? %><li><a href="#permissions">Permissions</a></li><% end %>
-    <% plugin("user/edit/tabs").each do |tab| %>
+    <% plugin("user/edit/tabs") do |tab| %>
     <li><%= tab.link %></li>
     <% end %>
   </ul>

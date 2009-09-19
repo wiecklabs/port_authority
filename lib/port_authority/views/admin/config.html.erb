@@ -21,7 +21,7 @@
         <% end %>
       </table>
 
-      <% plugin("admin/config").each do |config| %>
+      <% plugin("admin/config") do |config| %>
       <h2><%= config.port %></h2>
       <table>
         <% config.port.config.each do |option, value| %>

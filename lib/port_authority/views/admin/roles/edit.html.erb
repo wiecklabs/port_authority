@@ -38,7 +38,7 @@
   <ul class="tabs">
     <li><a href="#role">Role</a></li>
     <li><a href="#permissions">Permissions</a></li>
-    <% plugin("role/edit/tabs").each do |tab| %>
+    <% plugin("role/edit/tabs") do |tab| %>
     <li><%= tab.link %></li>
     <% end %>
   </ul>
@@ -55,7 +55,7 @@
 
   <div class="actions">
     <label id="propagate_permissions" style="float: none; display: none; width: auto"><input type="checkbox" name="propagate_permissions" value="1"> Update permissions for existing users?</label>
-    <% plugin("role/edit/tabs").each do |tab| %>
+    <% plugin("role/edit/tabs") do |tab| %>
     <%= tab.propagation if tab.respond_to?(:propagation) %>
     <% end %>
     <input type="submit" value="Save" class="submit">

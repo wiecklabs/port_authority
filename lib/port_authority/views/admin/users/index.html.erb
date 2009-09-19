@@ -49,8 +49,8 @@
         <li><a href="javascript:void(0)" class="delete">x</a></li>
       </ul>
     </li>
-    <% plugin("admin/users/links").each do |link| %>
-    <li><%= link %></li>
+    <% plugin("admin/users/links") do |plugin| %>
+    	<li><%= plugin %></li>
     <% end %>
 		<li><a href="/admin/users/new">+ New User</a></li>
 	</ul>
