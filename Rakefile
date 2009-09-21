@@ -15,7 +15,7 @@ require "rake/gempackagetask"
 
 NAME = "port_authority"
 SUMMARY = "Port Authority: User management port for Harbor"
-GEM_VERSION = "1.1"
+GEM_VERSION = "1.1.1"
 
 spec = Gem::Specification.new do |s|
   s.name = NAME
@@ -27,7 +27,7 @@ spec = Gem::Specification.new do |s|
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.require_path = 'lib'
-  s.files = %w(Rakefile) + Dir.glob("lib/**/*")
+  s.files = %w(Rakefile) + Dir.glob("{lib,assets,public,test}/**/*")
 
   s.add_dependency "fastercsv"
   s.add_dependency "json"
