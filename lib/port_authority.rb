@@ -54,8 +54,6 @@ require "dm-types"
 gem "tmail"
 require "tmail/address"
 
-require Pathname(__FILE__).dirname + "port_authority" + "application"
-
 Harbor::View::path.unshift(Pathname(__FILE__).dirname + "port_authority" + "views")
 Harbor::View.layouts.map("admin/*", "layouts/admin")
 Harbor::View.layouts.map("account/new", "layouts/login")
