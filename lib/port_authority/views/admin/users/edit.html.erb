@@ -1,8 +1,4 @@
-<% unless @user.errors.empty? %>
-<ul class="message error">
-<%= @user.errors.full_messages.map { |message| "<li>#{message}.\n" } %>
-</ul>
-<% end %>
+<%= UI::ErrorMessages.new(self, "There are problems with this User Account that prevented it from being saved.", response.errors).to_s %>
 
 <% head "tabs_css" do %>
 <style type="text/css" media="screen">
@@ -39,7 +35,9 @@
 <% end %>
 
 <form action="/admin/users/<%= @user.id %>" method="post">
-  <input type="hidden" name="_method" value="put">
+	<% unless @user.new_record? %>
+  	<input type="hidden" name="_method" value="put">
+	<% end %>
 
   <%= plugin("user/edit/context", :user => @user) %>
 
@@ -78,7 +76,9 @@
     <label for="override" style="color: #f00; margin-left: 10px; display: inline; float: none;">Override Validation Errors?</label><input type="checkbox" value="true" name="override" id="override">
     <% end %>
     <a href="/admin/users" class="cancel">Cancel</a>
-    <a class="delete" href="/admin/users/<%= @user.id %>/delete" onclick="return modalize(this);"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
+		<% unless @user.new_record? %>
+    	<a class="delete" href="/admin/users/<%= @user.id %>/delete" onclick="return modalize(this);"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
+		<% end %>
   </div>
 </form>
 

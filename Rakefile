@@ -12,10 +12,11 @@ end
 
 # Gem
 require "rake/gempackagetask"
+require "lib/port_authority/version"
 
 NAME = "port_authority"
 SUMMARY = "Port Authority: User management port for Harbor"
-GEM_VERSION = "1.1"
+GEM_VERSION = PortAuthority::VERSION
 
 spec = Gem::Specification.new do |s|
   s.name = NAME
@@ -32,7 +33,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "fastercsv"
   s.add_dependency "json"
   s.add_dependency "harbor", ">= 0.12.8"
-  s.add_dependency "ui", ">= 0.5.2"
+  s.add_dependency "ui", ">= 0.7.3"
   s.add_dependency "dm-core"
   s.add_dependency "dm-is-searchable"
   s.add_dependency "dm-validations"

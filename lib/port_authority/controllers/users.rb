@@ -12,13 +12,13 @@ class PortAuthority::Users
 
   protect "Users", "create"
   def random_password
-    @response.content_type = "text/plain"
-    @response.puts User.random_password
+    response.content_type = "text/plain"
+    response.puts User.random_password
   end
 
   protect "Users", "show"
   def show(id)
-    @response.render "admin/users/show", :id => id
+    response.render "admin/users/show", :id => id
   end
 
   protect "Users", "create"
@@ -30,12 +30,12 @@ class PortAuthority::Users
       user.roles.clear
       user.roles << Role.first(:name => PortAuthority::default_user_role)
     end
-    @response.render "admin/users/new", :user => user
+    response.render "admin/users/new", :user => user
   end
 
   protect "Users", "update"
   def edit(id)
-    @response.render "admin/users/edit", :user => User.get(id), :message => @request.params["message"]
+    response.render "admin/users/edit", :user => User.get(id), :message => request.params["message"]
   end
 
   protect "Users", "update"
@@ -43,7 +43,7 @@ class PortAuthority::Users
     user = User.get(id)
 
     if PortAuthority::allow_multiple_roles?
-      roles = @request.params["roles"]
+      roles = request.params["roles"]
     else
       # This is a bit of a hack, but seemed to be the easiest way to support "single-role" selection in the UI
       # Need to build a hash (that looks just like the form's role fields when using "multiple roles")
@@ -58,9 +58,9 @@ class PortAuthority::Users
 
     # If the password fields are blank, it means they aren't being changed. Use a remove password checkbox to blank them.
     user.attributes = params.reject { |k,v| %w(password password_confirmation role roles).include?(k) && v.blank? }
-    user.password, user.password_confirmation = nil if @request.params["remove_password"]
+    user.password, user.password_confirmation = nil if request.params["remove_password"]
 
-    if user.valid? || (override && @request.session.authorized?("Users", "override"))
+    if user.valid? || (override && request.session.authorized?("Users", "override"))
       user.save!
 
       update_roles(user, roles)
@@ -74,12 +74,21 @@ class PortAuthority::Users
       end
 
       if PortAuthority::allow_user_specific_permissions?
-        update_permissions(user, @request.params["permissions"])
+        update_permissions(user, request.params["permissions"])
       end
 
-      @response.redirect "/admin/users/#{user.id}/edit", :message => "User Saved"
+      response.redirect "/admin/users/#{user.id}/edit", :message => "User Saved"
     else
-      @response.render "admin/users/edit", :user => user
+      # Set the roles on the user so the form will render the previously selected role
+      user.roles.clear
+      Role.all(:id => roles.keys.select { |id| roles[id] == 1 }).each do |role|
+        user.roles << role
+      end
+
+      raise_event(:user_save_failed, user, request)
+
+      response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
+      response.render "admin/users/edit", :user => user
     end
   end
 
@@ -88,7 +97,7 @@ class PortAuthority::Users
     user = User.new
 
     if PortAuthority::allow_multiple_roles?
-      roles = @request.params["roles"] || Hash.new
+      roles = request.params["roles"] || Hash.new
     else
       # This is a bit of a hack, but seemed to be the easiest way to support "single-role" selection in the UI
       # Need to build a hash (that looks just like the form's role fields when using "multiple roles")
@@ -114,8 +123,8 @@ class PortAuthority::Users
 
     user.awaiting_approval = false if PortAuthority::use_approvals?
     user.active = true
-
-    if user.valid? || (override && @request.session.authorized?("Users", "override"))
+    
+    if user.valid? || (override && request.session.authorized?("Users", "override"))
       user.save!
 
       update_roles(user, roles)
@@ -123,7 +132,7 @@ class PortAuthority::Users
       raise_event(:user_created, user, request)
 
       if PortAuthority::allow_user_specific_permissions?
-        update_permissions(user, @request.params["permissions"])
+        update_permissions(user, request.params["permissions"])
       end
 
       # If we don't do this after we process the user-specific permission on User Create
@@ -140,14 +149,18 @@ class PortAuthority::Users
 
       user.reload
 
-      @response.redirect "/admin/users/#{user.id}/edit"
+      response.redirect "/admin/users/#{user.id}/edit"
     else
       # Set the roles on the user so the form will render the previously selected role
       user.roles.clear
       Role.all(:id => roles.keys.select { |id| roles[id] == 1 }).each do |role|
         user.roles << role
       end
-      @response.render "admin/users/new", :user => user
+
+      raise_event(:user_save_failed, user, request)
+      
+      response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
+      response.render "admin/users/new", :user => user
     end
 
   end
@@ -158,19 +171,19 @@ class PortAuthority::Users
     filename = id ? users.first.to_s.gsub(/[^\w-]/, "_") : "Contacts"
 
     case format
-    when "vcf" then @response.content_type = "text/x-vcard"
-    when "csv" then @response.content_type = "text/csv"
+    when "vcf" then response.content_type = "text/x-vcard"
+    when "csv" then response.content_type = "text/csv"
     else
-      return @response.status = 404
+      return response.status = 404
     end
 
-    @response.headers["Content-Disposition"] = "attachment; filename=#{filename}.#{format}"
+    response.headers["Content-Disposition"] = "attachment; filename=#{filename}.#{format}"
 
     case format
     when "vcf"
       users.each do |user|
-        @response.puts Harbor::View.new("admin/users/show.#{format}.erb", :user => user)
-        @response.puts ""
+        response.puts Harbor::View.new("admin/users/show.#{format}.erb", :user => user)
+        response.puts ""
       end
     when "csv"
       properties = User.properties.map { |p| p.name } - User::CSV_IGNORE
@@ -180,7 +193,7 @@ class PortAuthority::Users
           csv << User.properties.collect { |p| p.get(user) || "" if properties.include?(p.name) }.compact
         end
       end
-      @response.puts csv_string
+      response.puts csv_string
     end
   end
 
@@ -188,13 +201,13 @@ class PortAuthority::Users
   def delete(id)
     user = User.get(id)
 
-    case @request.request_method
+    case request.request_method
     when "GET"
       context = { :user => user }
-      context[:layout] = nil if @request.xhr?
-      @response.render "admin/users/delete", context
+      context[:layout] = nil if request.xhr?
+      response.render "admin/users/delete", context
     when "DELETE"
-      if @request.session.user == user
+      if request.session.user == user
         raise StandardError.new("User<#{user.id}> tried to delete themselves")
       else
         user.permission_sets.each { |set| set.destroy }
@@ -207,7 +220,7 @@ class PortAuthority::Users
         #
         user.save!
       end
-      @response.redirect "/admin/users"
+      response.redirect "/admin/users"
     end
   end
 
@@ -225,7 +238,7 @@ class PortAuthority::Users
     mailer.text = Harbor::View.new("mailers/reset_password.txt.erb", :user => user)
     mailer.send!
 
-    @response.render("admin/users/edit", :user => user, :message => "A password change notification has been sent to the email registered with this account.")
+    response.render("admin/users/edit", :user => user, :message => "A password change notification has been sent to the email registered with this account.")
   end
 
   def self.use_approvals!
@@ -245,7 +258,7 @@ class PortAuthority::Users
         message = "Account could not be updated!"
       end
 
-      @response.render("admin/users/edit", :user => user, :message => message)
+      response.render("admin/users/edit", :user => user, :message => message)
     end
 
     protect "Users", "update"
@@ -260,7 +273,7 @@ class PortAuthority::Users
       mailer.text = Harbor::View.new("mailers/denial.txt.erb", :user => user)
       mailer.send!
 
-      @response.redirect("/", :message => "Account Denied for #{user.email}")
+      response.redirect("/", :message => "Account Denied for #{user.email}")
     end
   end
 
@@ -274,9 +287,9 @@ class PortAuthority::Users
     search = User::Search.new(page, page_size, options, query)
 
     if request.xhr?
-      @response.render "admin/users/_list", :search => search, :layout => nil
+      response.render "admin/users/_list", :search => search, :layout => nil
     else
-      @response.render "admin/users/index", :search => search
+      response.render "admin/users/index", :search => search
     end
   end
 
