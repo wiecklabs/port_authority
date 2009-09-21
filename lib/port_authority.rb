@@ -95,7 +95,7 @@ class PortAuthority < Harbor::Application
     @@default_user_sort = value
   end
 
-  @@public_path = Pathname(__FILE__).dirname.expand_path + "port_authority" + "public"
+  @@public_path = Pathname(__FILE__).dirname.parent + "public"
   def self.public_path
     @@public_path
   end
@@ -115,7 +115,7 @@ class PortAuthority < Harbor::Application
   end
 
   def self.asset_path
-    Pathname(__FILE__).dirname + "port_authority/assets"
+    Pathname(__FILE__).dirname.parent + "assets"
   end
 
   # Used to enable/disable site-generated emails which would go to end users,
@@ -488,7 +488,6 @@ require Pathname(__FILE__).dirname + "port_authority" + "models" + "role"
 UI::Asset::register("stylesheets/port_authority.css", PortAuthority::asset_path + "stylesheets/port_authority.css")
 UI::Asset.register("images/check.png", PortAuthority.asset_path + "images/check.png")
 UI::Asset.register("images/delete.png", PortAuthority.asset_path + "images/delete.png")
-UI::Asset.register("images/delete_big.png", PortAuthority.asset_path + "images/delete_big.png")
 UI::Asset.register("images/vcard.png", PortAuthority.asset_path + "images/vcard.png")
 UI::Asset.register("images/delete.gif", PortAuthority.asset_path + "images/delete.gif")
 UI::Asset.register("images/transparent.gif", PortAuthority.asset_path + "images/transparent.gif")
