@@ -4,7 +4,7 @@ class PortAuthority::Session
 
   def index(message)
     @users = User.all(:active => true) if @request.environment == "development"
-    @response.render "session/index", :layout => "layouts/login", :users => @users, :message => message, :referrer => referrer
+    @response.render "session/index", :users => @users, :message => message, :referrer => referrer
   end
 
   def create(login, password)
@@ -17,7 +17,7 @@ class PortAuthority::Session
       if PortAuthority::redirect_failed_logins_to_referrer?
         @response.redirect(referrer, :error => status)
       else
-        @response.render "session/index", :layout => "layouts/login", :error => status, :users => @users, :referrer => referrer
+        @response.render "session/index", :error => status, :users => @users, :referrer => referrer
       end
     end
   end

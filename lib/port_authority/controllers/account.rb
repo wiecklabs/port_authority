@@ -106,7 +106,7 @@ class PortAuthority::Account
 
   def forgot_password(email_address = nil)
     if email_address.blank?
-      @response.render "account/forgot_password", :layout => "layouts/login", :back => referrer
+      @response.render "account/forgot_password", :back => referrer
     else
       user = User.first(:email => email_address)
 
