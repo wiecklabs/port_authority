@@ -21,18 +21,17 @@
         <% end %>
       </table>
 
-      <% plugin("admin/config") do |config| %>
-      <h2><%= config.port %></h2>
-      <table>
-        <% config.port.config.each do |option, value| %>
-        <tr>
-          <th><%= option %></th>
-          <td><%= h value.inspect %></td>
-        </tr>
-        <% end %>
-      </table>
+      <% plugin("admin/config").each do |config| %>
+      	<h2><%= config.port %></h2>
+      	<table>
+        	<% config.port.config.each do |option, value| %>
+        		<tr>
+          		<th><%= option %></th>
+							<td><%= h value.inspect %></td>
+        		</tr>
+					<% end %>
+      	</table>
       <% end %>
-      
     </div>
   </body>
 </html>

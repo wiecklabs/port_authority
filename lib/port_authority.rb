@@ -26,7 +26,7 @@ require "fastercsv"
 gem "json"
 require "json"
 
-gem "harbor", ">= 0.12.8"
+gem "harbor", ">= 0.12.11"
 require "harbor"
 require "harbor/mailer"
 
