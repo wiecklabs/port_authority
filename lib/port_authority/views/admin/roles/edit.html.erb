@@ -60,7 +60,7 @@
     <% end %>
     <input type="submit" value="Save" class="submit">
     <a href="/admin/roles" class="cancel">Cancel</a>
-    <a class="delete" href="/admin/roles/<%= @role.id %>/delete" onclick="return modalize(this);"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
+    <a class="modal_link delete" href="/admin/roles/<%= @role.id %>/delete"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
   </div>
 </form>
 

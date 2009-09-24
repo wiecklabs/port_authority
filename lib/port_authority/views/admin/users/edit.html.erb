@@ -77,7 +77,7 @@
     <% end %>
     <a href="/admin/users" class="cancel">Cancel</a>
 		<% unless @user.new_record? %>
-    	<a class="delete" href="/admin/users/<%= @user.id %>/delete" onclick="return modalize(this);"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
+    	<a class="modal_link delete" href="/admin/users/<%= @user.id %>/delete"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
 		<% end %>
   </div>
 </form>
