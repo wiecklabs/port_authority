@@ -26,7 +26,7 @@ require "fastercsv"
 gem "json"
 require "json"
 
-gem "harbor", ">= 0.12.8"
+gem "harbor", ">= 0.12.11"
 require "harbor"
 require "harbor/mailer"
 
@@ -57,6 +57,8 @@ require "tmail/address"
 Harbor::View::path.unshift(Pathname(__FILE__).dirname + "port_authority" + "views")
 Harbor::View.layouts.map("admin/*", "layouts/admin")
 Harbor::View.layouts.map("account/new", "layouts/login")
+Harbor::View.layouts.map("account/forgot_password", "layouts/login")
+Harbor::View.layouts.map("session/index", "layouts/login")
 Harbor::View.layouts.map("session/unauthorized", "layouts/exception")
 Harbor::View.layouts.map("*", "layouts/application")
 

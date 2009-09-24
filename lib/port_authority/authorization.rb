@@ -49,7 +49,7 @@ class PortAuthority
             if block.call(controller)
               # Neither of the checks passed, redirect the user appropriately based on session authentication status
               if request.session.authenticated?
-                throw :halt, response.render("session/unauthorized", :layout => "layouts/exception")
+                throw :halt, response.render("session/unauthorized")
               else
                 throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(request.env["REQUEST_URI"])}")
               end
