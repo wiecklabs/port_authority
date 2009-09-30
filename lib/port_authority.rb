@@ -33,22 +33,22 @@ require "harbor/mailer"
 gem "ui", ">= 0.6.1"
 require "ui"
 
-gem "dm-core"
+gem "dm-core", "= 0.9.11"
 require "dm-core"
 
-gem "dm-is-searchable"
+gem "dm-is-searchable", "= 0.9.11"
 require "dm-is-searchable"
 
-gem "dm-validations"
+gem "dm-validations", "= 0.9.11"
 require "dm-validations"
 
-gem "dm-timestamps"
+gem "dm-timestamps", "= 0.9.11"
 require "dm-timestamps"
 
-gem "dm-aggregates"
+gem "dm-aggregates", "= 0.9.11"
 require "dm-aggregates"
 
-gem "dm-types"
+gem "dm-types", "= 0.9.11"
 require "dm-types"
 
 gem "tmail"
