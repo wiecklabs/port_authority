@@ -1,13 +1,13 @@
 require "rubygems"
 require "pathname"
 require "rake"
-require "spec/rake/spectask"
+require "rake/testtask"
 
-# Specs
-task :default => :spec
-Spec::Rake::SpecTask.new("spec") do |t|
-  t.spec_opts << "--colour" << "--loadby" << "random"
-  t.spec_files = Dir["spec/**/*_spec.rb"]
+task :default => :test
+
+# Tests
+Rake::TestTask.new do |t|
+  t.test_files = 'test/**/*_test.rb'
 end
 
 # Gem

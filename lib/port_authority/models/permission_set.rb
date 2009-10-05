@@ -71,6 +71,8 @@ module PermissionSet
   # 
   def mask_for_permission(permission)
     group = PermissionSet::permissions[self.name]
+    raise "Requested permission group \"#{self.name}\" not found in PermissionSet::permissions hash." if group.nil?
+
     index = group.index(group.detect { |value, index| value =~ /^#{permission}(:|$)/ })
 
     # If the permission doesn't exist in the global permissions hash, then
@@ -163,5 +165,15 @@ class RolePermissionSet
     end
 
     @old_mask = nil
+  end
+end
+
+class SessionPermissionSet
+  include PermissionSet
+
+  attr_reader :name, :mask
+
+  def initialize(name, mask)
+    @name, @mask = name, mask
   end
 end
