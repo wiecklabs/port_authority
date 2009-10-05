@@ -145,16 +145,11 @@ class PortAuthority
     # Returns a self-generating hash that will always return a SessionPermissionSet
     ##
     def load_permissions_from_user
-      guest_permissions = load_permissions_from_guest_role
 
       Hash.new do |h, k|
-        guest_permission_set = PortAuthority::guest_role.permission_sets.detect { |set| set.name == k }
-        guest_mask = guest_permission_set ? guest_permission_set.mask : 0
-
         user_permission_set = user.permission_sets.detect { |set| set.name == k }
-        user_mask = user_permission_set ? user_permission_set.mask : 0
 
-        h[k] = SessionPermissionSet.new(k, guest_mask | user_mask)
+        h[k] = SessionPermissionSet.new(k, user_permission_set ? user_permission_set.mask : 0)
       end
     end
 
