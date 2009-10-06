@@ -140,11 +140,3 @@
   <input type="hidden" value="0" class="hidden" name="user[graphic_content_visible_by_default]"/>
   <input type="checkbox" name="user[graphic_content_visible_by_default]" id="graphic_content_visible_by_default" value="1" <%= 'checked="checked"' if @user.graphic_content_visible_by_default? %>>
 </fieldset>
-
-<% if defined? SyndicationManagement -%>
-<fieldset>
-  <legend>Syndication Information</legend>
-  <label for="syndication_ip_address">IP Addresses</label>
-  <textarea name="user[syndication_ip_addresses]" id="syndication_ip_addresses"><%= FasterCSV.parse(@user.syndication_ip_addresses).join("\r\n") unless @user.syndication_ip_addresses.nil? %></textarea>
-</fieldset>
-<% end -%>
