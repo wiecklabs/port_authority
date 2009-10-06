@@ -152,17 +152,17 @@ class SessionPermissionsTest < Test::Unit::TestCase
   def test_user_permissions_with_fresh_cache
     permissions = serialize_permissions('User', @user.updated_at + 1, 'Photos' => 15, 'Money' => 0)
   
-    guest_session = Session.new({:user_id => @user.id, 'permissions' => permissions})
-    assert_equal(15, guest_session.permissions['Photos'].mask)
-    assert(guest_session.permissions_loaded)
-    assert(!guest_session.permissions_loaded_from_user)
-    assert_equal(0, guest_session.permissions['Money'].mask)
+    user_session = Session.new({:user_id => @user.id, 'permissions' => permissions})
+    assert_equal(15, user_session.permissions['Photos'].mask)
+    assert(user_session.permissions_loaded)
+    assert(!user_session.permissions_loaded_from_user)
+    assert_equal(0, user_session.permissions['Money'].mask)
   end
   
   private
   
   def serialize_permissions(type, date_time, masks)
-    "#{type}[#{date_time}]:#{masks.map { |group, mask| "#{group}=#{mask}" }.join(',') }"
+    "#{type}[#{date_time}]:#{masks.map { |group, mask| "#{group}=#{mask}" }.join(';') }"
   end
   
 end

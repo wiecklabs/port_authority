@@ -101,20 +101,16 @@ class PortAuthority
     def load_permissions
       permission_data = self['permissions'].to_s
 
-      if permission_data =~ /(Guest|User)\[([0-9\-:T]{25})\]/
+      if permission_data =~ /(Guest|User)\[([0-9\-:T]{25})\](.*)/
         permission_cache_source = $1
         permission_cache_last_updated = DateTime.parse($2)
+        permission_string = $3
       else
         return update_permission_cache(guest? ? load_permissions_from_guest_role : load_permissions_from_user)
       end
-
-      loader = Hash.new do |h, k|
-        h[k] = if permission_data =~ /#{Regexp.escape(k)}\=(\d{1,10})?/
-          SessionPermissionSet.new(k, $1.to_i)
-        else
-          SessionPermissionSet.new(k, 0)
-        end
-      end
+      
+      cached_permission_map = Hash[*permission_string.split(';').map { |permission| key, value = permission.split('='); [key, SessionPermissionSet.new(key, value.to_i)] }.flatten]
+      loader = lambda { |group_name| cached_permission_map[group_name] || SessionPermissionSet.new(group_name, 0) }
 
       if guest?
         if permission_cache_source != 'Guest' || (guest.updated_at > permission_cache_last_updated) 
@@ -136,8 +132,10 @@ class PortAuthority
     # SessionPermissionSet
     ##
     def load_permissions_from_guest_role
+      guest_permission_sets = PortAuthority::guest_role.permission_sets.entries
+
       Hash.new do |h, k|
-        h[k] = PortAuthority::guest_role.permission_sets.detect { |set| set.name == k } || SessionPermissionSet.new(k, 0)
+        h[k] = guest_permission_sets.detect { |set| set.name == k } || SessionPermissionSet.new(k, 0)
       end
     end
 
@@ -145,11 +143,10 @@ class PortAuthority
     # Returns a self-generating hash that will always return a SessionPermissionSet
     ##
     def load_permissions_from_user
+      user_permission_sets = user.permission_sets.entries
 
       Hash.new do |h, k|
-        user_permission_set = user.permission_sets.detect { |set| set.name == k }
-
-        h[k] = SessionPermissionSet.new(k, user_permission_set ? user_permission_set.mask : 0)
+        h[k] = user_permission_sets.detect { |set| set.name == k } || SessionPermissionSet.new(k, 0)
       end
     end
 
@@ -168,7 +165,7 @@ class PortAuthority
         permission_cache_last_updated = user.updated_at
       end
 
-      self['permissions'] = "#{permission_cache_source}[#{permission_cache_last_updated}]:" + PermissionSet::permissions.map { |name, keys| "#{name}=#{source_permissions[name].mask}" }.join(',')
+      self['permissions'] = "#{permission_cache_source}[#{permission_cache_last_updated}]:" + PermissionSet::permissions.map { |name, keys| "#{name}=#{source_permissions[name].mask}" }.join(';')
 
       source_permissions
     end
