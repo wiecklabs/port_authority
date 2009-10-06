@@ -101,7 +101,7 @@ class PortAuthority
     def load_permissions
       permission_data = self['permissions'].to_s
 
-      if permission_data =~ /(Guest|User)\[([0-9\-:T]{25})\](.*)/
+      if permission_data =~ /(Guest|User)\[([0-9\-:T]{25})\]\:(.*)/
         permission_cache_source = $1
         permission_cache_last_updated = DateTime.parse($2)
         permission_string = $3

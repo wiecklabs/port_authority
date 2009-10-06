@@ -103,7 +103,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
   end
 
   def test_guest_permissions_with_fresh_cache
-    permissions = serialize_permissions('Guest', @guest_role.updated_at + 1, 'Photos' => 3, 'Money' => 0)
+    permissions = serialize_permissions('Guest', @guest_role.updated_at + 1, 'Photos=3;Money=0')
 
     guest_session = Session.new({:user_id => nil, 'permissions' => permissions})
     assert_equal(3, guest_session.permissions['Photos'].mask)
@@ -130,7 +130,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
   end
   
   def test_user_permissions_with_stale_cache
-    permissions = serialize_permissions('User', DateTime.now - 1, 'Photos' => 15, 'Money' => 0)
+    permissions = serialize_permissions('User', DateTime.now - 1, 'Photos=15;Money=0')
 
     user_session = Session.new({:user_id => @user.id, 'permissions' => permissions})
     assert_equal(15, user_session.permissions['Photos'].mask)
@@ -140,7 +140,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
   end
 
   def test_user_permissions_with_guest_cache
-    permissions = serialize_permissions('Guest', DateTime.now + 1, 'Photos' => 15, 'Money' => 0)
+    permissions = serialize_permissions('Guest', DateTime.now + 1, 'Photos=15;Money=0')
   
     user_session = Session.new({:user_id => @user.id, 'permissions' => permissions})
     assert_equal(15, user_session.permissions['Photos'].mask)
@@ -150,7 +150,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
   end
 
   def test_user_permissions_with_fresh_cache
-    permissions = serialize_permissions('User', @user.updated_at + 1, 'Photos' => 15, 'Money' => 0)
+    permissions = serialize_permissions('User', @user.updated_at + 1, 'Photos=15;Money=0')
   
     user_session = Session.new({:user_id => @user.id, 'permissions' => permissions})
     assert_equal(15, user_session.permissions['Photos'].mask)
@@ -161,8 +161,8 @@ class SessionPermissionsTest < Test::Unit::TestCase
   
   private
   
-  def serialize_permissions(type, date_time, masks)
-    "#{type}[#{date_time}]:#{masks.map { |group, mask| "#{group}=#{mask}" }.join(';') }"
+  def serialize_permissions(type, date_time, mask_string)
+    "#{type}[#{date_time}]:#{mask_string}"
   end
   
 end
