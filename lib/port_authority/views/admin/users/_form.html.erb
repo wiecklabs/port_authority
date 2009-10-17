@@ -13,10 +13,10 @@
 <fieldset>
   <legend>Account Information</legend>
 
-  <label for="email">Email Address</label>
+  <label class="required" for="email">Email Address <em>*</em></label>
   <input type="text" name="user[email]" id="email" value="<%= @user.email %>">
 
-  <label for="password">Password</label>
+  <label class="required" for="password">Password <em>*</em></label>
   <% if PortAuthority::use_crypted_passwords? %>
   <input type="password" name="user[password]" id="password">
   <% else %>
@@ -82,10 +82,10 @@
 <fieldset>
   <legend>Contact Information</legend>
 
-  <label for="first_name">First name</label>
+  <label class="required" for="first_name">First name <em>*</em></label>
   <input type="text" name="user[first_name]" id="first_name" value="<%= @user.first_name %>">
 
-  <label for="last_name">Last name</label>
+  <label class="required" for="last_name">Last name <em>*</em></label>
   <input type="text" name="user[last_name]" id="last_name" value="<%= @user.last_name %>">
 
   <label for="organization">Organization</label>

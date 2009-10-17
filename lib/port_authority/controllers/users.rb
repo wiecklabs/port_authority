@@ -77,7 +77,7 @@ class PortAuthority::Users
         update_permissions(user, request.params["permissions"])
       end
 
-      response.redirect "/admin/users/#{user.id}/edit", :message => "User Saved"
+      response.redirect "/admin/users/#{user.id}/edit", :message => "User successfully updated."
     else
       # Set the roles on the user so the form will render the previously selected role
       user.roles.clear
@@ -149,7 +149,7 @@ class PortAuthority::Users
 
       user.reload
 
-      response.redirect "/admin/users/#{user.id}/edit"
+      response.redirect "/admin/users/#{user.id}/edit", :message => "User successfully created."
     else
       # Set the roles on the user so the form will render the previously selected role
       user.roles.clear
@@ -220,7 +220,7 @@ class PortAuthority::Users
         #
         user.save!
       end
-      response.redirect "/admin/users"
+      response.redirect "/admin/users", :message => "User successfully deleted."
     end
   end
 
