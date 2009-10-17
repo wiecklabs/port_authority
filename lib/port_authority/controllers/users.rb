@@ -219,6 +219,7 @@ class PortAuthority::Users
         #   user.destroy # => user.deleted_at = Time.now; user.save
         #
         user.save!
+        raise_event(:user_deleted, user, request)
       end
       response.redirect "/admin/users", :message => "User successfully deleted."
     end
