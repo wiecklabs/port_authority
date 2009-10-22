@@ -88,6 +88,7 @@ class User
 
   def self.use_approvals!
     property :awaiting_approval, Boolean, :default => true
+    property :usage_statement, Text
 
     def self.awaiting_approval
       sort = PortAuthority::use_logins? ? [:login.asc] : [:email.asc]

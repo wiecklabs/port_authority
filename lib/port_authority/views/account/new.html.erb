@@ -35,6 +35,9 @@
 
     <label for="fax">Fax</label>
     <input type="text" name="user[fax]" id="fax" value="<%= @user.fax %>">
+
+		<label for="website">Website</label>
+		<input type="text" name="user[www]" id="website" value="<%= @user.www %>">
   </fieldset>
 
   <fieldset>
@@ -73,6 +76,11 @@
 
     <label for="postal_code">Postal Code</label>
     <input type="text" id="postal_code" name="user[postal_code]" value="<%= @user.postal_code %>">
+		
+		<% if PortAuthority.use_approvals? %>
+			<label for="usage_statement">Usage Statement</label>
+			<textarea name="user[usage_statement]" id="usage_statement"><%= @user.usage_statement %></textarea>
+		<% end%>
   </fieldset>
 
   <input type="submit" value="Create Account">
