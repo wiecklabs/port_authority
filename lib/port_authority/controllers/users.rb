@@ -63,7 +63,7 @@ class PortAuthority::Users
     if user.valid? || (override && request.session.authorized?("Users", "override"))
       user.save!
 
-      update_roles(user, roles)
+      User.update_roles(user, roles)
 
       raise_event(:user_updated, user, request)
 
@@ -93,11 +93,12 @@ class PortAuthority::Users
   end
 
   protect "Users", "create"
-  def create(params, override = false)
+  def create(params, override = false, options = {})
     user = User.new
+    raise_event(:start_user_create, user, request, options)
 
     if PortAuthority::allow_multiple_roles?
-      roles = request.params["roles"] || Hash.new
+      roles = request.params["roles"].clone || Hash.new
     else
       # This is a bit of a hack, but seemed to be the easiest way to support "single-role" selection in the UI
       # Need to build a hash (that looks just like the form's role fields when using "multiple roles")
@@ -127,9 +128,7 @@ class PortAuthority::Users
     if user.valid? || (override && request.session.authorized?("Users", "override"))
       user.save!
 
-      update_roles(user, roles)
-
-      raise_event(:user_created, user, request)
+      User.update_roles(user, roles)
 
       if PortAuthority::allow_user_specific_permissions?
         update_permissions(user, request.params["permissions"])
@@ -149,6 +148,7 @@ class PortAuthority::Users
 
       user.reload
 
+      raise_event(:user_created, user, request, response, options)
       response.redirect "/admin/users/#{user.id}/edit", :message => "User successfully created."
     else
       # Set the roles on the user so the form will render the previously selected role
@@ -157,10 +157,9 @@ class PortAuthority::Users
         user.roles << role
       end
 
-      raise_event(:user_save_failed, user, request)
-      
       response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
-      response.render "admin/users/new", :user => user
+      raise_event(:user_save_failed, user, request, response, options)
+      response.render "admin/users/new", :user => user if response.size == 0
     end
 
   end
@@ -303,20 +302,6 @@ class PortAuthority::Users
       set.save
     end
     true
-  end
-
-  def update_roles(user, roles)
-    return unless roles.respond_to?(:each)
-
-    roles.each do |id, value|
-      role = RoleUser.first(:user_id => user.id, :role_id => id)
-      
-      case value.to_i
-      when 0 then role.destroy unless role.nil?
-      when 1 then RoleUser.create(:user_id => user.id, :role_id => id) if role.nil?
-      end
-    end
-
   end
 
 end
