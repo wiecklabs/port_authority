@@ -197,6 +197,19 @@ class User
     end
   end
 
+  def self.update_roles(user, roles)
+    return unless roles.respond_to?(:each)
+
+    roles.each do |id, value|
+      role = RoleUser.first(:user_id => user.id, :role_id => id)
+      
+      case value.to_i
+      when 0 then role.destroy unless role.nil?
+      when 1 then RoleUser.create(:user_id => user.id, :role_id => id) if role.nil?
+      end
+    end
+  end
+
   protected
 
   def encrypt_password
