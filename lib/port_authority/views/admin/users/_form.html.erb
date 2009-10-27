@@ -126,7 +126,9 @@
 	
 	<% if PortAuthority.use_approvals? %>
 		<label for="usage_statement">Usage Statement</label>
-		<textarea name="user[usage_statement]" id="usage_statement"><%= @user.usage_statement %></textarea>
+		<div class="textarea">
+			<textarea name="user[usage_statement]" id="usage_statement" rows=7><%= @user.usage_statement %></textarea>
+		</div>
 	<% end%>
 </fieldset>
 
