@@ -26,9 +26,10 @@ require "fastercsv"
 gem "json"
 require "json"
 
-gem "harbor", ">= 0.12.11"
+gem "harbor", ">= 0.15.1"
 require "harbor"
 require "harbor/mailer"
+require "harbor/logging"
 
 gem "ui", ">= 0.6.1"
 require "ui"
@@ -84,6 +85,15 @@ class PortAuthority < Harbor::Application
   
   def self.is_searchable?
     @@is_searchable
+  end
+
+  @@logger = nil
+  def self.logger
+    @@logger
+  end
+  
+  def self.logger=(value)
+    @@logger = value
   end
 
   @@default_user_sort = [:email.asc]
@@ -383,6 +393,55 @@ class PortAuthority < Harbor::Application
       role.permission_sets.each { |set| set.propagate_permissions! }
     end
   end
+
+  def self.fake!
+    gem "faker"
+    require "faker"
+
+    admin_role = Role.create!(:name => "Admin", :description => "Site administrators")
+    user_role  = Role.create!(:name => "User", :description => "General users")
+    guest_role = Role.create!(:name => "Guest", :description => "Guests")
+
+    admin_user = {
+      :first_name => "Admin",
+      :last_name => "Admin",
+      :email => "admin@example.com",
+      :password => "test",
+      :active => true,
+      :roles => [admin_role]
+    }
+
+    admin_user[:login] = "admin" if PortAuthority::use_logins?
+
+    User.create!(admin_user)
+    puts "Created an admin user. Login with '#{PortAuthority::use_logins? ? admin_user[:login] : admin_user[:email]}' and '#{admin_user[:password]}' "
+
+    PermissionSet::permissions.each do |name, permissions|
+      role = RolePermissionSet.new(:role => admin_role, :name => name)
+      role.add *permissions
+      role.save
+      role.propagate_permissions!
+    end
+
+    if !ENV["ENVIRONMENT"] || ENV["ENVIRONMENT"] == "development"
+      10.times do |i|
+        user = {
+          :first_name => Faker::Name::first_name,
+          :last_name  => Faker::Name::last_name,
+          :email      => Faker::Internet::email,
+          :organization => Faker::Company::name,
+          :password => "test",
+          :active => true
+        }
+
+        user[:login] = "#{user[:first_name].downcase}#{rand(5)}" if PortAuthority::use_logins?
+
+        User.create!(user)
+      end
+    end
+    puts "#{User.count} created."
+  end
+
   
   def self.routes(services = self.services)
     raise ArgumentError.new("+services+ must be a Harbor::Container") unless services.is_a?(Harbor::Container)
@@ -398,7 +457,7 @@ class PortAuthority < Harbor::Application
 
         get("/admin/users")          { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:active => true}, params["query"]) }
         get("/admin/users/inactive") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:active => false}, params["query"]) }
-        get("/admin/users/awaiting") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:awaiting_approval => true}, params["query"]) }
+            get("/admin/users/awaiting") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:awaiting_approval => true}, params["query"]) }
         get("/admin/users/new")      { |users, params| users.new(params["user"]) }
         
         get("/admin/roles/:role_id/users") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:role_id => params['role_id'].to_i}, params["query"]) }
@@ -409,6 +468,7 @@ class PortAuthority < Harbor::Application
         get("/session")         { |session, params| session.index(params["message"]) }
         post("/session")        { |session, params| session.create(params["login"], params["password"]) }
         get("/session/delete")  { |session| session.delete }
+        get("/logout")          { |session| session.delete }
       end
 
       using services, PortAuthority::Users do

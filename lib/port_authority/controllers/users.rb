@@ -3,7 +3,7 @@ class PortAuthority::Users
   include PortAuthority::Authorization
   include Harbor::Events
 
-  attr_accessor :request, :response, :mailer
+  attr_accessor :request, :response, :mailer, :logger
 
   protect "Users", "list"
   def index(page, page_size, options = {}, query = nil)

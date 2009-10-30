@@ -53,3 +53,7 @@ desc "Install Port Authority as a gem"
 task :install => [:repackage] do
   sh %{gem install pkg/#{NAME}-#{GEM_VERSION}}
 end
+
+task :version do
+    puts GEM_VERSION
+end

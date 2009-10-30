@@ -34,6 +34,7 @@ class PortAuthority
 
     def authenticate(login, password)
       login.nil? ? login : login.strip!
+      PortAuthority.logger.info{"Login attempt with #{PortAuthority::login_type.to_s}:#{login.inspect} and password:#{password.inspect}"} if PortAuthority.logger
 
       user = if PortAuthority::login_type == :email
         if User.repository.adapter.class.name =~ /postgres/i
@@ -45,6 +46,8 @@ class PortAuthority
         User.first(PortAuthority::login_type => login)
       end
       status = nil
+
+      PortAuthority.logger.info{"\"Claimed identity: #{user.inspect}"} if PortAuthority.logger
 
       return AuthenticationRequest.new(false, PortAuthority::login_failed_message) unless user && user.send(PortAuthority::login_type) == login
 
@@ -67,6 +70,7 @@ class PortAuthority
       status = AuthenticationRequest.new(false, "Account locked out") if PortAuthority::use_lockouts? && user.locked?
 
       if status
+        PortAuthority.logger.info{"\tLogin failed: #{status.inspect}"} if PortAuthority.logger
         status
       else
         user.failed_logins = 0 if PortAuthority::use_lockouts?
@@ -74,6 +78,7 @@ class PortAuthority
         user.save!
         self[:user_id] = user.id
         @user = user
+        PortAuthority.logger.info{"\tLogin success"} if PortAuthority.logger
         AuthenticationRequest.new(true, "Login success")
       end
     end

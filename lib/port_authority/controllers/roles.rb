@@ -2,7 +2,7 @@ class PortAuthority::Roles
 
   include PortAuthority::Authorization
 
-  attr_accessor :request, :response
+  attr_accessor :request, :response, :logger
 
   protect "Roles", "show"
   def index(query = nil)

@@ -1,6 +1,6 @@
 class PortAuthority::Session
 
-  attr_accessor :request, :response, :mailer
+  attr_accessor :request, :response, :mailer, :logger
 
   def index(message)
     @users = User.all(:active => true) if @request.environment == "development"
