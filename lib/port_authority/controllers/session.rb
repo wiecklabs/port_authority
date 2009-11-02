@@ -14,6 +14,8 @@ class PortAuthority::Session
     else
       # audit "FailedLogin", [login, password]
       @users = User.all(:active => true) if @request.environment == "development"
+      @request.params["status"] = status
+
       if PortAuthority::redirect_failed_logins_to_referrer?
         @response.redirect(referrer, :error => status)
       else
