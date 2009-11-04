@@ -20,10 +20,12 @@
     <%= UI::AccountNavigation.new(self) if me %>
   </div>
   <div class="content">
-    <% if @message %>
-      <p class="message"><%= @message %></p>
-    <% end %>
-    
+    <% @request.messages.keys.each do |key| -%>
+      <% message = @request.messages[key] -%>
+      <% unless message.blank? -%>
+        <p class="message <%= key %>"><%= message %></p>
+      <% end -%>
+    <% end -%>
     <%= @content %>
   </div>
 </body>

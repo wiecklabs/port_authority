@@ -35,7 +35,7 @@ class PortAuthority::Users
 
   protect "Users", "update"
   def edit(id)
-    response.render "admin/users/edit", :user => User.get(id), :message => request.params["message"]
+    response.render("admin/users/edit", :user => User.get(id))
   end
 
   protect "Users", "update"
@@ -77,7 +77,8 @@ class PortAuthority::Users
         update_permissions(user, request.params["permissions"])
       end
 
-      response.redirect "/admin/users/#{user.id}/edit", :message => "User successfully updated."
+      response.message("success", "User successfully updated.")
+      response.redirect("/admin/users/#{user.id}/edit")
     else
       # Set the roles on the user so the form will render the previously selected role
       user.roles.clear
@@ -149,7 +150,8 @@ class PortAuthority::Users
       user.reload
 
       raise_event(:user_created, user, request, response, options)
-      response.redirect "/admin/users/#{user.id}/edit", :message => "User successfully created."
+      response.message("success", "User successfully created.")
+      response.redirect("/admin/users/#{user.id}/edit")
     else
       # Set the roles on the user so the form will render the previously selected role
       user.roles.clear
@@ -220,7 +222,8 @@ class PortAuthority::Users
         user.save!
         raise_event(:user_deleted, user, request)
       end
-      response.redirect "/admin/users", :message => "User successfully deleted."
+      response.message("success", "User successfully deleted.")
+      response.redirect("/admin/users")
     end
   end
 
@@ -238,7 +241,8 @@ class PortAuthority::Users
     mailer.text = Harbor::View.new("mailers/reset_password.txt.erb", :user => user)
     mailer.send!
 
-    response.render("admin/users/edit", :user => user, :message => "A password change notification has been sent to the email registered with this account.")
+    response.message("success", "A password change notification has been sent to the email registered with this account.")
+    response.render("admin/users/edit", :user => user)
   end
 
   def self.use_approvals!
@@ -246,7 +250,7 @@ class PortAuthority::Users
     def approve(id)
       user = User.get(id)
       if user.approve!
-        message = "Account was successfully approved."
+        response.message("success", "Account was successfully approved.")
 
         mailer.to = user.email
         mailer.from = PortAuthority::no_reply_email_address
@@ -255,10 +259,10 @@ class PortAuthority::Users
         mailer.text = Harbor::View.new("mailers/approval.txt.erb", :user => user)
         mailer.send!
       else
-        message = "Account could not be updated!"
+        response.message("error", "Account could not be updated!")
       end
 
-      response.render("admin/users/edit", :user => user, :message => message)
+      response.render("admin/users/edit", :user => user)
     end
 
     protect "Users", "update"
@@ -273,7 +277,8 @@ class PortAuthority::Users
       mailer.text = Harbor::View.new("mailers/denial.txt.erb", :user => user)
       mailer.send!
 
-      response.redirect("/", :message => "Account Denied for #{user.email}")
+      repsonse.message("error", "Account Denied for #{user.email}")
+      response.redirect("/")
     end
   end
 

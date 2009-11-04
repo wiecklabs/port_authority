@@ -4,7 +4,8 @@ class PortAuthority::Session
 
   def index(message)
     @users = User.all(:active => true) if @request.environment == "development"
-    @response.render "session/index", :users => @users, :message => message, :referrer => referrer
+    @response.message("success", message) if message
+    @response.render("session/index", :users => @users, :referrer => referrer)
   end
 
   def create(login, password)

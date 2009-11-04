@@ -7,17 +7,17 @@ class PortAuthority::Roles
   protect "Roles", "show"
   def index(query = nil)
     return search(query) if query
-    @response.render "admin/roles/index", :roles => Role.all(:order => [:name.asc])
+    @response.render("admin/roles/index", :roles => Role.all(:order => [:name.asc]))
   end
 
   protect "Roles", "create"
   def new(params)
-    @response.render "admin/roles/new", :role => Role.new(params || {})
+    @response.render("admin/roles/new", :role => Role.new(params || {}))
   end
 
   protect "Roles", "update"
   def edit(id)
-    @response.render "admin/roles/edit", :role => Role.get(id)
+    @response.render("admin/roles/edit", :role => Role.get(id))
   end
 
   protect "Roles", "update"
@@ -26,9 +26,10 @@ class PortAuthority::Roles
     role.update_attributes(params)
 
     if role.valid? && update_permissions(role, permissions, @request.params["propagate_permissions"])
-      @response.redirect "/admin/roles"
+      @response.message("success", "Role was successfully updated.")
+      @response.redirect("/admin/roles")
     else
-      @response.render "admin/roles/edit", :role => role
+      @response.render("admin/roles/edit", :role => role)
     end
   end
 
@@ -37,9 +38,9 @@ class PortAuthority::Roles
     role = Role.new(params || {})
 
     if role.save && update_permissions(role, permissions)
-      @response.redirect "/admin/roles"
+      @response.redirect("/admin/roles")
     else
-      @response.render "admin/roles/new", :role => role
+      @response.render("admin/roles/new", :role => role)
     end
   end
 
@@ -48,18 +49,19 @@ class PortAuthority::Roles
     role = Role.get(id)
     
     if role.name == PortAuthority::default_user_role
-      return @response.render("admin/roles/index", :roles => Role.all(:order => [:name.asc]), :message => "Deleting the default role is not permitted.")
+      @response.message("error", "Deleting the default role is not permitted.")
+      return @response.render("admin/roles/index", :roles => Role.all(:order => [:name.asc]))
     end
     
     case @request.request_method
     when "GET"
       context = { :role => role }
       context[:layout] = nil if @request.xhr?
-      @response.render "admin/roles/delete", context
+      @response.render("admin/roles/delete", context)
     when "DELETE"
       role.permission_sets.each { |set| set.destroy }
       role.destroy
-      @response.redirect "/admin/roles"
+      @response.redirect("/admin/roles")
     end
   end
 
@@ -73,7 +75,7 @@ class PortAuthority::Roles
       results = repository(:search).search("+_type:Role #{clean}")
       roles = Role.all(:id => results[Role], :order => [:name.asc])
     end
-    @response.render "admin/roles/_list", :roles => roles, :layout => nil
+    @response.render("admin/roles/_list", :roles => roles, :layout => nil)
   end
 
   def update_permissions(role, permission_sets, propagate_permissions = false)

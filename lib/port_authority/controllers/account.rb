@@ -22,11 +22,11 @@ class PortAuthority::Account
       self.mailer.html = Harbor::View.new("mailers/account_changed", :user => user)
       self.mailer.send!
 
-      @response.redirect "/account", :message => "Your account was updated successfully"
+      @response.message("success", "Your account was updated successfully")
+      @response.redirect("/account")
     else
-      @response.render "account/edit",
-        :user => user,
-        :message => user.errors.values.flatten
+      @response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
+      @response.render ("account/edit", :user => user)
     end
   end
 
@@ -68,7 +68,8 @@ class PortAuthority::Account
         message = "An activation email has been sent to #{user.email}. Follow the directions there to activate your account."
       end
 
-      response.redirect("/", :message => message)
+      response.message("success", message)
+      response.redirect("/")
     else
       response.render "account/new", :user => user
     end
@@ -94,14 +95,16 @@ class PortAuthority::Account
         request.session[:user_id] = user.id
         message = "Your account has been activated and you are now logged in."
       end
-      
+
       user.save
 
+      @response.message("success", message)
+
     else
-      message = "No account associated with the provided authentication key could be found."
+      @response.message("error",  "No account associated with the provided authentication key could be found.")
     end
 
-    @response.redirect("/", :message => message)
+    @response.redirect("/")
   end
 
   def forgot_password(email_address = nil)
@@ -112,7 +115,8 @@ class PortAuthority::Account
 
       # If the user doesn't exist, redirect to /account/password
       if user.nil?
-        return @response.redirect("/account/password", :message => "We do not have an account registered for that email.")
+        @response.message("error", "We do not have an account registered for that email.")
+        return @response.redirect("/account/password")
       end
 
       # If the user is inactive and hasn't been approved, let them know.
@@ -122,7 +126,8 @@ class PortAuthority::Account
         sent to the email address registered on the account.
         EOS
 
-        return @response.redirect("/account/password", :message => message)
+        @response.message("error", message)
+        return @response.redirect("/account/password")
       end
 
       user.password = User.random_password
@@ -139,7 +144,8 @@ class PortAuthority::Account
       Your password has been sent to the email registered with your account.  Please check your email.
       EOS
 
-      @response.redirect "/account/password", :message => message
+      @response.message("success", message)
+      @response.redirect("/account/password")
     end
   end
 
