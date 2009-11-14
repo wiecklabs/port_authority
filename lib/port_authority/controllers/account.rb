@@ -12,6 +12,18 @@ class PortAuthority::Account
   protect
   def update(params)
     user = @request.session.user
+    
+    if user.force_password_update?
+      @updated_password = false
+      if !params["password"].blank? && !params["password_confirmation"].blank?
+        if user.respond_to?(:crypted_password)
+          @updated_password = true if user.crypted_password != user.encrypt_password(params["password"])
+        else
+          @updated_password = true if user.password != params["password"]
+        end
+      end
+    end
+
     user.attributes = params.reject { |k,v| %w(password password_confirmation).include?(k) && v.blank? }
 
     if user.save
@@ -22,7 +34,19 @@ class PortAuthority::Account
       self.mailer.html = Harbor::View.new("mailers/account_changed", :user => user)
       self.mailer.send!
 
-      @response.message("success", "Your account was updated successfully")
+      if user.force_password_update?
+        if @updated_password
+          @request.session[:force_password_update] = false
+          user.force_password_update = false
+          user.save
+          @response.message("success", "Your account was updated successfully")
+        else
+          @response.message("error", "Please update your password before continuing.")
+        end
+      else
+        @response.message("success", "Your account was updated successfully")
+      end
+
       @response.redirect("/account")
     else
       @response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
