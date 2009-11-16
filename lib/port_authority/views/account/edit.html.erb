@@ -72,6 +72,12 @@
 					<textarea name="user[usage_statement]" id="usage_statement"><%= @user.usage_statement %></textarea>
 				<% end%>
       </fieldset>
+			
+			<fieldset>
+				<legend>Preferences</legend>
+				
+				<%= plugin("user/edit/content_notifications", :user => @user) %>
+			</fieldset>
 
       <input type="submit" class="submit" value="Save">
       <a href="<%= @back %>" class="cancel">Cancel</a>

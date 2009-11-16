@@ -149,4 +149,7 @@
   <label for="graphic_content_visible_by_default">Graphic Content Visible By Default?</label>
   <input type="hidden" value="0" class="hidden" name="user[graphic_content_visible_by_default]"/>
   <input type="checkbox" name="user[graphic_content_visible_by_default]" id="graphic_content_visible_by_default" value="1" <%= 'checked="checked"' if @user.graphic_content_visible_by_default? %>>
+	
+	<div class="clear"></div>
+	<%= plugin("user/edit/content_notifications", :user => @user) %>
 </fieldset>
