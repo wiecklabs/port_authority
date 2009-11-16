@@ -38,6 +38,8 @@ class User
     before :save, :encrypt_password
   end
 
+  property :force_password_update, Boolean, :default => false
+
   property :password, String, :auto_validation => false
   attr_accessor :password_confirmation
 

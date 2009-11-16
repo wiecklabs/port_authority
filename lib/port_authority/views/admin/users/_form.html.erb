@@ -123,7 +123,8 @@
 
 	<label for="website">Website</label>
 	<input type="text" name="user[www]" id="website" value="<%= @user.www %>">
-	
+	<label for="force_password_update">Force Password Update on Next Login?</label>
+  <input type="checkbox" name="user[force_password_update" id="force_password_update" value="1" <%= 'checked="checked"' if @user.force_password_update?%>/>
 	<% if PortAuthority.use_approvals? %>
 		<label for="usage_statement">Usage Statement</label>
 		<div class="textarea">

@@ -77,6 +77,7 @@ class PortAuthority
         user.last_login = DateTime.now
         user.save!
         self[:user_id] = user.id
+        self[:force_password_update] = user.force_password_update
         @user = user
         PortAuthority.logger.info{"\tLogin success"} if PortAuthority.logger
         AuthenticationRequest.new(true, "Login success")
