@@ -22,6 +22,14 @@ class PortAuthority
         queue_hook(
           lambda do |controller|
             request, response = controller.request, controller.response
+
+            if request.session[:force_password_update]  
+              
+              if (request.env["PATH_INFO"] =~ /.*?\/account\/?/).nil?
+                response.message("error", "You must update your password before continuing.") 
+                throw :halt, response.redirect("/account/") 
+              end
+            end
             # No arguments were supplied to protect, just check for authentiation
             break if permission_category.nil? && request.session.authenticated?
 

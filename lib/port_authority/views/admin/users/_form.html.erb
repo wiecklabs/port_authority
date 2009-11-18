@@ -123,7 +123,8 @@
 
 	<label for="website">Website</label>
 	<input type="text" name="user[www]" id="website" value="<%= @user.www %>">
-	
+	<label for="force_password_update">Force Password Update on Next Login?</label>
+  <input type="checkbox" name="user[force_password_update" id="force_password_update" value="1" <%= 'checked="checked"' if @user.force_password_update?%>/>
 	<% if PortAuthority.use_approvals? %>
 		<label for="usage_statement">Usage Statement</label>
 		<div class="textarea">
@@ -149,4 +150,7 @@
   <label for="graphic_content_visible_by_default">Graphic Content Visible By Default?</label>
   <input type="hidden" value="0" class="hidden" name="user[graphic_content_visible_by_default]"/>
   <input type="checkbox" name="user[graphic_content_visible_by_default]" id="graphic_content_visible_by_default" value="1" <%= 'checked="checked"' if @user.graphic_content_visible_by_default? %>>
+	
+	<div class="clear"></div>
+	<%= plugin("user/edit/content_notifications", :user => @user) %>
 </fieldset>
