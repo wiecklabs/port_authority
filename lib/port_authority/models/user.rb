@@ -18,11 +18,11 @@ class User
                 :created_at, :updated_at, :failed_logins, :crypted_password, :salt]
 
   property :id, Serial
-  property :first_name, String
-  property :last_name, String
-  property :organization, String
+  property :first_name, String, :length => 50
+  property :last_name, String, :length => 50
+  property :organization, String, :length => 80
 
-  property :email, String
+  property :email, String, :length => 100
   property :title, String, :length => 255
 
   def self.use_crypted_passwords!
@@ -44,16 +44,16 @@ class User
   property :last_login, DateTime
   property :active, Boolean, :default => true
 
-  property :address, String
-  property :address2, String
-  property :city, String
-  property :state, String
-  property :postal_code, String
-  property :country, String
-  property :office_phone, String
-  property :mobile_phone, String
-  property :fax, String
-  property :www, String
+  property :address, String, :length => 100
+  property :address2, String, :length => 100
+  property :city, String, :length => 100
+  property :state, String, :length => 50
+  property :postal_code, String, :length => 20
+  property :country, String, :length => 100
+  property :office_phone, String, :length => 20
+  property :mobile_phone, String, :length => 20
+  property :fax, String, :length => 20
+  property :www, String, :length => 200
   property :graphic_content_visible_by_default, Boolean, :default => false
   property :prefers_attachments, Boolean, :default => false
 
@@ -65,7 +65,7 @@ class User
   property :updated_at, DateTime
 
   property :api_key, String, :default => lambda { Digest::MD5.hexdigest(`uuidgen`.chomp) }
-  property :auth_key, String, :default => lambda { `uuidgen`.chomp }
+  property :auth_key, String, :length => 36, :default => lambda { `uuidgen`.chomp }
 
   has n, :roles, :through => Resource
   
