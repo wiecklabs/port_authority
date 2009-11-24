@@ -1,10 +1,91 @@
-<script type="text/javascript" charset="utf-8">
-  function resetLoginAttempts() {
-    $("#failed_logins").attr("disabled", null);
-    $("#failed_logins").val(0);
-    $("#failed_logins").siblings("span").text("Account will be unlocked on save.");
-  };
-</script>
+<% head do -%>
+  <script type="text/javascript" charset="utf-8">
+    function resetLoginAttempts() {
+      $("#failed_logins").attr("disabled", null);
+      $("#failed_logins").val(0);
+      $("#failed_logins").siblings("span").text("Account will be unlocked on save.");
+    };
+
+    <%
+      roles_hash = Role.all.collect do |role|
+        permissions = role.permission_sets.collect { |set| [set.name, set.mask] }
+        ["role_#{role.id}", Hash[*permissions.flatten]]
+      end
+      roles_hash = Hash[*roles_hash.flatten]
+    -%>
+    var roles = <%= roles_hash.to_json %>;
+
+    <% original_mask = Hash[*(@user.permission_sets.collect { |set| [set.name, (set.mask) &~ @user.role_mask_for(set.name)] }.flatten)] %>
+    var original_mask = <%= original_mask.to_json %>;
+
+    function label_for(checkbox) {
+      return $(checkbox).prev().prev();
+    }
+
+    function set_permissions() {
+      var permissions = roles[this.id];
+      for (name in permissions) {
+        var mask = permissions[name];
+        grant_permissions(this.id, name, mask);
+      }
+    }
+
+    function update_permissions() {
+      var permissions = roles[this.id];
+      for ( name in permissions ) {
+        var mask = permissions[name];
+        if ( this.checked ) {
+          grant_permissions(this.id, name, mask)
+        }
+      }
+    }
+
+    function grant_permissions(role, name, mask) {
+      var permissions = $("input[id^='"+ name +"_']");
+      $.each(permissions, function(i, permission) {
+        index = 1 << i;
+        if ( (mask & index) == index ) add_permission(permissions[i], name, index);
+      });
+    }
+
+    function revoke_permissions(role, name, mask) {    
+      var permissions = $("input[id^='"+ name +"_']");
+      $.each(permissions, function(i, permission) {
+        index = 1 << i;
+        if ( (mask & index) != index ) return;
+        if ( (original_mask[name] & index ) != index ) remove_permission(permissions[i], name, index);
+      });
+    }
+
+    function add_permission(permission, name, index) {
+      if ( !permission.checked ) {
+        label_for(permission).addClass("auto_add");
+      }
+      permission.checked = true;
+      if ($(permission).parent().children("input[type=checkbox]").attr("checked")) {
+        $("legend input[type='checkbox']", $(permission).parent()).attr("checked", "checked");
+      }
+    }
+
+    function remove_permission(permission, name, index) {
+      label_for(permission).removeClass("auto_add");
+      permission.checked = false;
+    }
+
+    $(document).ready(function() {
+      $("#role").change(function() {
+        // Uncheck all permissions
+        $("#permissions input[type='checkbox']").attr("checked", "");
+        var role_id = $("#role").val();
+        var permissions = roles["role_" + role_id];
+        for (name in permissions) {
+          var mask = permissions[name];
+          grant_permissions("role_" + role_id, name, mask);
+        }
+      });
+    });
+  </script>
+<% end -%>
 
 <style type="text/css" media="screen">
   fieldset p.note { float: left; left: 2em; margin: 0; position: relative; top: 0em; z-index: 0; }

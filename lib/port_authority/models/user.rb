@@ -192,11 +192,34 @@ class User
     `pwgen -A -0 #{size} 1`.chomp
   end
   
-  def sync_permission_set_with_roles
-    self.permission_sets.destroy!
-    self.roles.each do |role|
-      role.permission_sets.each { |set| set.propagate_permissions! }
+  # def sync_permission_set_with_roles
+    # self.permission_sets.destroy!
+    # self.roles.each do |role|
+      # role.permission_sets.each { |set| set.propagate_permissions! }
+    # end
+  # end
+
+  # Resets the user's permission sets based on their roles.
+  # Note: Custom-defined permissions on the user are not preserved.
+  def reset_permission_set_from_roles
+    UserPermissionSet.all(:user_id => self.id).each do |existing_permission_set|
+      existing_permission_set.destroy
     end
+
+    user_role_ids = self.roles.map { |role| role.id }
+
+    PermissionSet::permissions.keys.each do |permission_name|
+      role_permissions = RolePermissionSet.all(:name => permission_name, :role_id.in => user_role_ids)
+      role_mask = role_permissions.inject(0) { |mask, set| mask | set.mask }
+
+      user_permission_set = UserPermissionSet.first_or_create(:name => permission_name, :user_id => self.id)
+      # user_mask = user_premission_set.mask
+
+      user_permission_set.mask = role_mask
+      user_permission_set.save
+    end
+
+    self.permission_sets.reload
   end
 
   def self.update_roles(user, roles)

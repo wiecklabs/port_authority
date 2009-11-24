@@ -67,12 +67,6 @@ class PortAuthority::Users
 
       raise_event(:user_updated, user, request)
 
-      unless PortAuthority::allow_multiple_roles?
-        user.reload
-        user.sync_permission_set_with_roles
-        user.save
-      end
-
       if PortAuthority::allow_user_specific_permissions?
         update_permissions(user, request.params["permissions"])
       end
