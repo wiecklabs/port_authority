@@ -15,8 +15,8 @@ An Account has been requested by <%= @user.email %>
 ===================================================
 
 To approve this request, log on and visit
-<%= "http://#{@mailer.host}/users/#{@user.id}/approve" %>
+<%= "http://#{@mailer.host}/admin/users/#{@user.id}/approve" %>
 
 To deny this request, log on and visit
-<%= "http://#{@mailer.host}/users/#{@user.id}/deny" %>
+<%= "http://#{@mailer.host}/admin/users/#{@user.id}/deny" %>
 

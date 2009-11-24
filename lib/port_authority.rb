@@ -586,7 +586,7 @@ module Harbor
 
   class ViewContext
     def me
-      @me ||= request.session.user
+      @me ||= request ? request.session.user : nil
     end
 
     def authenticated?
