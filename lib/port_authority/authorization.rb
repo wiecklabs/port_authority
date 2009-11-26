@@ -44,7 +44,9 @@ class PortAuthority
 
               throw :halt, response.render("session/unauthorized")
             else
-              throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(request.env["REQUEST_URI"])}")
+              messages = response.messages.merge(request.params["messages"]||{})
+              message_string = messages.collect { |k,v| "&messages[#{k}]=#{v}" }
+              throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(request.env["REQUEST_URI"])}#{message_string}")
             end
           end
         )
