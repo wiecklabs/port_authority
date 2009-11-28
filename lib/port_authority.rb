@@ -191,7 +191,7 @@ class PortAuthority < Harbor::Application
     @@account_activated_email_subject
   end
 
-  @@user_approved_email_subject = "An admin has approved your account"
+  @@user_approved_email_subject = "Your account has been approved."
   def self.user_approved_email_subject=(value)
     @@user_approved_email_subject = value
   end

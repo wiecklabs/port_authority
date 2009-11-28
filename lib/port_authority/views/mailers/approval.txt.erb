@@ -1,1 +1,5 @@
 Your account has been approved
+
+Your login is: <%= @user.to_s %> and your password is: <%= @user.password %>
+
+Login here: <%= "http://#{@mailer.host}/session" %>
