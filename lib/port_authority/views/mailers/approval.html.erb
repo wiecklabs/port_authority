@@ -1,5 +1,6 @@
-<p>Your account has been approved</p>
+<p>Your account has been approved!</p>
 
-<p>Your login is: <%= @user.to_s %> and your password is: <%= @user.password %></p>
+<p>Login: <%= @user.to_s %></p>
+<p>Password: <%= @user.password %></p>
 
-<p><a href="http://<%= @mailer.host %>/session">Login here</a></p>
+<p>Please click here to login: <a href="http://<%= @mailer.host %>/session">http://<%= @mailer.host %>/session</a></p>
