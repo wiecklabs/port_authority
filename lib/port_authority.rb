@@ -218,7 +218,7 @@ class PortAuthority < Harbor::Application
     @@password_reset_email_subject
   end
 
-  @@forgot_password_email_subject = "Your new password"
+  @@forgot_password_email_subject = "Password Recovery"
   def self.forgot_password_email_subject=(value)
     @@forgot_password_email_subject = value
   end
