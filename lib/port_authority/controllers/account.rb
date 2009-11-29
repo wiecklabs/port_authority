@@ -153,22 +153,50 @@ class PortAuthority::Account
         return @response.redirect("/account/password")
       end
 
-      user.password = User.random_password
-      user.save!
+      # Ensure users have a token (Although there is a default value for this, 
+      # it was added later and auto_upgrade doesn't do the work for you)
+      if user.reset_password_token.blank?
+        user.reset_password_token!
+        user.save
+      end
 
       mailer.to = user.email
       mailer.from = PortAuthority::no_reply_email_address
       mailer.subject = PortAuthority::forgot_password_email_subject
-      mailer.html = Harbor::View.new("mailers/password.html.erb", :user => user)
-      mailer.text = Harbor::View.new("mailers/password.txt.erb", :user => user)
+      mailer.html = Harbor::View.new("mailers/forgot_password.html.erb", :user => user)
+      mailer.text = Harbor::View.new("mailers/forgot_password.txt.erb", :user => user)
       mailer.send!
 
       message = <<-EOS
-      Your password has been sent to the email registered with your account.  Please check your email.
+      Your request to reset your password has been sent to the email registered with your account.  Please check your email.
       EOS
 
       @response.message("success", message)
       @response.redirect("/account/password")
+    end
+  end
+
+  def reset_password(token = nil, user_params = nil)
+    user = User.first(:reset_password_token => token)
+
+    if token.nil? || user.nil?
+      @response.message("error", "Invalid reset password link.")
+      return @response.redirect("/account/password")
+    end
+
+    if user_params.blank?
+      @response.render "account/reset_password", :token => token, :user => user
+    else
+      user.update_attributes(user_params)
+      user.reset_password_token!
+
+      if user.save
+        @response.message("success", "Your password has been successfully updated!")
+        @response.redirect("/session")
+      else
+        @response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
+        @response.render "account/reset_password", :token => token, :user => user
+      end
     end
   end
 

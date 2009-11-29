@@ -36,7 +36,7 @@ class PortAuthority::Session
   def referrer
     if @request.params["referrer"]
       @request.params["referrer"]
-    elsif @request.referrer !~ /\/(session|(account\/password))/
+    elsif @request.referrer !~ /\/(session|(account\/(password|reset_password)))/
       @request.referrer
     else
        "/"

@@ -68,6 +68,7 @@ class User
 
   property :api_key, String, :default => lambda { Digest::MD5.hexdigest(`uuidgen`.chomp) }
   property :auth_key, String, :length => 36, :default => lambda { `uuidgen`.chomp }
+  property :reset_password_token, String, :default => lambda { Digest::MD5.hexdigest(`uuidgen`.chomp) }
 
   has n, :roles, :through => Resource
   
@@ -181,6 +182,10 @@ class User
   
   def to_s
     PortAuthority::use_logins? ? (login || email) : email
+  end
+
+  def reset_password_token!
+    self.reset_password_token = Digest::MD5.hexdigest(`uuidgen`.chomp)
   end
 
   ##

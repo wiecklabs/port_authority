@@ -191,7 +191,7 @@ class PortAuthority < Harbor::Application
     @@account_activated_email_subject
   end
 
-  @@user_approved_email_subject = "Your account has been approved."
+  @@user_approved_email_subject = "Your account has been approved"
   def self.user_approved_email_subject=(value)
     @@user_approved_email_subject = value
   end
@@ -209,6 +209,15 @@ class PortAuthority < Harbor::Application
     @@user_denied_email_subject
   end
 
+  @@forgot_password_email_subject = "Lost Password Recovery Request"
+  def self.forgot_password_email_subject=(value)
+    @@forgot_password_email_subject = value
+  end
+
+  def self.forgot_password_email_subject
+    @@forgot_password_email_subject
+  end
+
   @@password_reset_email_subject = "An admin has reset your password"
   def self.password_reset_email_subject=(value)
     @@password_reset_email_subject = value
@@ -216,15 +225,6 @@ class PortAuthority < Harbor::Application
 
   def self.password_reset_email_subject
     @@password_reset_email_subject
-  end
-
-  @@forgot_password_email_subject = "Password Recovery"
-  def self.forgot_password_email_subject=(value)
-    @@forgot_password_email_subject = value
-  end
-
-  def self.forgot_password_email_subject
-    @@forgot_password_email_subject
   end
 
   @@login_failed_message = "Bad #{PortAuthority::login_type} or password"
@@ -510,8 +510,11 @@ class PortAuthority < Harbor::Application
         get("/account")             { |account| account.edit }
         post("/account")            { |account, params| account.create(params["user"]) }
         put("/account")             { |account, params| account.update(params["user"]) }
-        get("/account/password")    { |account| account.forgot_password }
-        post("/account/password")   { |account, params| account.forgot_password(params["email"]) }
+
+        get("/account/password")              { |account| account.forgot_password }
+        post("/account/password")             { |account, params| account.forgot_password(params["email"]) }
+        get("/account/reset_password/:token") { |account, params| account.reset_password(params["token"]) }
+        post("/account/reset_password")       { |account, params| account.reset_password(params["token"], params["user"]) }
 
         get("/account/vcard")       { |account| account.vcard }
         post("/account/vcard")      { |account, params| account.vcard(params["vcard"]) }
