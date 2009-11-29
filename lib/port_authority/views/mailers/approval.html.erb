@@ -2,4 +2,4 @@
 
 <p>Your login is: <%= @user.to_s %> and your password is: <%= @user.password %></p>
 
-<p><a href=<%= "http://#{@mailer.host}/session" %>>Login here</a></p>
+<p><a href="http://<%= @mailer.host %>/session" %>">Login here</a></p>
