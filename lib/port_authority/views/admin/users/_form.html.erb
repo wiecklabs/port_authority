@@ -97,6 +97,11 @@
   <label class="required" for="email">Email Address <em>*</em></label>
   <input type="text" name="user[email]" id="email" value="<%= @user.email %>">
 
+  <% if PortAuthority::use_logins? %>
+    <label class="required" for="login">Login <em>*</em></label>
+    <input type="text" name="user[login]" id="login" value="<%= @user.login %>">
+  <% end %>
+
   <label class="required" for="password">Password <em>*</em></label>
   <% if PortAuthority::use_crypted_passwords? %>
   <input type="password" name="user[password]" id="password">
