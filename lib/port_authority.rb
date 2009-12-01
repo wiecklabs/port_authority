@@ -182,7 +182,7 @@ class PortAuthority < Harbor::Application
     @@activation_email_subject
   end
 
-  @@account_activated_email_subject = "A user has activated their account"
+  @@account_activated_email_subject = "A guest has just registered for an account."
   def self.account_activated_email_subject=(value)
     @@account_activated_email_subject = value
   end
