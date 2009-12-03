@@ -93,6 +93,9 @@ class PortAuthority::Account
       end
   
       response.message("success", message)
+      response.redirect("/")
+    else
+      response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
     end
     
     response.render "account/new", :user => user
