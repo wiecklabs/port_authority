@@ -12,7 +12,7 @@
   <h2>Sign Up</h2>
   <% if @user.dirty? && !@user.valid?(:register) %>
     <ul class="message error">
-    <%= @user.errors.full_messages.map { |message| "<li>#{message}.\n" } %>
+    <%= @user.errors.full_messages.map { |message| "<li>#{message}.</li>\n" } %>
     </ul>
   <% end %>
   <fieldset>
