@@ -271,7 +271,7 @@ class PortAuthority::Users
       mailer.text = Harbor::View.new("mailers/denial.txt.erb", :user => user)
       mailer.send!
 
-      repsonse.message("error", "Account Denied for #{user.email}")
+      response.message("error", "Account Denied for #{user.email}")
       response.redirect("/")
     end
   end
