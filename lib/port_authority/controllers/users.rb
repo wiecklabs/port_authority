@@ -253,16 +253,18 @@ class PortAuthority::Users
         mailer.html = Harbor::View.new("mailers/approval.html.erb", :user => user)
         mailer.text = Harbor::View.new("mailers/approval.txt.erb", :user => user)
         mailer.send!
+        raise_event(:user_updated, user, request)
       else
         response.message("error", "Account could not be updated!")
       end
 
-      response.render("admin/users/edit", :user => user)
+      response.render("admin/users/edit", :user => user.reload)
     end
 
     protect "Users", "update"
     def deny(id)
       user = User.get(id)
+      raise_event(:user_denied, user, request)
       user.deny!
 
       mailer.to = user.email
