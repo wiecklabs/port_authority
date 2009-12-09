@@ -23,6 +23,8 @@ UI.public_path = Pathname(__FILE__).dirname.expand_path + "lib" + "port_authorit
 PortAuthority::is_searchable! if ENV['SEARCHABLE']
 PortAuthority::use_lockouts!
 PortAuthority::use_logins! if ENV['LOGINS']
+PortAuthority::use_approvals! if ENV['APPROVALS']
+PortAuthority::admin_email_addresses = [ENV['ADMIN_EMAIL']].flatten if ENV['ADMIN_EMAIL']
 Harbor::Mailer.host = "localhost:3000"
 # PortAuthority.logger = logger
 

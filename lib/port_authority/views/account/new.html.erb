@@ -27,11 +27,6 @@
     <label for="email" class="required"><span>*</span> Email Address</label>
     <input type="text" name="user[email]" id="email" value="<%= @user.email %>">
 
-    <% if PortAuthority::use_logins? %>
-      <label for="login" class="required"><span>*</span> Login</label>
-      <input type="text" name="user[login]" id="login" value="<%= @user.login %>">
-    <% end %>
-
     <label for="office_phone">Office Phone</label>
     <input type="text" name="user[office_phone]" id="office_phone" value="<%= @user.office_phone %>">
 
