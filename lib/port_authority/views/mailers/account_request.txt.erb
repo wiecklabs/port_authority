@@ -1,21 +1,27 @@
 An Account has been requested by <%= @user.email %>
 
 ===================================================
-<%= @user.first_name %> <%= @user.last_name %>
-<%= @user.title -%> <%= @user.organization %>
-<%= @user.email %>
-<%= @user.www %>
+First Name: <%= @user.first_name %>
+Last Name: <%= @user.last_name %>
+Title: <%= @user.title %>
+Organization: <%= @user.organization %>
+Email: <%= @user.email %>
+<% # Need to strip out 'http://' so the mailer doesn't tokenize this url -%>
+Website: <%= @user.www.match(/^(http:\/\/)?(.*)$/)[2].to_s %>
 
-<%= @user.address -%> <%= @user.address2 if @user.address2 %>
-<%= @user.city -%> <%= @user.state -%> <%= @user.postal_code %>
+Address:
+<%= @user.address %> <%= @user.address2 if @user.address2 %>
+<%= @user.city %> <%= @user.state %> <%= @user.postal_code %>
 
-<%= @user.office_phone %>
-<%= @user.mobile_phone %>
-<%= @user.fax %>
+Office Phone: <%= @user.office_phone %>
+Mobile Phone: <%= @user.mobile_phone %>
+Fax: <%= @user.fax %>
+
 ===================================================
 
 To approve this request, log on and visit
 <%= "http://#{@mailer.host}/admin/users/#{@user.id}/approve" %>
+
 
 To deny this request, log on and visit
 <%= "http://#{@mailer.host}/admin/users/#{@user.id}/deny" %>
