@@ -110,6 +110,7 @@ class User
     def approve!
       self.active = true
       self.awaiting_approval = false
+      User.update_roles(self, Role.all(:name => PortAuthority.default_user_role).map{|r| [r.id, 1]})
       save! && approved?
     end
 

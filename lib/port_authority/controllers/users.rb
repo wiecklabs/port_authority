@@ -244,6 +244,7 @@ class PortAuthority::Users
     def approve(id)
       user = User.get(id)
       if user.approve!
+        user.reset_permission_set_from_roles # updating permissions
         response.message("success", "Account was successfully approved.")
 
         mailer.to = user.email
