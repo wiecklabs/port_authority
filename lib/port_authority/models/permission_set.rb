@@ -107,12 +107,7 @@ class RolePermissionSet
 
   after :save do
     # Propagation is disabled, or mask hasn't changed.
-    #return @old_mask = nil if !@propagate_permissions || @old_mask.nil? || @old_mask == self.mask
-
-    # If a permission set is updated and not propagated (at the time of the change), those changes
-    # will NEVER be propagated if we compare masks (like above).
-
-    return @old_maks = nil unless @propagate_permissions
+    return @old_mask = nil if !@propagate_permissions || @old_mask.nil? || @old_mask == self.mask
 
     propagate_permissions!
   end
