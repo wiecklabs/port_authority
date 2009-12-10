@@ -50,7 +50,7 @@ class PortAuthority::Account
       @response.redirect("/account")
     else
       @response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
-      @response.render ("account/edit", :user => user)
+      @response.render("account/edit", :user => user)
     end
   end
 
