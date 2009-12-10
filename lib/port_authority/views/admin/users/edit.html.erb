@@ -67,6 +67,13 @@
   </div>
 
   <%= plugin("user/edit/tabs", :user => @user) %>
+  
+  <% if plugin("user/edit/right_column").size > 0 %>
+  <div class="column">
+    <%= plugin("user/edit/right_column") %>
+  </div>
+  <% end%>
+    
 
   <div class="clear"> </div>
 
