@@ -455,13 +455,14 @@ class PortAuthority < Harbor::Application
       using services, PortAuthority::Users do
         get("/admin/users/random_password") { |users| users.random_password }
 
-        get("/admin/users")          { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:active => true}, params["query"]) }
-        get("/admin/users/inactive") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:active => false}, params["query"]) }
-            get("/admin/users/awaiting") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:awaiting_approval => true}, params["query"]) }
+        get("/admin/users")          { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:active => true, :denied_at => nil, :awaiting_approval => false}, params["query"]) }
+        get("/admin/users/inactive") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:active => false, :denied_at => nil, :awaiting_approval => false}, params["query"]) }
+            get("/admin/users/awaiting") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:conditions => ["((awaiting_approval = ?) OR (denied_at IS NOT ? AND awaiting_approval = ?))", true, nil, false]}, params["query"]) }
         get("/admin/users/new")      { |users, params| users.new(params["user"]) }
         
         get("/admin/roles/:role_id/users") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:role_id => params['role_id'].to_i}, params["query"]) }
       end
+
 
       # Session Routes
       using services, PortAuthority::Session do

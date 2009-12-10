@@ -80,7 +80,6 @@ class PortAuthority::Roles
   end
 
   def update_permissions(role, permission_sets, propagate_permissions = false)
-    puts "PROPAGATING PERMISSIONS"
     permission_sets.each do |name, permissions|
       set = role.permission_sets.first_or_create(:role_id => role.id, :name => name)
       set.propagate_permissions = propagate_permissions

@@ -264,18 +264,10 @@ class PortAuthority::Users
     protect "Users", "update"
     def deny(id)
       user = User.get(id)
-      raise_event(:user_denied, user, request)
       user.deny!
-
-      mailer.to = user.email
-      mailer.from = PortAuthority::no_reply_email_address
-      mailer.subject = PortAuthority::user_denied_email_subject
-      mailer.html = Harbor::View.new("mailers/denial.html.erb", :user => user)
-      mailer.text = Harbor::View.new("mailers/denial.txt.erb", :user => user)
-      mailer.send!
-
+      raise_event(:user_denied, user, request)
       response.message("error", "Account Denied for #{user.email}")
-      response.redirect("/")
+      response.redirect("/admin/users/awaiting")
     end
   end
 

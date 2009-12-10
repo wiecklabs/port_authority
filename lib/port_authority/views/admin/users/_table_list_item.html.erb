@@ -1,22 +1,15 @@
-<tr>
-	<% link = @render_edit_links ? "/admin/users/#{@user.id}/edit" : "/admin/users/#{@user.id}" %>
-	<% if PortAuthority.use_logins? %>
-		<td>
-			<a href="<%= link -%>"><%= @user.login %></a>
-		</td>
-	<% else %>
-		<td>
-			<a href="<%= link -%>"><%= @user.email %></a>
-		</td>
-	<% end %>
+<tr <% if !!@user.denied_at %>class="denied"<% end %>>
+  <% link = @render_edit_links ? "/admin/users/#{@user.id}/edit" : "/admin/users/#{@user.id}" %>
+  <% if PortAuthority.use_logins? %>
+    <td>
+      <a href="<%= link -%>"><%= @user.login %></a>
+    </td>
+  <% else %>
+    <td>
+      <a href="<%= link -%>"><%= @user.email %></a>
+    </td>
+  <% end %>
   <td><%= @user.organization %></td>
   <td><%= @user.last_login.strftime "%Y-%m-%d" rescue "-" %></td>
   <td><a href="/admin/users/<%= @user.id %>.vcf"><img src="<%= UI::Asset.new("images/vcard.png") %>"></a></td>
-  <td>
-    <% if me == @user %>
-      &nbsp;
-    <% else %>
-      <a href="/admin/users/<%= @user.id %>/delete" class="delete" onclick="return modalize(this);"><img src="<%= UI::Asset.new("images/delete.gif") %>"></a>
-    <% end %>
-  </td>
 </tr>
