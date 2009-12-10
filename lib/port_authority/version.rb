@@ -1,3 +1,3 @@
 class PortAuthority
-  VERSION = "1.5.29"
+  VERSION = "1.6"
 end

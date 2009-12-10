@@ -91,6 +91,7 @@ class User
 
   def self.use_approvals!
     property :awaiting_approval, Boolean, :default => true
+    property :denied_at, DateTime
     property :usage_statement, Text
 
     def self.awaiting_approval
@@ -117,7 +118,9 @@ class User
 
     def deny!
       self.permission_sets.each { |set| set.destroy }
-      self.destroy
+      self.awaiting_approval = self.active = false
+      self.denied_at = Time.now
+      self.save!
     end
 
   end

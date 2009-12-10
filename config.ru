@@ -18,7 +18,7 @@ DataObjects::Sqlite3.logger = DataObjects::Logger.new(Pathname(__FILE__).dirname
 
 Harbor::View.layouts.map("admin/*", "layouts/admin")
 
-UI.public_path = Pathname(__FILE__).dirname.expand_path + "lib" + "port_authority" + "public"
+UI.public_path = PortAuthority.public_path
 
 PortAuthority::is_searchable! if ENV['SEARCHABLE']
 PortAuthority::use_lockouts!

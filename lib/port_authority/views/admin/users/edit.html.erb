@@ -82,13 +82,16 @@
     <% if !@user.errors.empty? && authorized?("Users", "override") %>
     <label for="override" style="color: #f00; margin-left: 10px; display: inline; float: none;">Override Validation Errors?</label><input type="checkbox" value="true" name="override" id="override">
     <% end %>
-    <% if PortAuthority::use_approvals? && @user.awaiting_approval? %>
-		<a href="/admin/users/<%= @user.id %>/approve">Approve</a>
-		<% end %>
-    <a href="/admin/users" class="cancel">Cancel</a>
-		<% unless @user.new_record? %>
-    	<a class="modal_link delete" href="/admin/users/<%= @user.id %>/delete"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
-		<% end %>
+    <% if PortAuthority::use_approvals? && (@user.awaiting_approval? || @user.denied_at) %>
+      <a href="/admin/users/<%= @user.id %>/approve">Approve</a>
+      <a href="/admin/users" class="cancel">Cancel</a>
+      <% unless @user.denied_at %><a class="modal_link delete" href="/admin/users/<%= @user.id %>/deny">deny</a><% end %>
+    <% else %>
+      <a href="/admin/users" class="cancel">Cancel</a>
+      <% unless @user.new_record? %>
+        <a class="modal_link delete" href="/admin/users/<%= @user.id %>/delete"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
+      <% end %>
+    <% end %>
   </div>
 </form>
 
