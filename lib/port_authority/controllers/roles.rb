@@ -25,7 +25,7 @@ class PortAuthority::Roles
     role = Role.get(id)
     role.update_attributes(params)
 
-    if role.valid? && update_permissions(role, permissions, @request.params["propagate_permissions"])
+    if role.valid? && update_permissions(role, permissions, @request.params["propagate_permissions"] == "1")
       @response.message("success", "Role was successfully updated.")
       @response.redirect("/admin/roles")
     else
@@ -81,7 +81,7 @@ class PortAuthority::Roles
   def update_permissions(role, permission_sets, propagate_permissions = false)
     permission_sets.each do |name, permissions|
       set = role.permission_sets.first_or_create(:role_id => role.id, :name => name)
-      set.propagate_permissions = propagate_permissions != "0"
+      set.propagate_permissions = propagate_permissions
       set.update_mask(permissions)
       set.save
     end
