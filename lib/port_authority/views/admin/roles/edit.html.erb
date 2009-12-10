@@ -54,7 +54,7 @@
   <%= plugin("role/edit/tabs", :role => @role) %>
 
   <div class="actions">
-    <label id="propagate_permissions" style="float: none; display: none; width: auto"><input type="checkbox" name="propagate_permissions" value="1"> Update permissions for existing users?</label>
+    <label id="propagate_permissions" style="float: none; display: none; width: auto"><input type="checkbox" name="propagate_permissions" value="1" disabled="disabled"> Update permissions for existing users?</label>
     <% plugin("role/edit/tabs").each do |tab| %>
     	<%= tab.propagation if tab.respond_to?(:propagation) %>
     <% end %>
