@@ -41,7 +41,7 @@ class PortAuthority::Account
           user.save
           @response.message("success", "Your account was updated successfully")
         else
-          @response.message("error", "Please update your password before continuing.")
+          @response.message("error", "Please update your password and verify your profile information before continuing.")
         end
       else
         @response.message("success", "Your account was updated successfully")

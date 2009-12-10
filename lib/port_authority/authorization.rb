@@ -26,7 +26,7 @@ class PortAuthority
             if request.session[:force_password_update]  
               
               if (request.env["PATH_INFO"] =~ /.*?\/account\/?/).nil?
-                response.message("error", "You must update your password before continuing.") 
+                response.message("error", "Please update your password and verify your profile information before continuing.") 
                 throw :halt, response.redirect("/account/") 
               end
             end
