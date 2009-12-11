@@ -163,6 +163,11 @@
   <strong style="color: #999; float: left;"><%= @user.last_login.strftime "%Y-%m-%d" rescue "-" %></strong>
   <% end -%>
   
+  <% if @user.denied_at %>
+  <label>Denied At</label>
+  <span style="color: #f00; font-weight:bold;"><%= @user.denied_at.strftime "%Y-%m-%d" rescue "-" %></span>
+  <% end %>
+  
 </fieldset>
 
 <fieldset>
