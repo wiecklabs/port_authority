@@ -78,7 +78,7 @@
     <% if PortAuthority::use_approvals? && (@user.awaiting_approval? || @user.denied_at) %>
       <a href="/admin/users/<%= @user.id %>/approve">Approve</a>
       <a href="/admin/users" class="cancel">Cancel</a>
-      <% unless @user.denied_at %><a class="modal_link delete" href="/admin/users/<%= @user.id %>/deny">deny</a><% end %>
+      <% unless @user.denied_at %><a class="delete" href="/admin/users/<%= @user.id %>/deny">deny</a><% end %>
     <% else %>
       <a href="/admin/users" class="cancel">Cancel</a>
       <% unless @user.new_record? %>
