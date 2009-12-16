@@ -166,9 +166,7 @@ class User
   end
   alias :to_s :name
   
-  require 'ruby-debug'
   def email=(email)
-    breakpoint
     attribute_set(:email, email.downcase)
   end
 
