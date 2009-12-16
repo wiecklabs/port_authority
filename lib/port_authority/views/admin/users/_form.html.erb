@@ -212,16 +212,17 @@
   <label for="fax">Fax</label>
   <input type="text" name="user[fax]" id="fax" value="<%= @user.fax %>">
 
-	<label for="website">Website</label>
-	<input type="text" name="user[www]" id="website" value="<%= @user.www %>">
-	<label for="force_password_update">Force Password Update on Next Login?</label>
-  <input type="checkbox" name="user[force_password_update" id="force_password_update" value="1" <%= 'checked="checked"' if @user.force_password_update?%>/>
-	<% if PortAuthority.use_approvals? %>
-		<label for="usage_statement">Usage Statement</label>
-		<div class="textarea">
-			<textarea name="user[usage_statement]" id="usage_statement" rows=7><%= @user.usage_statement %></textarea>
-		</div>
-	<% end%>
+  <label for="website">Website</label>
+  <input type="text" name="user[www]" id="website" value="<%= @user.www %>">
+  <label for="force_password_update">Force Password Update on Next Login?</label>
+  <input type="hidden" value="0" class="hidden" name="user[force_password_update]"/>
+  <input type="checkbox" name="user[force_password_update]" id="force_password_update" value="1" <%= 'checked="checked"' if @user.force_password_update?%>/>
+  <% if PortAuthority.use_approvals? %>
+    <label for="usage_statement">Usage Statement</label>
+    <div class="textarea">
+      <textarea name="user[usage_statement]" id="usage_statement" rows=7><%= @user.usage_statement %></textarea>
+    </div>
+  <% end%>
 </fieldset>
 
 <% if User.properties(:default).has_property?(:military_rank) %>
