@@ -164,6 +164,12 @@ class User
     [first_name.to_s.strip, last_name.to_s.strip].compact.join(" ")
   end
   alias :to_s :name
+  
+  require 'ruby-debug'
+  def email=(email)
+    breakpoint
+    attribute_set(:email, email.downcase)
+  end
 
   def role_mask_for(name)
     RolePermissionSet.all(:name => name, :role_id.in => self.roles.map { |r| r.id }).inject(0) { |mask, set| mask | set.mask }
