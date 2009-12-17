@@ -33,7 +33,7 @@ class PortAuthority
     end
 
     def authenticate(login, password)
-      login.nil? ? login : login.downcase.strip!
+      login.nil? ? login : login.downcase!.strip!
       PortAuthority.logger.info{"Login attempt with #{PortAuthority::login_type.to_s}:#{login.inspect} and password:#{password.inspect}"} if PortAuthority.logger
 
       user = if PortAuthority::login_type == :email
