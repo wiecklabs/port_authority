@@ -110,6 +110,10 @@ class PortAuthority::Account
 
         mailer.from = PortAuthority::no_reply_email_address
         mailer.subject = PortAuthority::account_activated_email_subject
+        if PortAuthority::use_approvals?
+          # hitting this property to make it load so the email will include it when marshalled to the mail queue
+          user.usage_statement
+        end
         mailer.text = Harbor::View.new("mailers/account_request.txt.erb", :user => user)
         PortAuthority.admin_email_addresses.each do |email|
           mailer.to = email
