@@ -33,10 +33,10 @@ class PortAuthority
     end
 
     def authenticate(login, password)
-      login = login.nil? ? login : login.downcase.strip
       PortAuthority.logger.info{"Login attempt with #{PortAuthority::login_type.to_s}:#{login.inspect} and password:#{password.inspect}"} if PortAuthority.logger
 
       user = if PortAuthority::login_type == :email
+        login = login.nil? ? login : login.downcase.strip
         if User.repository.adapter.class.name =~ /postgres/i
           User.first(:conditions => ["email ILIKE ?", login])
         else
@@ -49,7 +49,7 @@ class PortAuthority
 
       PortAuthority.logger.info{"\"Claimed identity: #{user.inspect}"} if PortAuthority.logger
 
-      return AuthenticationRequest.new(false, PortAuthority::login_failed_message) unless user && user.send(PortAuthority::login_type).downcase.strip == login
+      return AuthenticationRequest.new(false, PortAuthority::login_failed_message) unless user && user.send(PortAuthority::login_type) == login
 
       status = AuthenticationRequest.new(false, "User not active") unless user.active?
 
