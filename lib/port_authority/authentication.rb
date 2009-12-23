@@ -49,7 +49,7 @@ class PortAuthority
 
       PortAuthority.logger.info{"\"Claimed identity: #{user.inspect}"} if PortAuthority.logger
 
-      return AuthenticationRequest.new(false, PortAuthority::login_failed_message) unless user && user.send(PortAuthority::login_type) == login
+      return AuthenticationRequest.new(false, PortAuthority::login_failed_message) unless user && user.send(PortAuthority::login_type).downcase.strip == login
 
       status = AuthenticationRequest.new(false, "User not active") unless user.active?
 
