@@ -43,13 +43,12 @@ class PortAuthority
           User.first(:email.like => login.to_s.downcase)
         end
       else
-        User.first(PortAuthority::login_type => login)
+        User.first(:conditions => ["LOWER(login) = ?", login])
       end
       status = nil
 
-      PortAuthority.logger.info{"\"Claimed identity: #{user.inspect}"} if PortAuthority.logger
-
-      return AuthenticationRequest.new(false, PortAuthority::login_failed_message) unless user && user.send(PortAuthority::login_type) == login
+      PortAuthority.logger.info{"Claimed identity: #{user.inspect}"} if PortAuthority.logger
+      return AuthenticationRequest.new(false, PortAuthority::login_failed_message) unless user && user.send(PortAuthority::login_type).downcase == login.downcase
 
       status = AuthenticationRequest.new(false, "User not active") unless user.active?
 
