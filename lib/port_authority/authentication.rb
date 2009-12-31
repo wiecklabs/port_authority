@@ -43,7 +43,7 @@ class PortAuthority
           User.first(:email.like => login.to_s.downcase)
         end
       else
-        User.first(:conditions => ["LOWER(login) = ?", login])
+        User.first(:conditions => ["LOWER(login) = ?", login.downcase])
       end
       status = nil
 
