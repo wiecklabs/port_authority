@@ -94,20 +94,26 @@
 <fieldset>
   <legend>Account Information</legend>
 
-  <label class="required" for="email">Email Address <em>*</em></label>
-  <input type="text" name="user[email]" id="email" value="<%= @user.email %>">
+  <div>
+    <label class="required" for="email">Email Address <em>*</em></label>
+    <input type="text" name="user[email]" id="email" value="<%= @user.email %>">
+  </div>
 
   <% if PortAuthority::use_logins? %>
-    <label class="required" for="login">Login <em>*</em></label>
-    <input type="text" name="user[login]" id="login" value="<%= @user.login %>">
+    <div>
+      <label class="required" for="login">Login <em>*</em></label>
+      <input type="text" name="user[login]" id="login" value="<%= @user.login %>">
+    </div>
   <% end %>
 
-  <label class="required" for="password">Password <em>*</em></label>
-  <% if PortAuthority::use_crypted_passwords? %>
-  <input type="password" name="user[password]" id="password">
-  <% else %>
-  <input type="text" name="user[password]" value="<%= @user.password %>" id="password">
-  <% end %>
+  <div>
+    <label class="required" for="password">Password <em>*</em></label>
+    <% if PortAuthority::use_crypted_passwords? %>
+    <input type="password" name="user[password]" id="password">
+    <% else %>
+    <input type="text" name="user[password]" value="<%= @user.password %>" id="password">
+    <% end %>
+  </div>
 
   <% if @user.new_record? %>
   <p class="note"><a href="#" id="generate_password">Generate a random password.</a></p>
@@ -124,48 +130,64 @@
     })
   </script>
 
-  <label for="password_confirmation">Confirm Password</label>
-  <input type="password" name="user[password_confirmation]" id="password_confirmation">
+  <div>
+    <label for="password_confirmation">Confirm Password</label>
+    <input type="password" name="user[password_confirmation]" id="password_confirmation">
+  </div>
 
   <% if PortAuthority::allow_blank_passwords? && authorized?("Users", "override") %>
-  <label for="remove_password" style="color: #f00; display: inline; float: none;">Remove Password?</label>
-  <input type="checkbox" value="true" name="remove_password" id="remove_password">
+  <div>
+    <label for="remove_password" style="color: #f00; display: inline; float: none;">Remove Password?</label>
+    <input type="checkbox" value="true" name="remove_password" id="remove_password">
+  </div>
   <% end %>
 
   <% unless PortAuthority::allow_multiple_roles? -%>
-  <label>Role</label>
-  <select name="user[role]" id="role">
-    <%= "<option value='' selected='selected'> </option>" unless @user.roles.size > 0 %>
-    <% Role.all.each do |role| %>
-    <option value="<%= role.id %>" <%= 'selected="selected"' if @user.roles.size > 0 and @user.roles.first.id == role.id %> ><%= role.name %></option>
-  <% end %>
-  </select>
+  <div>
+    <label>Role</label>
+    <select name="user[role]" id="role">
+      <%= "<option value='' selected='selected'> </option>" unless @user.roles.size > 0 %>
+      <% Role.all.each do |role| %>
+      <option value="<%= role.id %>" <%= 'selected="selected"' if @user.roles.size > 0 and @user.roles.first.id == role.id %> ><%= role.name %></option>
+    <% end %>
+    </select>
+  </div>
   <% end -%>
+  
 
-  <label for="active">Active?</label>
-  <input type="hidden" value="0" class="hidden" name="user[active]"/>
-  <input type="checkbox" name="user[active]" id="active" value="1" <%= 'checked="checked"' if @user.active? %>>
+  <div>
+    <label for="active">Active?</label>
+    <input type="hidden" value="0" class="hidden" name="user[active]"/>
+    <input style="width:auto;" type="checkbox" name="user[active]" id="active" value="1" <%= 'checked="checked"' if @user.active? %>>
+  </div>
+
 
   <% if PortAuthority::use_lockouts? %>
-  <label>Failed Logins</label>
-  <div style="float: left;">
-  <% if @user.locked? %>
-    <span style="color: #f00;"><%= @user.failed_logins %>: Account Locked. <a href="javascript:void(0);" onclick="resetLoginAttempts();">Reset Login Attempts</a></span>
-    <input type="hidden" name="user[failed_logins]" id="failed_logins" value="<%= @user.failed_logins %>" disabled="disabled">
-  <% else %>
-    <span><%= @user.failed_logins %>: Account Not Locked.</span>
-  <% end %>
+  <div>
+    <label>Failed Logins</label>
+    <div style="float: left;">
+    <% if @user.locked? %>
+      <span style="color: #f00;"><%= @user.failed_logins %>: Account Locked. <a href="javascript:void(0);" onclick="resetLoginAttempts();">Reset Login Attempts</a></span>
+      <input type="hidden" name="user[failed_logins]" id="failed_logins" value="<%= @user.failed_logins %>" disabled="disabled">
+    <% else %>
+      <span><%= @user.failed_logins %>: Account Not Locked.</span>
+    <% end %>
+    </div>
   </div>
   <% end %>
 
   <% unless @user.new_record? -%>
-  <label>Last Login</label>
-  <strong style="color: #999; float: left;"><%= @user.last_login.strftime "%Y-%m-%d" rescue "-" %></strong>
+  <div>
+    <label>Last Login</label>
+    <strong style="color: #999; float: left;"><%= @user.last_login.strftime "%Y-%m-%d" rescue "-" %></strong>
+  </div>
   <% end -%>
   
   <% if @user.denied_at %>
-  <label>Denied At</label>
-  <span style="color: #f00; font-weight:bold;"><%= @user.denied_at.strftime "%Y-%m-%d" rescue "-" %></span>
+  <div>
+    <label>Denied At</label>
+    <span style="color: #f00; font-weight:bold;"><%= @user.denied_at.strftime "%Y-%m-%d" rescue "-" %></span>
+  </div>
   <% end %>
   
 </fieldset>
@@ -173,67 +195,104 @@
 <fieldset>
   <legend>Contact Information</legend>
 
-  <label class="required" for="first_name">First name <em>*</em></label>
-  <input type="text" name="user[first_name]" id="first_name" value="<%= @user.first_name %>">
+  <div>
+    <label class="required" for="first_name">First name <em>*</em></label>
+    <input type="text" name="user[first_name]" id="first_name" value="<%= @user.first_name %>">
+  </div>
 
-  <label class="required" for="last_name">Last name <em>*</em></label>
-  <input type="text" name="user[last_name]" id="last_name" value="<%= @user.last_name %>">
+  <div>
+    <label class="required" for="last_name">Last name <em>*</em></label>
+    <input type="text" name="user[last_name]" id="last_name" value="<%= @user.last_name %>">
+  </div>
 
-  <label for="organization">Organization</label>
-  <input type="text" name="user[organization]" id="organization" value="<%= @user.organization %>">
+  <div>
+    <label for="organization">Organization</label>
+    <input type="text" name="user[organization]" id="organization" value="<%= @user.organization %>">
+  </div>
 
-  <label for="user_title">Title</label>
-  <input type="text" name="user[title]" id="user_title" value="<%= @user.title %>">
+  <div>
+    <label for="user_title">Title</label>
+    <input type="text" name="user[title]" id="user_title" value="<%= @user.title %>">
+  </div>
 
-  <label for="address">Address</label>
-  <input type="text" name="user[address]" id="address" value="<%= @user.address %>">
+  <div>
+    <label for="address">Address</label>
+    <input type="text" name="user[address]" id="address" value="<%= @user.address %>">
+  </div>
 
-  <label for="address2">Address 2</label>
-  <input type="text" name="user[address2]" id="address2" value="<%= @user.address2 %>">
+  <div>
+    <label for="address2">Address 2</label>
+    <input type="text" name="user[address2]" id="address2" value="<%= @user.address2 %>">
+  </div>
 
-  <label for="city">City</label>
-  <input type="city" name="user[city]" id="city" value="<%= @user.city %>">
+  <div>
+    <label for="city">City</label>
+    <input type="city" name="user[city]" id="city" value="<%= @user.city %>">
+  </div>
 
-  <label for="state">State</label>
-  <input type="state" name="user[state]" id="state" value="<%= @user.state %>">
+  <div>
+    <label for="state">State</label>
+    <input type="state" name="user[state]" id="state" value="<%= @user.state %>">
+  </div>
 
-  <label for="postal_code">Postal Code</label>
-  <input type="text" name="user[postal_code]" id="postal_code" value="<%= @user.postal_code %>">
+  <div>
+    <label for="postal_code">Postal Code</label>
+    <input type="text" name="user[postal_code]" id="postal_code" value="<%= @user.postal_code %>">
+  </div>
   
-  <label for="postal_code">Country</label>
-  <input type="text" name="user[country]" id="country" value="<%= @user.country %>">
+  <div>
+    <label for="postal_code">Country</label>
+    <input type="text" name="user[country]" id="country" value="<%= @user.country %>">
+  </div>
 
-  <label for="office_phone">Office Phone</label>
-  <input type="text" name="user[office_phone]" id="office_phone" value="<%= @user.office_phone %>">
+  <div>
+    <label for="office_phone">Office Phone</label>
+    <input type="text" name="user[office_phone]" id="office_phone" value="<%= @user.office_phone %>">
+  </div>
 
-  <label for="mobile_phone">Mobile Phone</label>
-  <input type="text" name="user[mobile_phone]" id="mobile_phone" value="<%= @user.mobile_phone %>">
+  <div>
+    <label for="mobile_phone">Mobile Phone</label>
+    <input type="text" name="user[mobile_phone]" id="mobile_phone" value="<%= @user.mobile_phone %>">
+  </div>
 
-  <label for="fax">Fax</label>
-  <input type="text" name="user[fax]" id="fax" value="<%= @user.fax %>">
+  <div>
+    <label for="fax">Fax</label>
+    <input type="text" name="user[fax]" id="fax" value="<%= @user.fax %>">
+  </div>
 
-  <label for="website">Website</label>
-  <input type="text" name="user[www]" id="website" value="<%= @user.www %>">
-  <label for="force_password_update">Force Password Update on Next Login?</label>
-  <input type="hidden" value="0" class="hidden" name="user[force_password_update]"/>
-  <input type="checkbox" name="user[force_password_update]" id="force_password_update" value="1" <%= 'checked="checked"' if @user.force_password_update?%>/>
+  <div>
+    <label for="website">Website</label>
+    <input type="text" name="user[www]" id="website" value="<%= @user.www %>">
+  </div>
+  
+  <div>
+    <label for="force_password_update">Force Password Update on Next Login?</label>
+    <input type="hidden" value="0" class="hidden" name="user[force_password_update]"/>
+    <input type="checkbox" style="width:auto;" name="user[force_password_update]" id="force_password_update" value="1" <%= 'checked="checked"' if @user.force_password_update?%>/>
+  </div>
+
   <% if PortAuthority.use_approvals? %>
+<div>
     <label for="usage_statement">Usage Statement</label>
     <div class="textarea">
       <textarea name="user[usage_statement]" id="usage_statement" rows=7><%= @user.usage_statement %></textarea>
     </div>
-  <% end%>
+</div>  <% end%>
 </fieldset>
 
 <% if User.properties(:default).has_property?(:military_rank) %>
 <fieldset id="military">
   <legend>Military</legend>
 
-  <label class="required" for="military_rank">Rank</label>
-  <input type="text" name="user[military_rank]" id="military_rank" value="<%= @user.military_rank %>">
+  <div>
+    <label class="required" for="military_rank">Rank</label>
+    <input type="text" name="user[military_rank]" id="military_rank" value="<%= @user.military_rank %>">
+  </div>
 
-  <label class="required" for="military_command">Ship / Command</label>
-  <input type="text" name="user[military_command]" id="military_command" value="<%= @user.military_command %>">
+  <div>
+    <label class="required" for="military_command">Ship / Command</label>
+    <input type="text" name="user[military_command]" id="military_command" value="<%= @user.military_command %>">
+  </div>
 </fieldset>
 <% end %>
 
