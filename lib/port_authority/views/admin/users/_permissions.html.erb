@@ -1,22 +1,13 @@
+<% head do %>
+<style type="text/css" media="screen">
+  legend {margin-left:-6px;}
+</style>
 <script type="text/javascript" charset="utf-8">
-$(function() {
-  $(".permissions legend input").each(function() {
-    var legend = $(this).parent();
-    if(legend.siblings("input[type=checkbox]").length == legend.siblings("input[type=checkbox]:checked").length) {
-      $(this).attr("checked", "checked");
-    }
-    
-    $(this).click(function() {
-      if ( this.checked ) {
-        legend.siblings("input[type=checkbox]:not(:checked)").each(function() { this.click(); });
-      }
-      else {
-        legend.siblings("input[type=checkbox]:checked").each(function() { this.click(); });
-      }
-    });
-  });
-});
+  function toggle(link, affecting) {
+    $(link).parents('fieldset').find(":checkbox" + affecting).click()
+  }
 </script>
+<% end %>
 
 <%
   ##
@@ -37,9 +28,11 @@ $(function() {
 
 <% PermissionSet.permissions.sort_by { |name, permissions| name }.each do |name, permissions| %>
 <fieldset class="permissions">
-  <legend style="font-size: 1em;">
-    <label for="<%= name %>" style="margin: 0px;"><span style="color: #063A60; font-size: 1.2em; font-weight: bold;"><%= name %></span></label>
-    <input id="<%= name %>" type="checkbox">
+  <legend style="width:32em;">
+    <span style="width:20em;"><%= name %></span>
+    <span style="width:10em; text-align:right; font-size:9px;">
+      <a href="javascript: void(0);" onclick="toggle(this, ':not(:checked)'); return false;">all</a> &nbsp; <a href="javascript: void(0);" onclick="toggle(this, ':checked');">none</a>
+    </span>
   </legend>
   <%
     permissions.each do |permission|
@@ -52,31 +45,7 @@ $(function() {
   <label for="<%= id %>"><%= permission_description %></label>
   <input type="hidden"   name="permissions[<%= name %>][<%= permission_name %>]" value="0">
   <input type="checkbox" name="permissions[<%= name %>][<%= permission_name %>]" id="<%= id %>" value="1" <%= 'checked="checked"' if permission_checked.call(name, permission_name) %>>
+  <div style="clear:both;"></div>
   <% end %>
 </fieldset>
 <% end %>
-
-<script type="text/javascript" charset="utf-8">
-  $("#permissions fieldset > input[type='checkbox']").click(function() {
-    name = this.id.split(/_/)[0];
-    mask = original_mask[name];
-    if ( !mask ) mask = 0;
-
-    if ( this.checked ) {
-      if ( $(this).siblings("input[type=checkbox]").attr("checked") ) {
-        $("legend input[type='checkbox']", $(this).parent()).attr("checked", "checked");
-      }
-      label_for(this).addClass("auto_add");
-      original_mask[name] = mask | index_of(this);
-    }
-    else {
-      $("legend input[type='checkbox']", $(this).parent()).attr("checked", null);
-      label_for(this).removeClass("auto_add");
-      original_mask[name] = mask &~ index_of(this);
-    }
-  });
-
-  function index_of(permission) {
-    return 1 << $(permission).prevAll("input[type='checkbox']").length;
-  }
-</script>
