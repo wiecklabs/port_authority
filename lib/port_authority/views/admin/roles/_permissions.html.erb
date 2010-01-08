@@ -3,9 +3,21 @@
   legend {margin-left:-6px;}
 </style>
 <script type="text/javascript" charset="utf-8">
-  function toggle(link, affecting) {
-    $(link).parents('fieldset').find(":checkbox" + affecting).click()
+  function add_permission_propagation_to_actions_bar() {
+    $("#propagate_permissions input").attr("checked", "checked");
+    $("#propagate_permissions").show(100);
   }
+
+  function toggle(link, affecting) {
+    $(link).parents('fieldset').find(":checkbox" + affecting).click();
+    add_permission_propagation_to_actions_bar();
+  }
+
+  $(function() {
+    $(".permissions input").change(function() {
+      add_permission_propagation_to_actions_bar();
+    })
+  });
 </script>
 <% end %>
 
