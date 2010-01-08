@@ -1,10 +1,12 @@
 <% head do %>
 <style type="text/css" media="screen">
-  legend {margin-left:-6px;}
+  th  {text-align:left;}
+  th.small {font-size:9px;}
+  table {margin-bottom:2em;}
 </style>
 <script type="text/javascript" charset="utf-8">
   function toggle(link, affecting) {
-    $(link).parents('fieldset').find(":checkbox" + affecting).click()
+    $(link).parents('table').find(":checkbox" + affecting).click()
   }
 </script>
 <% end %>
@@ -27,13 +29,14 @@
 %>
 
 <% PermissionSet.permissions.sort_by { |name, permissions| name }.each do |name, permissions| %>
-<fieldset class="permissions">
-  <legend style="width:32em;">
-    <span style="width:20em;"><%= name %></span>
-    <span style="width:10em; text-align:right; font-size:9px;">
+<table border="0" style="width:50%;">
+  <tr>
+    <th><%= name %></th>
+    <th class="small">
       <a href="javascript: void(0);" onclick="toggle(this, ':not(:checked)'); return false;">all</a> &nbsp; <a href="javascript: void(0);" onclick="toggle(this, ':checked');">none</a>
-    </span>
-  </legend>
+    </th>
+  </tr>
+
   <%
     permissions.each do |permission|
 
@@ -42,10 +45,13 @@
       id = "#{name}_#{permission_name}"
 
   %>
-  <label for="<%= id %>"><%= permission_description %></label>
-  <input type="hidden"   name="permissions[<%= name %>][<%= permission_name %>]" value="0">
-  <input type="checkbox" name="permissions[<%= name %>][<%= permission_name %>]" id="<%= id %>" value="1" <%= 'checked="checked"' if permission_checked.call(name, permission_name) %>>
-  <div style="clear:both;"></div>
-  <% end %>
-</fieldset>
+  <tr>
+    <td><label for="<%= id %>"><%= permission_description %></label></td>
+    <td>
+      <input type="hidden"   name="permissions[<%= name %>][<%= permission_name %>]" value="0">
+      <input type="checkbox" name="permissions[<%= name %>][<%= permission_name %>]" id="<%= id %>" value="1" <%= 'checked="checked"' if permission_checked.call(name, permission_name) %>>
+    </td>
+  </tr>
+  <% end %>  
+</table>
 <% end %>
