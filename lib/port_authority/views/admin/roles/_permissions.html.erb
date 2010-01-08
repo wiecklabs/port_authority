@@ -25,7 +25,7 @@
 
 <h2>Permissions</h2>
 <% PermissionSet.permissions.sort_by { |name, permissions| name }.each do |name, permissions| %>
-<table border="0" style="width:50%;">
+<table border="0" style="width:50%;" class="permissions">
   <tr>
     <th><%= name %></th>
     <th class="small">
