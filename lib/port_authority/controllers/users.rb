@@ -265,7 +265,7 @@ class PortAuthority::Users
     def deny(id)
       user = User.get(id)
       user.deny!
-      raise_event(:user_denied, user, request)
+      raise_event(:user_denied, user, request, mailer)
       response.message("error", "Account Denied for #{user.email}")
       response.redirect("/admin/users/awaiting")
     end

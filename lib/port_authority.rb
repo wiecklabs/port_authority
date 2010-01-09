@@ -307,6 +307,23 @@ class PortAuthority < Harbor::Application
   def self.admin_email_addresses=(value)
     @@admin_email_addresses = value
   end
+  
+  @@denial_emails_enabled = false
+  def self.denial_emails_enabled?
+    @@denial_emails_enabled
+  end
+  
+  def self.enable_denial_emails!
+    @@denial_emails_enabled = true
+    PortAuthority::Users.register_event(:user_denied) do |user, request, mailer|
+      mailer.to = user.email
+      mailer.from = PortAuthority::no_reply_email_address
+      mailer.subject = PortAuthority::user_denied_email_subject
+      mailer.html = Harbor::View.new("mailers/denial.html.erb", :user => user)
+      mailer.text = Harbor::View.new("mailers/denial.txt.erb", :user => user)
+      mailer.send!
+    end
+  end
 
   @@guest_role = nil
   def self.guest_role

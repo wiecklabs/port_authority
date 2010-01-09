@@ -34,17 +34,9 @@ class PortAuthority
 
     def authenticate(login, password)
       PortAuthority.logger.info{"Login attempt with #{PortAuthority::login_type.to_s}:#{login.inspect} and password:#{password.inspect}"} if PortAuthority.logger
-
-      user = if PortAuthority::login_type == :email
-        login = login.nil? ? login : login.downcase.strip
-        if User.repository.adapter.class.name =~ /postgres/i
-          User.first(:conditions => ["email ILIKE ?", login])
-        else
-          User.first(:email.like => login.to_s.downcase)
-        end
-      else
-        User.first(:conditions => ["LOWER(login) = ?", login.downcase])
-      end
+      login = login.nil? ? login : login.downcase.strip
+      user = User.first(:conditions => ["LOWER(#{PortAuthority::login_type}) = ?", login])
+      
       status = nil
 
       PortAuthority.logger.info{"Claimed identity: #{user.inspect}"} if PortAuthority.logger
