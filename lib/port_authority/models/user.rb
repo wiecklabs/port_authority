@@ -52,7 +52,7 @@ class User
   property :state, String, :length => 50
   property :postal_code, String, :length => 20
   property :country, String, :length => 100
-  property :office_phone, String, :length => 20
+  property :office_phone, String, :length => 30
   property :mobile_phone, String, :length => 20
   property :fax, String, :length => 20
   property :www, String, :length => 200
