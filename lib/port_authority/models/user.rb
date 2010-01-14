@@ -91,6 +91,7 @@ class User
 
   def self.use_approvals!
     property :awaiting_approval, Boolean, :default => true
+    property :activated_at, DateTime
     property :denied_at, DateTime
     property :usage_statement, Text
 

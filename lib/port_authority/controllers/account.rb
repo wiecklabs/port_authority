@@ -127,6 +127,7 @@ class PortAuthority::Account
 
     if user
       if PortAuthority::use_approvals?
+        user.activated_at = DateTime.now
         user.awaiting_approval = true
 
         mailer.from = PortAuthority::no_reply_email_address
