@@ -149,7 +149,7 @@ class User
     end
   end
 
-  validates_present :first_name, :last_name, :when => [ :register ]
+  validates_present :first_name, :last_name
 
   # Password Validations
   validates_present :password, :when => [ :register, :default ], :if => :password_needs_validation_and_dissallow_blank_passwords?
