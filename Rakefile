@@ -49,6 +49,14 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+spec_file = ".gemspec"
+desc "Create #{spec_file}"
+task :gemspec do
+  File.open(spec_file, "w") do |file|
+    file.puts spec.to_ruby
+  end
+end
+
 desc "Install Port Authority as a gem"
 task :install => [:repackage] do
   sh %{gem install pkg/#{NAME}-#{GEM_VERSION}}

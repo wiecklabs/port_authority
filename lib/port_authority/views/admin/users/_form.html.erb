@@ -183,7 +183,7 @@
   </div>
   <% end -%>
   
-  <% if @user.denied_at %>
+  <% if PortAuthority::use_approvals? && @user.denied_at %>
   <div>
     <label>Denied At</label>
     <span style="color: #f00; font-weight:bold;"><%= @user.denied_at.strftime "%Y-%m-%d" rescue "-" %></span>

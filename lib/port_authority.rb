@@ -468,19 +468,6 @@ class PortAuthority < Harbor::Application
         get("/admin") { |admin| admin.index }
       end
 
-      # User Routes
-      using services, PortAuthority::Users do
-        get("/admin/users/random_password") { |users| users.random_password }
-
-        get("/admin/users")          { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:active => true, :denied_at => nil, :awaiting_approval => false}, params["query"]) }
-        get("/admin/users/inactive") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:active => false, :denied_at => nil, :awaiting_approval => false}, params["query"]) }
-            get("/admin/users/awaiting") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:conditions => ["((awaiting_approval = ?) OR (denied_at IS NOT ? AND awaiting_approval = ?))", true, nil, false]}, params["query"]) }
-        get("/admin/users/new")      { |users, params| users.new(params["user"]) }
-        
-        get("/admin/roles/:role_id/users") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:role_id => params['role_id'].to_i}, params["query"]) }
-      end
-
-
       # Session Routes
       using services, PortAuthority::Session do
         get("/session")         { |session, params| session.index(params["message"]) }
@@ -489,7 +476,37 @@ class PortAuthority < Harbor::Application
         get("/logout")          { |session| session.delete }
       end
 
+      # User Routes
       using services, PortAuthority::Users do
+        get("/admin/users/random_password") { |users| users.random_password }
+
+        get("/admin/users") do |users, params|
+          options = { :active => true }
+          options.merge!(:denied_at => nil, :awaiting_approval => false) if PortAuthority::use_approvals?
+
+          users.index(params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
+        end
+
+        get("/admin/users/inactive") do |users, params|
+          options = { :active => false }
+          options.merge!(:denied_at => nil, :awaiting_approval => false) if PortAuthority::use_approvals?
+
+          users.index(params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
+        end
+
+        if PortAuthority::use_approvals?
+          get("/admin/users/awaiting") do |users, params|
+            options = {
+              :conditions => ["((awaiting_approval = ?) OR (denied_at IS NOT ? AND awaiting_approval = ?))", true, nil, false]
+            }
+            users.index(params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
+          end
+        end
+
+        get("/admin/users/new")      { |users, params| users.new(params["user"]) }
+        
+        get("/admin/roles/:role_id/users") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:role_id => params['role_id'].to_i}, params["query"]) }
+
         get("/admin/users/:id")         { |users, params| users.show(params["id"]) }
         get("/admin/users/:id/edit")    { |users, params| users.edit(params["id"]) }
         get("/admin/users/:id/delete")  { |users, params| users.delete(params["id"]) }
@@ -500,8 +517,10 @@ class PortAuthority < Harbor::Application
         get("/admin/users.:format")      { |users, params| users.export(params["format"]) }
         get("/admin/users/:id.:format")  { |users, params| users.export(params["format"], params["id"]) }
 
-        get("/admin/users/:id/approve") { |users, params| users.approve(params["id"]) }
-        get("/admin/users/:id/deny")    { |users, params| users.deny(params["id"]) }
+        if PortAuthority::use_approvals?
+          get("/admin/users/:id/approve") { |users, params| users.approve(params["id"]) }
+          get("/admin/users/:id/deny")    { |users, params| users.deny(params["id"]) }
+        end
 
         get("/admin/users/:id/reset_password")    { |users, params| users.reset_password(params["id"]) }
         get("/users/:id/change_password")   { |users, params| users.response.render("admin/users/change_password", :id => params["id"]) }
