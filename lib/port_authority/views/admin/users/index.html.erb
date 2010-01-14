@@ -34,6 +34,7 @@
 		<li <%= "class='selected'" if @request.path_info =~ /^\/admin\/users\/inactive/ %>><a href="/admin/users/inactive">Inactive</a></li>
 		<% if PortAuthority::use_approvals? %>
 		<li <%= "class='selected'" if @request.path_info =~ /^\/admin\/users\/awaiting/ %>><a href="/admin/users/awaiting">Requests</a></li>
+                <li <%= "class='selected'" if @request.path_info =~ /^\/admin\/users\/pending/ %>><a href="/admin/users/pending">Pending</a></li>
 		<% end %>
 		
 		<li class="seperator">&nbsp;</li>
