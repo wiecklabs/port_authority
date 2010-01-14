@@ -13,17 +13,6 @@ class PortAuthority::Account
   def update(params)
     user = @request.session.user
     
-    if user.force_password_update?
-      @updated_password = false
-      if !params["password"].blank? && !params["password_confirmation"].blank?
-        if user.respond_to?(:crypted_password)
-          @updated_password = true if user.crypted_password != user.encrypt_password(params["password"])
-        else
-          @updated_password = true if user.password != params["password"]
-        end
-      end
-    end
-
     user.attributes = params.reject { |k,v| %w(password password_confirmation).include?(k) && v.blank? }
 
     if user.save
@@ -34,24 +23,55 @@ class PortAuthority::Account
       self.mailer.html = Harbor::View.new("mailers/account_changed", :user => user)
       self.mailer.send!
 
-      if user.force_password_update?
-        if @updated_password
-          @request.session[:force_password_update] = false
-          user.force_password_update = false
-          user.save
-          @response.message("success", "Your account was updated successfully.  You are now logged in.")
-          return @response.redirect("/")
-        else
-          @response.message("error", "Please update your password and verify your profile information before continuing.")
-        end
-      else
-        @response.message("success", "Your account was updated successfully")
-      end
+      @response.message("success", "Your account was updated successfully")
 
       @response.redirect("/account")
     else
       @response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
       @response.render("account/edit", :user => user)
+    end
+  end
+  
+  def force_update_password
+    @response.render("account/update_password", :user => request.session.user)
+  end
+  
+  def update_password(password, confirmation)
+    user = @request.session.user
+    
+    if user.force_password_update?
+      @updated_password = false
+      if !password.blank? && !confirmation.blank?
+        if user.respond_to?(:crypted_password)
+          @updated_password = true if user.crypted_password != user.encrypt_password(password)
+        else
+          @updated_password = true if user.password != password
+        end
+      end
+
+      if @updated_password
+        unless password == confirmation
+         @response.message("error", "Password and Password confirmation must match.")
+         return @response.redirect("/account/update_password")
+        end 
+        user.password = password
+        user.password_confirmation= confirmation
+        @request.session[:force_password_update] = false
+        user.force_password_update = false
+        if user.valid?
+          user.save
+          @response.message("success", "Your account was updated successfully.  You are now logged in.")
+          return @response.redirect("/")
+        else
+          user.save
+          @response.message("success", "Your password was updated successfully, however there are errors on your account.  Please review your profile.")
+          return @response.redirect("/account")
+        end
+    
+      else
+        @response.message("error", "Please update your password and verify your profile information before continuing.")
+        @response.render("account/update_password", :user => user)
+      end
     end
   end
 

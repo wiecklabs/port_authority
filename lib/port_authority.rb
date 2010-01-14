@@ -552,6 +552,9 @@ class PortAuthority < Harbor::Application
         post("/account/password")             { |account, params| account.forgot_password(params["email"]) }
         get("/account/reset_password/:token") { |account, params| account.reset_password(params["token"]) }
         post("/account/reset_password")       { |account, params| account.reset_password(params["token"], params["user"]) }
+        
+        get ("/account/update_password") { |account, params| account.force_update_password }
+        put ("/account/update_password") { |account, params| account.update_password(params["password"], params["password_confirmation"]) }
 
         get("/account/vcard")       { |account| account.vcard }
         post("/account/vcard")      { |account, params| account.vcard(params["vcard"]) }
