@@ -39,7 +39,8 @@ class PortAuthority::Account
           @request.session[:force_password_update] = false
           user.force_password_update = false
           user.save
-          @response.message("success", "Your account was updated successfully")
+          @response.message("success", "Your account was updated successfully.  You are now logged in.")
+          return @response.redirect("/")
         else
           @response.message("error", "Please update your password and verify your profile information before continuing.")
         end
