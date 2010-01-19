@@ -25,8 +25,10 @@ class PortAuthority
 
             if request.session[:force_password_update]  
               
+              message = "You have been redirected to this page because we need you to make the following updates to your profile information before continuing.<ol><li>Please choose a new password and enter it into both the Password and Confirm Password fields below.</li><li>Please fill in all required fields, which are indicated by the star symbol (*)</li></ol>When you're finished, click the 'Submit' button to update your profile and return to the site."
+              response.message("error force_password", message)
+              
               if (request.env["PATH_INFO"] =~ /.*?\/account\/?/).nil?
-                response.message("error", "Please update your password and verify your profile information before continuing.") 
                 throw :halt, response.redirect("/account/") 
               end
             end
