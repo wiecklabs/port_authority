@@ -7,8 +7,11 @@
     <fieldset>
       <label for="search_query">Live Search</label>
       <input id="search_query" type="text" name="query">
+      <%= UI::LiveSearchBox.new(self, "roles_list").to_s %>
+      <img id="spinner" src="<%= UI::Asset.new("images/spinner.gif") %>" style="display: none;">
     </fieldset>
   </form>
+
   <%= render "admin/roles/_list" %>
 </div>
 
