@@ -4,10 +4,10 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-  <script type="text/javascript" src="/javascripts/jquery-1.2.5.min.js"></script>
+  <script type="text/javascript" src="<%= UI::Asset.new("javascripts/jquery.js") %>"></script>
   <script type="text/javascript" charset="utf-8" src="/javascripts/jquery-ui-highlight.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="/javascripts/jquery-modal.js"></script>
-  <script type="text/javascript" charset="utf-8" src="/javascripts/application.js"></script>
+  <script type="text/javascript" charset="utf-8" src="<%= UI::Asset.new("javascripts/admin.js") %>"></script>
 
 	<link rel="stylesheet" type="text/css" href="<%= UI::Asset.new("stylesheets/admin.css") %>" media="screen">
 	<link rel="stylesheet" type="text/css" href="<%= UI::Asset.new("stylesheets/port_authority.css") %>" media="screen">
