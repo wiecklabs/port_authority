@@ -497,14 +497,14 @@ class PortAuthority < Harbor::Application
         if PortAuthority::use_approvals?
           get("/admin/users/awaiting") do |users, params|
             options = {
-              :conditions => ["((awaiting_approval = ?) OR (denied_at IS NOT ? AND awaiting_approval = ?)) AND (activated_at IS NOT ?)", true, nil, false, nil]
+              :conditions => ["(denied_at IS ? AND (awaiting_approval = ? AND activated_at IS NOT ?))", nil, true, nil]
             }
             users.index(params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
           end
 
           get("/admin/users/pending") do |users, request|
             options = {
-              :conditions => ["((awaiting_approval = ?) OR (denied_at IS NOT ? AND awaiting_approval = ?)) AND (activated_at IS ?)", true, nil, false, nil]
+              :conditions => ["(denied_at IS ? AND (awaiting_approval = ? AND activated_at IS ?))", nil, true, nil]
             }
             users.index(request.fetch("page", 1), request.fetch("page_size", 100), options, request["query"])
           end
