@@ -76,7 +76,7 @@
 
   <%= render "admin/users/_list" %>
 </div>
-<% if request.path_info.include? 'awaiting' %>
+<% if request.path_info.include?('awaiting') || request.path_info.include?('pending') %>
 <div style="text-align:center;">
   <a id="show_denied" href="javascript: void(0);" onclick="show_denied();">Show denied requests</a>
 </div>
