@@ -1,3 +1,6 @@
+1.6.30 (Jan 21, 2010) Chris Gibson <chris@wieck.com>
+  * Buf fix in DataMapper criteria for data behind denied users tab
+
 1.6.29 (Jan 21, 2010) Chris Gibson <chris@wieck.com>
   * Moving denied users to separate tab (rather than trying to integrate it
     into the 'Requests' and 'Pending' tabs.

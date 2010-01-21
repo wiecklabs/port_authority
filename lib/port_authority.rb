@@ -511,7 +511,7 @@ class PortAuthority < Harbor::Application
 
           get("/admin/users/denied") do |users, request|
             options = {
-              :conditions => ["denied_at IS ?", nil]
+              :conditions => ["denied_at IS NOT ?", nil]
             }
             users.index(request.fetch("page", 1), request.fetch("page_size", 100), options, request["query"])
           end
