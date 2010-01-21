@@ -4,8 +4,6 @@
     <style type="text/css" media="screen">
       #export_options { background-color: #eee; margin: 0; padding: 0; position: absolute; z-index: 2; }
       #export_options li { margin: 0; padding: 0.5em; }
-      .denied {display:none;}
-      .denied a {color:gray;}
     </style>
 
     <script type="text/javascript" charset="utf-8">
@@ -21,9 +19,6 @@
           if ( $(this).hasClass("delete") ) return false;
         });
       });
-      function show_denied() {
-        $(".denied").show();
-      }
     </script>
     <% end %>
   </ul>
@@ -35,6 +30,7 @@
 		<% if PortAuthority::use_approvals? %>
 		<li <%= "class='selected'" if @request.path_info =~ /^\/admin\/users\/awaiting/ %>><a href="/admin/users/awaiting">Requests</a></li>
                 <li <%= "class='selected'" if @request.path_info =~ /^\/admin\/users\/pending/ %>><a href="/admin/users/pending">Pending</a></li>
+                <li <%= "class='selected'" if @request.path_info =~ /^\/admin\/users\/denied/ %>><a href="/admin/users/denied">Denied</a></li>
 		<% end %>
 		
 		<li class="seperator">&nbsp;</li>
@@ -76,9 +72,4 @@
 
   <%= render "admin/users/_list" %>
 </div>
-<% if request.path_info.include?('awaiting') || request.path_info.include?('pending') %>
-<div style="text-align:center;">
-  <a id="show_denied" href="javascript: void(0);" onclick="show_denied();">Show denied requests</a>
-</div>
-<% end %>
 <div id="modal"></div>

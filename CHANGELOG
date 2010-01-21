@@ -1,3 +1,7 @@
-1.6.28 (Jan 19, 2010) Chris Gibson <chris@wieck.com>
+1.6.29 (Jan 21, 2010) Chris Gibson <chris@wieck.com>
+  * Moving denied users to separate tab (rather than trying to integrate it
+    into the 'Requests' and 'Pending' tabs.
+
+1.6.28 (Jan 20, 2010) Chris Gibson <chris@wieck.com>
   * Adding 'show denied request' link to the pending user list (just like the
     requests list).

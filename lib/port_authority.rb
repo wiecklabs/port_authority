@@ -508,6 +508,13 @@ class PortAuthority < Harbor::Application
             }
             users.index(request.fetch("page", 1), request.fetch("page_size", 100), options, request["query"])
           end
+
+          get("/admin/users/denied") do |users, request|
+            options = {
+              :conditions => ["denied_at IS ?", nil]
+            }
+            users.index(request.fetch("page", 1), request.fetch("page_size", 100), options, request["query"])
+          end
         end
 
         get("/admin/users/new")      { |users, params| users.new(params["user"]) }
