@@ -67,6 +67,8 @@ class PortAuthority::Users
 
       raise_event(:user_updated, user, request)
 
+      raise_event(:user_roles_changed, user, request)
+
       if PortAuthority::allow_user_specific_permissions?
         update_permissions(user, request.params["permissions"])
       end

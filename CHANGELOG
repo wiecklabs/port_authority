@@ -1,3 +1,6 @@
+1.6.31 (Jan 27, 2010) Chris Gibson <chris@wieck.com>
+  * Creating user_roles_changed event.
+
 1.6.30 (Jan 21, 2010) Chris Gibson <chris@wieck.com>
   * Bug fix in DataMapper criteria for data behind denied users tab.
   * Updated criteria behind requests and pending users tab.
