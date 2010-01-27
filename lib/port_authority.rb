@@ -227,7 +227,7 @@ class PortAuthority < Harbor::Application
     @@password_reset_email_subject
   end
   
-  @@force_password_update_message = "You have been redirected to this page because we need you to make<br />the following updates to your profile information before continuing.<ol><li>Please choose a new password and enter it into both the Password and Confirm Password fields below.</li><li>Please fill in all required fields, which are indicated by the star symbol (*)</li></ol>When you're finished, click 'Save' to update your profile and return to the site."
+  @@force_password_update_message = "Please make the following updates to your profile information before continuing:<ol><li>Please choose a new password and enter it into both the \"Password\" and \"Confirm Password\" fields below.</li><li>Please fill in all required fields, which are indicated by the asterisk(*).</li></ol>When you're finished, click the 'Submit' button to update your profile and return to the site."
   def self.force_password_update_message
     @@force_password_update_message
   end
