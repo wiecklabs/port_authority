@@ -39,7 +39,7 @@
   	<input type="hidden" name="_method" value="put">
 	<% end %>
 
-  <%= plugin("user/edit/context", :user => @user) %>
+  <%= plugin("user/edit/context", :user => @user, :options => @options) %>
 
   <ul class="tabs">
     <li><a href="#account">Account</a></li>

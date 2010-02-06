@@ -90,9 +90,8 @@ class PortAuthority::Users
   end
 
   protect "Users", "create"
-  def create(params, override = false, options = {})
+  def create(params, override = false, options = {}, &block)
     user = User.new
-    raise_event(:start_user_create, user, request, options)
 
     if PortAuthority::allow_multiple_roles?
       roles = request.params["roles"].clone || Hash.new
@@ -121,7 +120,10 @@ class PortAuthority::Users
 
     user.awaiting_approval = false if PortAuthority::use_approvals?
     user.active = true
-    
+
+    # A Port's base method can be extended this way
+    block && block.call(user)
+
     if user.valid? || (override && request.session.authorized?("Users", "override"))
       user.save!
 
@@ -157,7 +159,7 @@ class PortAuthority::Users
 
       response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
       raise_event(:user_save_failed, user, request, response, options)
-      response.render "admin/users/new", :user => user if response.size == 0
+      response.render "admin/users/new", :user => user, :options => options if response.size == 0
     end
 
   end
