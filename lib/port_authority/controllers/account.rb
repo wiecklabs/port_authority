@@ -11,6 +11,7 @@ class PortAuthority::Account
 
   protect
   def update(params)
+    require 'ruby-debug';debugger
     user = @request.session.user
     
     if user.force_password_update?
@@ -24,7 +25,12 @@ class PortAuthority::Account
       end
     end
 
-    user.attributes = params.reject { |k,v| %w(password password_confirmation).include?(k) && v.blank? }
+    clean_params = {}
+    params.reject { |k,v| %w(password password_confirmation).include?(k) && v.blank? }.each do |k, v|
+      clean_params[k] = Sanitize.clean(v)
+    end
+
+    user.attributes = clean_params 
 
     if user.save
       self.mailer.to = user.email
@@ -75,7 +81,14 @@ class PortAuthority::Account
   end
 
   def create(user_params)
-    user = User.new(user_params || {})
+    clean_params = {}
+
+    user_params.each do |k, v|
+      clean_params[k] = Sanitize.clean(v)
+    end
+
+    user = User.new(clean_params)
+
     user.active = false
 
     if user.save(:register)

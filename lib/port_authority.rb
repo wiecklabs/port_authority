@@ -55,6 +55,9 @@ require "dm-types"
 gem "tmail"
 require "tmail/address"
 
+gem "sanitize"
+require "sanitize"
+
 Harbor::View::path.unshift(Pathname(__FILE__).dirname + "port_authority" + "views")
 Harbor::View.layouts.map("admin/*", "layouts/admin")
 Harbor::View.layouts.map("account/new", "layouts/login")
