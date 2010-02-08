@@ -17,7 +17,7 @@
         <% end %>
 
         <label for="email">Email Address</label>
-        <input type="text" name="user[email]" id="email" value="<%= @user.email %>">
+        <input type="text" name="user[email]" id="email" value="<%= h @user.email %>">
 
         <label for="password">Password</label>
         <input type="text" name="user[password]" id="password">
@@ -32,44 +32,44 @@
         <legend>Contact Information (or <a href="/account/vcard" class="toggle_vcard">upload a vcard</a>)</legend>
 
         <label for="first_name">First name</label>
-        <input type="text" name="user[first_name]" id="first_name" value="<%= @user.first_name %>">
+        <input type="text" name="user[first_name]" id="first_name" value="<%= h @user.first_name %>">
 
         <label for="last_name">Last name</label>
-        <input type="text" name="user[last_name]" id="last_name" value="<%= @user.last_name %>">
+        <input type="text" name="user[last_name]" id="last_name" value="<%= h @user.last_name %>">
 
         <label for="organization">Organization</label>
-        <input type="text" name="user[organization]" id="organization" value="<%= @user.organization %>">
+        <input type="text" name="user[organization]" id="organization" value="<%= h @user.organization %>">
 
         <label for="address">Address</label>
-        <input type="text" name="user[address]" id="address" value="<%= @user.address %>">
+        <input type="text" name="user[address]" id="address" value="<%= h @user.address %>">
 
         <label for="address2">Address 2</label>
-        <input type="text" name="user[address2]" id="address2" value="<%= @user.address2 %>">
+        <input type="text" name="user[address2]" id="address2" value="<%= h @user.address2 %>">
 
         <label for="city">City</label>
-        <input type="text" name="user[city]" id="city" value="<%= @user.city %>">
+        <input type="text" name="user[city]" id="city" value="<%= h @user.city %>">
 
         <label for="state">State</label>
-        <input type="text" name="user[state]" id="state" value="<%= @user.state %>">
+        <input type="text" name="user[state]" id="state" value="<%= h @user.state %>">
 
         <label for="postal_code">Postal Code</label>
-        <input type="text" name="user[postal_code]" id="postal_code" value="<%= @user.postal_code %>">
+        <input type="text" name="user[postal_code]" id="postal_code" value="<%= h @user.postal_code %>">
 
         <label for="office_phone">Office Phone</label>
-        <input type="text" name="user[office_phone]" id="office_phone" value="<%= @user.office_phone %>">
+        <input type="text" name="user[office_phone]" id="office_phone" value="<%= h @user.office_phone %>">
 
         <label for="mobile_phone">Mobile Phone</label>
-        <input type="text" name="user[mobile_phone]" id="mobile_phone" value="<%= @user.mobile_phone %>">
+        <input type="text" name="user[mobile_phone]" id="mobile_phone" value="<%= h @user.mobile_phone %>">
 
         <label for="fax">Fax</label>
-        <input type="text" name="user[fax]" id="fax" value="<%= @user.fax %>">
+        <input type="text" name="user[fax]" id="fax" value="<%= h @user.fax %>">
 				
 				<label for="website">Website</label>
-				<input type="text" name="user[www]" id="website" value="<%= @user.www %>">
+				<input type="text" name="user[www]" id="website" value="<%= h @user.www %>">
 				
 				<% if PortAuthority.use_approvals? %>
 					<label for="usage_statement">Usage Statement</label>
-					<textarea name="user[usage_statement]" id="usage_statement"><%= @user.usage_statement %></textarea>
+					<textarea name="user[usage_statement]" id="usage_statement"><%= h @user.usage_statement %></textarea>
 				<% end%>
       </fieldset>
 			
