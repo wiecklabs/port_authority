@@ -31,6 +31,12 @@ class PortAuthority
                 throw :halt, response.redirect("/account/") 
               end
             end
+
+            if request.session[:user_invitation_url]
+              response.message("error", "You must fill out your invitation form before continuing")
+
+              throw :halt, response.redirect(request.session[:user_invitation_url])
+            end
             # No arguments were supplied to protect, just check for authentiation
             break if permission_category.nil? && request.session.authenticated?
 
@@ -49,6 +55,7 @@ class PortAuthority
             end
           end
         )
+        
       end
 
       # Deny access to the next-method-defined if the block returns TRUE
