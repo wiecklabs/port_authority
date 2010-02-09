@@ -11,7 +11,6 @@ class PortAuthority::Account
 
   protect
   def update(params)
-    require 'ruby-debug';debugger
     user = @request.session.user
     
     if user.force_password_update?
