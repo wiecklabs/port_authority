@@ -49,6 +49,7 @@ class PortAuthority
                 controller.logger.warn "Authenticated User #{request.session.user.inspect} was denied access to #{permission_category}/[#{permissions.join(' or ')}]"
               end
 
+              response.unauthorized
               throw :halt, response.render("session/unauthorized")
             else
               throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(request.env["REQUEST_URI"])}")
@@ -67,6 +68,11 @@ class PortAuthority
 
               # Neither of the checks passed, redirect the user appropriately based on session authentication status
               if request.session.authenticated?
+                if controller.respond_to?(:logger)
+                  controller.logger.warn "Authenticated User #{request.session.user.inspect} was denied access to '#{request.uri}'"
+                end
+                response.unauthorized
+                
                 throw :halt, response.render("session/unauthorized")
               else
                 throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(request.env["REQUEST_URI"])}")
