@@ -42,7 +42,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "dm-types"
   s.add_dependency "tmail"
   s.add_dependency "faker"
-
+  s.add_dependency "sanitize"
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
