@@ -63,6 +63,8 @@ class PortAuthority
         queue_hook(
           lambda do |controller|
             if block.call(controller)
+              request, response = controller.request, controller.response
+
               # Neither of the checks passed, redirect the user appropriately based on session authentication status
               if request.session.authenticated?
                 throw :halt, response.render("session/unauthorized")
