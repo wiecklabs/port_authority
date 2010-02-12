@@ -120,15 +120,9 @@ class PortAuthority::Account
           mailer.to = email
           mailer.send!
         end
-        message = "Thank you for confirming your account. You will receive an email when an admin approves your access."
+        @response.message("success", "Thank you for confirming your account. You will receive an email when an admin approves your access.")
       else
-        # user re-clicked his activation link in his email, so either log him in automatically (if he's already approved)
-        # or do nothing and redirect him to the index page
-        if user.active?
-          message = "You have been logged in." if request.session.authenticate(user.to_s, user.password).success?
-        else
-          @response.message("error", "Your account is still pending approval.")
-        end
+        @response.message("success", "Your account is still pending approval. You will receive an email when an admin approves your access.")
       end
 
     else
