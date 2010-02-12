@@ -479,6 +479,7 @@ class PortAuthority < Harbor::Application
 
       # Session Routes
       using services, PortAuthority::Session do
+        get("/login")           { |session, params| session.index(params["message"]) }
         get("/session")         { |session, params| session.index(params["message"]) }
         post("/session")        { |session, params| session.create(params["login"], params["password"]) }
         get("/session/delete")  { |session| session.delete }

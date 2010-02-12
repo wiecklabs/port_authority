@@ -105,10 +105,10 @@ class PortAuthority::Account
     user = User.first(:auth_key => key)
 
     if user
-      if PortAuthority::use_approvals?
+      if PortAuthority::use_approvals? && user.activated_at.blank?
         user.activated_at = DateTime.now
         user.awaiting_approval = true
-
+        user.save
         mailer.from = PortAuthority::no_reply_email_address
         mailer.subject = PortAuthority::account_activated_email_subject
         if PortAuthority::use_approvals?
@@ -120,21 +120,21 @@ class PortAuthority::Account
           mailer.to = email
           mailer.send!
         end
-        message = "Your account has been successfully activated. You will receive an email when an admin approves your account."
+        message = "Thank you for confirming your account. You will receive an email when an admin approves your access."
       else
-        user.active = true
-        request.session[:user_id] = user.id
-        message = "Your account has been activated and you are now logged in."
+        # user re-clicked his activation link in his email, so either log him in automatically (if he's already approved)
+        # or do nothing and redirect him to the index page
+        if user.active?
+          message = "You have been logged in." if request.session.authenticate(user.to_s, user.password).success?
+        else
+          @response.message("error", "Your account is still pending approval.")
+        end
       end
-
-      user.save
-
-      @response.message("success", message)
 
     else
       @response.message("error",  "No account associated with the provided authentication key could be found.")
     end
-
+    request.session.save
     @response.redirect("/")
   end
 
