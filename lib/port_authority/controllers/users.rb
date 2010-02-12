@@ -255,7 +255,7 @@ class PortAuthority::Users
         mailer.html = Harbor::View.new("mailers/approval.html.erb", :user => user)
         mailer.text = Harbor::View.new("mailers/approval.txt.erb", :user => user)
         mailer.send!
-        raise_event(:user_updated, user, request)
+        raise_event(:user_created, user, request)
       else
         response.message("error", "Account could not be updated!")
       end
