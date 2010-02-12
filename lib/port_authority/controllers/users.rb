@@ -90,7 +90,7 @@ class PortAuthority::Users
   end
 
   protect "Users", "create"
-  def create(params, override = false, options = {}, &block)
+  def create(params, override = false, options = {})
     user = User.new
 
     if PortAuthority::allow_multiple_roles?
@@ -121,8 +121,7 @@ class PortAuthority::Users
     user.awaiting_approval = false if PortAuthority::use_approvals?
     user.active = true
 
-    # A Port's base method can be extended this way
-    block && block.call(user)
+    raise_event(:user_will_save, request, user, override, options)
 
     if user.valid? || (override && request.session.authorized?("Users", "override"))
       user.save!
