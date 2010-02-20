@@ -30,18 +30,18 @@ spec = Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.files = %w(Rakefile) + Dir.glob("{lib,assets,public,test}/**/*")
 
-  # s.add_dependency "fastercsv"
-  # s.add_dependency "json"
-  # s.add_dependency "harbor", ">= 0.12.11"
-  # s.add_dependency "ui", ">= 0.7.3"
-  # s.add_dependency "dm-core"
-  # s.add_dependency "dm-is-searchable"
-  # s.add_dependency "dm-validations"
-  # s.add_dependency "dm-timestamps"
-  # s.add_dependency "dm-aggregates"
-  # s.add_dependency "dm-types"
-  # s.add_dependency "tmail"
-  # s.add_dependency "faker"
+  s.add_dependency "fastercsv"
+  s.add_dependency "json"
+  s.add_dependency "harbor", ">= 0.12.11"
+  s.add_dependency "ui", ">= 0.7.3"
+  s.add_dependency "dm-core"
+  s.add_dependency "dm-is-searchable"
+  s.add_dependency "dm-validations"
+  s.add_dependency "dm-timestamps"
+  s.add_dependency "dm-aggregates"
+  s.add_dependency "dm-types"
+  s.add_dependency "tmail"
+  s.add_dependency "faker"
 
 end
 
