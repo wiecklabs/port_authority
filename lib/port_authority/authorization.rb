@@ -33,7 +33,7 @@ class PortAuthority
             end
 
             if request.session[:user_invitation_url]
-              response.message("error", "You must fill out your invitation form before continuing")
+              response.message("error", "You must fill out your form before continuing")
 
               throw :halt, response.redirect(request.session[:user_invitation_url])
             end
