@@ -51,10 +51,9 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-spec_file = ".gemspec"
-desc "Create #{spec_file}"
+desc "create a gemspec file"
 task :gemspec do
-  File.open(spec_file, "w") do |file|
+  File.open("#{spec.name}.gemspec", "w") do |file|
     file.puts spec.to_ruby
   end
 end
