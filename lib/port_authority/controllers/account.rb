@@ -186,11 +186,11 @@ class PortAuthority::Account
       return @response.redirect("/account/password")
     end
 
-    user.password = user.password_confirmation = password
+    user.password = password
+    user.password_confirmation = password_confirmation
     user.valid?
-
     if user.errors[:password]
-      @response.message("error", "Please enter your new password twice.")
+      @response.message("error", user.errors[:password].join("\n")) if user.password
       @response.render "account/reset_password", :token => token, :user => user
     else
       user.reset_password_token!
