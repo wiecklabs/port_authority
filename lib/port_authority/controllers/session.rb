@@ -8,9 +8,15 @@ class PortAuthority::Session
     @response.render("session/index", :users => @users, :referrer => referrer)
   end
 
-  def create(login, password)
+  def create(login, password, remember_me)
     if (status = @request.session.authenticate(login, password)).success?
       # audit "Login"
+      unless remember_me.blank?
+        remember_me_cookie = {:value => @request.session.user.auth_key}
+        remember_me_cookie[:expires] = Time.now + PortAuthority::remember_me_expires_in if PortAuthority::remember_me_expires_in
+        @response.set_cookie("harbor.auth_key", remember_me_cookie)
+      end
+
       @response.redirect(referrer)
     else
       # audit "FailedLogin", [login, password]
@@ -28,6 +34,7 @@ class PortAuthority::Session
   def delete
     # audit "Logout"
     @request.session.abandon!
+    @response.delete_cookie('harbor.auth_key')
     @response.redirect "/session"
   end
 
@@ -42,5 +49,24 @@ class PortAuthority::Session
        "/"
     end
   end
+end
 
+module Harbor
+  class Response
+    def delete_cookie(key, value={})
+      unless Array === self["Set-Cookie"]
+        self["Set-Cookie"] = [self["Set-Cookie"]].compact
+      end
+
+      self["Set-Cookie"].reject! { |cookie|
+        cookie =~ /\A#{Rack::Utils.escape(key)}=/
+      }
+
+      set_cookie(key,
+                 {:value => '', :path => nil, :domain => nil,
+                   :expires => Time.at(0) }.merge(value))
+    end
+    
+  end
+  
 end

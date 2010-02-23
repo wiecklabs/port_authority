@@ -31,6 +31,12 @@ class PortAuthority
                 throw :halt, response.redirect("/account/") 
               end
             end
+
+            if request.session[:user_invitation_url]
+              response.message("error", "You must fill out your form before continuing")
+
+              throw :halt, response.redirect(request.session[:user_invitation_url])
+            end
             # No arguments were supplied to protect, just check for authentiation
             break if permission_category.nil? && request.session.authenticated?
 
@@ -43,12 +49,14 @@ class PortAuthority
                 controller.logger.warn "Authenticated User #{request.session.user.inspect} was denied access to #{permission_category}/[#{permissions.join(' or ')}]"
               end
 
+              response.unauthorized
               throw :halt, response.render("session/unauthorized")
             else
               throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(request.env["REQUEST_URI"])}")
             end
           end
         )
+        
       end
 
       # Deny access to the next-method-defined if the block returns TRUE
@@ -56,8 +64,15 @@ class PortAuthority
         queue_hook(
           lambda do |controller|
             if block.call(controller)
+              request, response = controller.request, controller.response
+
               # Neither of the checks passed, redirect the user appropriately based on session authentication status
               if request.session.authenticated?
+                if controller.respond_to?(:logger)
+                  controller.logger.warn "Authenticated User #{request.session.user.inspect} was denied access to '#{request.uri}'"
+                end
+                response.unauthorized
+                
                 throw :halt, response.render("session/unauthorized")
               else
                 throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(request.env["REQUEST_URI"])}")
