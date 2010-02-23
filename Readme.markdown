@@ -24,6 +24,7 @@ applications
 
   * git clone git://github.com/wiecklabs/port_authority.git
   * cd port_authority
+  * bundle install
   * Run ./config.ru to start console
     * DataMapper.auto_upgrade!
     * PortAuthority.fake!
