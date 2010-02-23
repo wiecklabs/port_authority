@@ -159,7 +159,7 @@ class PortAuthority::Account
       # it was added later and auto_upgrade doesn't do the work for you)
       if user.reset_password_token.blank?
         user.reset_password_token!
-        user.save
+        user.save!
       end
 
       mailer.to = user.email
@@ -178,7 +178,7 @@ class PortAuthority::Account
     end
   end
 
-  def reset_password(token = nil, user_params = nil)
+  def reset_password(token, password = nil, password_confirmation = nil)
     user = User.first(:reset_password_token => token)
 
     if token.nil? || user.nil?
@@ -186,19 +186,17 @@ class PortAuthority::Account
       return @response.redirect("/account/password")
     end
 
-    if user_params.blank?
+    user.password = user.password_confirmation = password
+    user.valid?
+
+    if user.errors[:password]
+      @response.message("error", "Please enter your new password twice.")
       @response.render "account/reset_password", :token => token, :user => user
     else
-      user.update_attributes(user_params)
       user.reset_password_token!
-
-      if user.save
-        @response.message("success", "Your password has been successfully updated!")
-        @response.redirect("/session")
-      else
-        @response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
-        @response.render "account/reset_password", :token => token, :user => user
-      end
+      user.save!
+      @response.message("success", "Your password has been successfully updated!")
+      @response.redirect("/session")
     end
   end
 

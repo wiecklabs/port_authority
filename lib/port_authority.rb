@@ -575,7 +575,7 @@ class PortAuthority < Harbor::Application
         get("/account/password")              { |account| account.forgot_password }
         post("/account/password")             { |account, params| account.forgot_password(params["email"]) }
         get("/account/reset_password/:token") { |account, params| account.reset_password(params["token"]) }
-        post("/account/reset_password")       { |account, params| account.reset_password(params["token"], params["user"]) }
+        post("/account/reset_password")       { |account, params| account.reset_password(params["token"], params["user"]["password"], params["user"]["password_confirmation"]) }
         
         get ("/account/update_password") { |account, params| account.force_update_password }
         put ("/account/update_password") { |account, params| account.update_password(params["password"], params["password_confirmation"]) }

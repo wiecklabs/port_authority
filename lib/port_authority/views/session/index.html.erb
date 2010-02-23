@@ -25,8 +25,12 @@ $(function() {$('#password').focus();});
 <% end; end %>
 
 <form action="/session<%= request.params["referrer"] ? "?referrer=#{q request.params["referrer"]}" : nil %>" method="post" class="login">
-  <% if @message %><p class="message"><%= h(@message) %></p><% end %>
-  <% if @error %><p class="message error"><%= @error %></p><% end %>
+  <% @request.messages.keys.each do |key| -%>
+    <% message = @request.messages[key] -%>
+    <% unless message.blank? -%>
+      <p class="message <%= key %>"><%= message %></p>
+    <% end -%>
+  <% end -%>
   <fieldset>
     <legend>Login</legend>
     <% if @referrer %><input type="hidden" name="referrer" value="<%= @referrer %>"><% end %>
