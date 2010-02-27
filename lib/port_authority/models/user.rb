@@ -19,11 +19,17 @@ class User
 
   property :id, Serial
   property :first_name, String, :length => 50
+  validates_length :first_name, :max => 50, :when => [ :register, :default ]
   property :last_name, String, :length => 50
+  validates_length :last_name, :max => 50, :when => [ :register, :default ]
   property :organization, String, :length => 80
+  validates_length :organization, :max => 80, :when => [ :register, :default ]
 
   property :email, String, :length => 100
+  validates_length :email, :max => 100, :when => [ :register, :default ]
+  
   property :title, String, :length => 255
+  validates_length :title, :max => 255, :when => [ :register, :default ]
 
   def self.use_crypted_passwords!
     # validators.contexts[:default].reject! {|v| v.field_name == :password }
@@ -47,15 +53,25 @@ class User
   property :active, Boolean, :default => true
 
   property :address, String, :length => 100
+  validates_length :address, :max => 100, :when => [ :register, :default ]
   property :address2, String, :length => 100
+  validates_length :address2, :max => 100, :when => [ :register, :default ]
   property :city, String, :length => 100
+  validates_length :city, :max => 100, :when => [ :register, :default ]
   property :state, String, :length => 50
+  validates_length :state, :max => 50, :when => [ :register, :default ]
   property :postal_code, String, :length => 20
+  validates_length :postal_code, :max => 20, :when => [ :register, :default ]
   property :country, String, :length => 100
+  validates_length :country, :max => 100, :when => [ :register, :default ]
   property :office_phone, String, :length => 30
+  validates_length :office_phone, :max => 30, :when => [ :register, :default ]
   property :mobile_phone, String, :length => 20
+  validates_length :mobile_phone, :max => 20, :when => [ :register, :default ]
   property :fax, String, :length => 20
+  validates_length :fax, :max => 20, :when => [ :register, :default ]
   property :www, String, :length => 200
+  validates_length :www, :within => 0..200, :when => [ :register, :default ]
   property :graphic_content_visible_by_default, Boolean, :default => false
   property :prefers_attachments, Boolean, :default => false
 
@@ -139,7 +155,7 @@ class User
     end
   end
 
-  validates_length :email, :within => 3..100, :when => [ :register, :default ]
+  validates_length :email, :max => 100, :when => [ :register, :default ]
   validates_is_unique :email, :when => [ :register, :default ], :unless => Proc.new { |user| PortAuthority::use_logins? }
   validates_with_block :email, :when => [ :register, :default ] do
     begin

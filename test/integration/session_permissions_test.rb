@@ -62,7 +62,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
     user_photos.update_mask("list" => 1, "show" => 1, "update" => 1, "create" => 1)
     user_photos.save
     
-    @user = User.create(:email => 'sample@example.com', :password => 'example', :password_confirmation => 'example', :roles => [user_role])
+    @user = User.create!(:email => 'sample@example.com', :password => 'example', :password_confirmation => 'example', :roles => [user_role])
     user_photos.propagate_permissions!
   end
   
