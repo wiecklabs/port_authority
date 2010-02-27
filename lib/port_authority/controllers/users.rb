@@ -120,8 +120,8 @@ class PortAuthority::Users
 
     user.awaiting_approval = false if PortAuthority::use_approvals?
     user.active = true
-
-    raise_event(:user_will_save, request, user, override, options)
+    
+    raise_event(:user_will_save, request, response, user, override, options)
 
     if user.valid? || (override && request.session.authorized?("Users", "override"))
       user.save!
