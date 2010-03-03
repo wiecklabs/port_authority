@@ -2,7 +2,7 @@ class PortAuthority::Account
 
   include PortAuthority::Authorization
 
-  attr_accessor :request, :response, :mailer, :logger
+  attr_accessor :request, :response, :mail_server, :logger
 
   protect
   def edit
@@ -32,12 +32,15 @@ class PortAuthority::Account
     user.attributes = clean_params 
 
     if user.save
-      self.mailer.to = user.email
-      self.mailer.from = PortAuthority::no_reply_email_address
-      self.mailer.subject = "Account Updated"
-      self.mailer.text = Harbor::View.new("mailers/account_changed.txt.erb", :user => user)
-      self.mailer.html = Harbor::View.new("mailers/account_changed", :user => user)
-      self.mailer.send!
+      mailer = Harbor::Mailer.new
+
+      mailer.to = user.email
+      mailer.from = PortAuthority::no_reply_email_address
+      mailer.subject = "Account Updated"
+      mailer.text = Harbor::View.new("mailers/account_changed.txt.erb", :user => user)
+      mailer.html = Harbor::View.new("mailers/account_changed", :user => user)
+
+      mail_server.deliver(mailer)
 
       if user.force_password_update?
         if @updated_password
@@ -91,13 +94,15 @@ class PortAuthority::Account
     user.active = false
 
     if user.save(:register)
+      mailer = Harbor::Mailer.new
       mailer.to = user.email
       mailer.from = PortAuthority::no_reply_email_address
       mailer.subject = PortAuthority::activation_email_subject
       mailer.html = Harbor::View.new("mailers/signup_activation.html.erb", :user => user)
       mailer.text = Harbor::View.new("mailers/signup_activation.txt.erb", :user => user)
-      mailer.send!
   
+      mail_server.deliver(mailer)
+
       if PortAuthority::use_approvals?
         message = "An activation email has been sent to #{user.email}, your account will not be up for approval until the directions in that email are followed."
       else
@@ -121,17 +126,22 @@ class PortAuthority::Account
         user.activated_at = DateTime.now
         user.awaiting_approval = true
         user.save
-        mailer.from = PortAuthority::no_reply_email_address
-        mailer.subject = PortAuthority::account_activated_email_subject
+        
         if PortAuthority::use_approvals?
           # hitting this property to make it load so the email will include it when marshalled to the mail queue
           user.usage_statement
         end
-        mailer.text = Harbor::View.new("mailers/account_request.txt.erb", :user => user)
-        PortAuthority.admin_email_addresses.each do |email|
+        mailers = PortAuthority.admin_email_addresses.collect do |email|
+          mailer = Harbor::Mailer.new
+          mailer.from = PortAuthority::no_reply_email_address
+          mailer.subject = PortAuthority::account_activated_email_subject
+          mailer.text = Harbor::View.new("mailers/account_request.txt.erb", :user => user)
           mailer.to = email
-          mailer.send!
+          mailer
         end
+
+        mailer_server.deliver(mailers)
+
         @response.message("success", "Thank you for confirming your account. You will receive an email when an admin approves your access.")
       else
         @response.message("success", "Your account is still pending approval. You will receive an email when an admin approves your access.")
@@ -174,12 +184,14 @@ class PortAuthority::Account
         user.save
       end
 
+      mailer = Harbor::Mailer.new
       mailer.to = user.email
       mailer.from = PortAuthority::no_reply_email_address
       mailer.subject = PortAuthority::forgot_password_email_subject
       mailer.html = Harbor::View.new("mailers/forgot_password.html.erb", :user => user)
       mailer.text = Harbor::View.new("mailers/forgot_password.txt.erb", :user => user)
-      mailer.send!
+
+      mail_server.deliver(mailer)
 
       message = <<-EOS
       Your request to reset your password has been sent to the email registered with your account.  Please check your email.

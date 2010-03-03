@@ -3,7 +3,7 @@ class PortAuthority::Users
   include PortAuthority::Authorization
   include Harbor::Events
 
-  attr_accessor :request, :response, :mailer, :logger
+  attr_accessor :request, :response, :mail_server, :logger
 
   protect "Users", "list"
   def index(page, page_size, options = {}, query = nil)
@@ -232,11 +232,13 @@ class PortAuthority::Users
     user.password = User.random_password
     user.save!
 
+    mailer = Harbor::Mailer.new
     mailer.to = user.email
     mailer.from = PortAuthority::no_reply_email_address
     mailer.subject = PortAuthority::password_reset_email_subject
     mailer.text = Harbor::View.new("mailers/reset_password.txt.erb", :user => user)
-    mailer.send!
+
+    mail_server.deliver(mailer)
 
     response.message("success", "A password change notification has been sent to the email registered with this account.")
     response.render("admin/users/edit", :user => user)
@@ -250,12 +252,14 @@ class PortAuthority::Users
         user.reset_permission_set_from_roles # updating permissions
         response.message("success", "Account was successfully approved.")
 
+        mailer = Harbor::Mailer.new
         mailer.to = user.email
         mailer.from = PortAuthority::no_reply_email_address
         mailer.subject = PortAuthority::user_approved_email_subject
         mailer.html = Harbor::View.new("mailers/approval.html.erb", :user => user)
         mailer.text = Harbor::View.new("mailers/approval.txt.erb", :user => user)
-        mailer.send!
+
+        mail_server.deliver(mailer)
 
         raise_event(:user_created, user, request)
       else
