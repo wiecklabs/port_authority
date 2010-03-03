@@ -140,7 +140,7 @@ class PortAuthority::Account
           mailer
         end
 
-        mailer_server.deliver(mailers)
+        mail_server.deliver(mailers)
 
         @response.message("success", "Thank you for confirming your account. You will receive an email when an admin approves your access.")
       else
