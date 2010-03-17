@@ -212,7 +212,7 @@ class PortAuthority < Harbor::Application
     @@user_denied_email_subject
   end
 
-  @@forgot_password_email_subject = "Lost Password Recovery Request"
+  @@forgot_password_email_subject = "Password Reset"
   def self.forgot_password_email_subject=(value)
     @@forgot_password_email_subject = value
   end
