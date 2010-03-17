@@ -165,7 +165,7 @@ class PortAuthority::Users
 
   protect "Users", "show"
   def export(format, id = nil)
-    users = id ? [User.get(id)] : User.all(:order => [:last_name.asc])
+    users = id ? [User.get(id)] : User::Search.new(nil, nil, request[:options] || {}, request[:query] || {}).users
     filename = id ? users.first.to_s.gsub(/[^\w-]/, "_") : "Contacts"
 
     case format
