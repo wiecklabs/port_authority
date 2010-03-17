@@ -496,28 +496,52 @@ class PortAuthority < Harbor::Application
       using services, PortAuthority::Users do
         get("/admin/users/random_password") { |users| users.random_password }
 
+        get("/admin/users.:format") do |users, params|
+          options = { :active => true }
+          options.merge!(:denied_at => nil, :awaiting_approval => false) if PortAuthority::use_approvals?
+          users.export(params['format'], params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
+        end
+
         get("/admin/users") do |users, params|
           options = { :active => true }
           options.merge!(:denied_at => nil, :awaiting_approval => false) if PortAuthority::use_approvals?
-
           users.index(params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
         end
-
+        
+        get("/admin/users/inactive.:format") do |users, params|
+          options = { :active => false }
+          options.merge!(:denied_at => nil, :awaiting_approval => false) if PortAuthority::use_approvals?
+          users.export(params['format'], params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
+        end
+        
         get("/admin/users/inactive") do |users, params|
           options = { :active => false }
           options.merge!(:denied_at => nil, :awaiting_approval => false) if PortAuthority::use_approvals?
-
           users.index(params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
         end
 
         if PortAuthority::use_approvals?
+          get("/admin/users/awaiting.:format") do |users, params|
+            options = {
+              :conditions => ["(denied_at IS ? AND (awaiting_approval = ? AND activated_at IS NOT ?))", nil, true, nil]
+            }
+            users.export(params['format'], params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
+          end
+          
           get("/admin/users/awaiting") do |users, params|
             options = {
               :conditions => ["(denied_at IS ? AND (awaiting_approval = ? AND activated_at IS NOT ?))", nil, true, nil]
             }
             users.index(params.fetch("page", 1), params.fetch("page_size", 100), options, params["query"])
           end
-
+          
+          get("/admin/users/pending.:format") do |users, request|
+            options = {
+              :conditions => ["(denied_at IS ? AND (awaiting_approval = ? AND activated_at IS ?))", nil, true, nil]
+            }
+            users.export(request['format'], request.fetch("page", 1), request.fetch("page_size", 100), options, request["query"])
+          end
+          
           get("/admin/users/pending") do |users, request|
             options = {
               :conditions => ["(denied_at IS ? AND (awaiting_approval = ? AND activated_at IS ?))", nil, true, nil]
@@ -525,6 +549,13 @@ class PortAuthority < Harbor::Application
             users.index(request.fetch("page", 1), request.fetch("page_size", 100), options, request["query"])
           end
 
+          get("/admin/users/denied.:format") do |users, request|
+            options = {
+              :conditions => ["denied_at IS NOT ?", nil]
+            }
+            users.export(request['format'], request.fetch("page", 1), request.fetch("page_size", 100), options, request["query"])
+          end
+          
           get("/admin/users/denied") do |users, request|
             options = {
               :conditions => ["denied_at IS NOT ?", nil]
@@ -535,6 +566,7 @@ class PortAuthority < Harbor::Application
 
         get("/admin/users/new")      { |users, params| users.new(params["user"]) }
         
+        get("/admin/roles/:role_id/users.:format") { |users, params| users.export(params['format'], params.fetch("page", 1), params.fetch("page_size", 100), {:role_id => params['role_id'].to_i}, params["query"]) }
         get("/admin/roles/:role_id/users") { |users, params| users.index(params.fetch("page", 1), params.fetch("page_size", 100), {:role_id => params['role_id'].to_i}, params["query"]) }
 
         get("/admin/users/:id")         { |users, params| users.show(params["id"]) }

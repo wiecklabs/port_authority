@@ -14,7 +14,7 @@ services.register("logger", logger)
 DataMapper.setup :default, "sqlite3://#{Pathname(__FILE__).dirname.expand_path + "users.db"}"
 # DataMapper.setup :search, "ferret:///tmp/ferret_index.sock"
 
-DataObjects::Sqlite3.logger = DataObjects::Logger.new(Pathname(__FILE__).dirname + "log/db.log", :debug)
+DataObjects::Sqlite3.logger = DataObjects::Logger.new(STDOUT, :debug)
 
 Harbor::View.layouts.map("admin/*", "layouts/admin")
 

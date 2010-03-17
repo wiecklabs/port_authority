@@ -164,10 +164,13 @@ class PortAuthority::Users
   end
 
   protect "Users", "show"
-  def export(format, id = nil)
-    users = id ? [User.get(id)] : User::Search.new(nil, nil, request[:options] || {}, request[:query] || {}).users
-    filename = id ? users.first.to_s.gsub(/[^\w-]/, "_") : "Contacts"
-
+  def export(format, page, page_size, options, query)
+    if role_id_option = options.delete(:role_id)
+      options[User.roles.role_id] = role_id_option
+    end
+    
+    users = User::Search.new(page, page_size, options, query).users
+    filename = "user-export"
     case format
     when "vcf" then response.content_type = "text/x-vcard"
     when "csv" then response.content_type = "text/csv"
