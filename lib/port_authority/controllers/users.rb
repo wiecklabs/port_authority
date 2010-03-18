@@ -169,7 +169,8 @@ class PortAuthority::Users
       options[User.roles.role_id] = role_id_option
     end
     
-    users = User::Search.new(page, page_size, options, query).users
+    total_count = User.count # since there's no way to NOT paginate with User::Search
+    users = User::Search.new(page, total_count, options, query).users
     filename = "user-export"
     case format
     when "vcf" then response.content_type = "text/x-vcard"
