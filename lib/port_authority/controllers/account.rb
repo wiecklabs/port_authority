@@ -142,9 +142,9 @@ class PortAuthority::Account
 
         mail_server.deliver(mailers)
 
-        @response.message("success", "Thank you for confirming your account. You will receive an email when an admin approves your access.")
+        @response.message("success", "Your email address has been successfully verified. You will receive a response after an administrator reviews your account.")
       else
-        @response.message("success", "Your account is still pending approval. You will receive an email when an admin approves your access.")
+        @response.message("success", "Your account is still pending approval. You will receive a response after an administrator reviews your account.")
       end
 
     else
