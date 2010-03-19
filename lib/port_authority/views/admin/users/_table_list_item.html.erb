@@ -1,8 +1,8 @@
-<tr <% if PortAuthority::use_approvals? && !!@user.denied_at %>class="denied"<% end %>>
+<tr>
   <% link = @render_edit_links ? "/admin/users/#{@user.id}/edit" : "/admin/users/#{@user.id}" %>
   <% if PortAuthority.use_logins? %>
     <td>
-      <a href="<%= link -%>"><%= @user.login %></a>
+      <a href="<%= link -%>"><%= @user.login.blank? ? @user.email : @user.login %></a>
     </td>
   <% else %>
     <td>
