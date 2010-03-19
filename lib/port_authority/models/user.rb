@@ -170,7 +170,7 @@ class User
 
   # Password Validations
   validates_present :password, :when => [ :register, :default ], :if => :password_needs_validation_and_dissallow_blank_passwords?
-  validates_is_confirmed :password, :when => [ :register, :default ], :if => :password_needs_validation?, :message => "Passwords do not match."
+  validates_is_confirmed :password, :when => [ :register, :default ], :if => :password_needs_validation?, :message => "Passwords do not match"
 
   repository :search do
     property :content, String, :field => "*", :auto_validation => false
