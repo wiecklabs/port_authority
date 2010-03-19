@@ -3,7 +3,7 @@ class PortAuthority::Users
   include PortAuthority::Authorization
   include Harbor::Events
 
-  attr_accessor :request, :response, :mailer, :logger
+  attr_accessor :request, :response, :mail_server, :logger
 
   protect "Users", "list"
   def index(page, page_size, options = {}, query = nil)
@@ -92,7 +92,6 @@ class PortAuthority::Users
   protect "Users", "create"
   def create(params, override = false, options = {})
     user = User.new
-    raise_event(:start_user_create, user, request, options)
 
     if PortAuthority::allow_multiple_roles?
       roles = request.params["roles"].clone || Hash.new
@@ -122,6 +121,8 @@ class PortAuthority::Users
     user.awaiting_approval = false if PortAuthority::use_approvals?
     user.active = true
     
+    raise_event(:user_will_save, request, response, user, override, options)
+
     if user.valid? || (override && request.session.authorized?("Users", "override"))
       user.save!
 
@@ -157,7 +158,7 @@ class PortAuthority::Users
 
       response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
       raise_event(:user_save_failed, user, request, response, options)
-      response.render "admin/users/new", :user => user if response.size == 0
+      response.render "admin/users/new", :user => user, :options => options if response.size == 0
     end
 
   end
@@ -231,11 +232,13 @@ class PortAuthority::Users
     user.password = User.random_password
     user.save!
 
+    mailer = Harbor::Mailer.new
     mailer.to = user.email
     mailer.from = PortAuthority::no_reply_email_address
     mailer.subject = PortAuthority::password_reset_email_subject
     mailer.text = Harbor::View.new("mailers/reset_password.txt.erb", :user => user)
-    mailer.send!
+
+    mail_server.deliver(mailer)
 
     response.message("success", "A password change notification has been sent to the email registered with this account.")
     response.render("admin/users/edit", :user => user)
@@ -249,12 +252,14 @@ class PortAuthority::Users
         user.reset_permission_set_from_roles # updating permissions
         response.message("success", "Account was successfully approved.")
 
+        mailer = Harbor::Mailer.new
         mailer.to = user.email
         mailer.from = PortAuthority::no_reply_email_address
         mailer.subject = PortAuthority::user_approved_email_subject
         mailer.html = Harbor::View.new("mailers/approval.html.erb", :user => user)
         mailer.text = Harbor::View.new("mailers/approval.txt.erb", :user => user)
-        mailer.send!
+
+        mail_server.deliver(mailer)
 
         raise_event(:user_created, user, request)
       else
@@ -267,7 +272,7 @@ class PortAuthority::Users
     def deny(id)
       user = User.get(id)
       user.deny!
-      raise_event(:user_denied, user, request, mailer)
+      raise_event(:user_denied, user, request)
       response.message("error", "Account Denied for #{user.email}")
       response.redirect("/admin/users/awaiting")
     end

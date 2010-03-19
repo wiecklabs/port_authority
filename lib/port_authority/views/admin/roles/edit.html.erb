@@ -38,7 +38,7 @@
   <ul class="tabs">
     <li><a href="#role">Role</a></li>
     <li><a href="#permissions">Permissions</a></li>
-    <% plugin("role/edit/tabs").each do |tab| %>
+    <% plugin("role/edit/tabs", :role => @role).each do |tab| %>
     	<li><%= tab.link %></li>
     <% end %>
   </ul>

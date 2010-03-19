@@ -39,7 +39,7 @@
   	<input type="hidden" name="_method" value="put">
 	<% end %>
 
-  <%= plugin("user/edit/context", :user => @user) %>
+  <%= plugin("user/edit/context", :user => @user, :options => @options) %>
 
   <ul class="tabs">
     <li><a href="#account">Account</a></li>
@@ -82,7 +82,7 @@
     <% if !@user.errors.empty? && authorized?("Users", "override") %>
     <label for="override" style="color: #f00; margin-left: 10px; display: inline; float: none;">Override Validation Errors?</label><input type="checkbox" value="true" name="override" id="override">
     <% end %>
-    <% if PortAuthority::use_approvals? && (@user.awaiting_approval? || @user.denied_at) %>
+    <% if PortAuthority::use_approvals? && (@user.awaiting_approval? || @user.denied_at) && !@user.id.nil? %>
       <a href="/admin/users/<%= @user.id %>/approve">Approve</a>
       <a href="/admin/users" class="cancel">Cancel</a>
       <% unless @user.denied_at %><a class="delete" href="/admin/users/<%= @user.id %>/deny">deny</a><% end %>
