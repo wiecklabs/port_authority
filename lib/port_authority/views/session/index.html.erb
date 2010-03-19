@@ -35,11 +35,21 @@ $(function() {$('#password').focus();});
     <legend>Login</legend>
     <% if @referrer %><input type="hidden" name="referrer" value="<%= @referrer %>"><% end %>
 
-    <label for="login"><%= PortAuthority::use_logins? ? "Username" : "Email" %></label>
-    <input type="text" name="login" value="<%= request.params["login"] %>" id="login">
+    <div class="row">
+      <label for="login"><%= PortAuthority::use_logins? ? "Username" : "Email" %></label>
+      <input type="text" name="login" value="<%= request.params["login"] %>" id="login">
+    </div>
 
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password">
+    <div class="row">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password">
+    </div>
+    
+    <div class="row">
+      <label for="remember_me">
+        <input type="checkbox" name="remember_me" value="true" checked="checked" id="remember_me">Stay Logged In?
+      </label>
+    </div>
     
   </fieldset>
   <input class="submit" type="submit" value="Log In">

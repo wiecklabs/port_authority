@@ -26,7 +26,7 @@ require "fastercsv"
 gem "json"
 require "json"
 
-gem "harbor", ">= 0.15.1"
+gem "harbor", ">= 0.18.6"
 require "harbor"
 require "harbor/mailer"
 require "harbor/logging"
@@ -348,10 +348,22 @@ class PortAuthority < Harbor::Application
   def self.guest_role=(value)
     @@guest_role = value
   end
-  
+    
   @@ftp_hostname = "localhost"
   def self.ftp_hostname
     @@ftp_hostname
+  end
+  
+  ##
+  # used to calculate when a 'remember me' cookie should expire
+  # when set to nil, cookie will never expire
+  @@remember_me_expires_in = nil
+  def self.remember_me_expires_in
+    @@remember_me_expires_in
+  end
+  
+  def self.remember_me_expires_in=(value)
+    @@remember_me_expires_in = value
   end
   
   def self.ftp_hostname=(value)
@@ -487,7 +499,7 @@ class PortAuthority < Harbor::Application
       using services, PortAuthority::Session do
         get("/login")           { |session, params| session.index(params["message"]) }
         get("/session")         { |session, params| session.index(params["message"]) }
-        post("/session")        { |session, params| session.create(params["login"], params["password"]) }
+        post("/session")        { |session, params| session.create(params["login"], params["password"], params["remember_me"]) }
         get("/session/delete")  { |session| session.delete }
         get("/logout")          { |session| session.delete }
       end
@@ -688,7 +700,7 @@ module Harbor
   class Session
     include PortAuthority::Authentication
   end
-
+  
   class ViewContext
     def me
       @me ||= request ? request.session.user : nil
