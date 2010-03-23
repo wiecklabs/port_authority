@@ -68,6 +68,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
   
   def test_guest_permissions_without_cache
     guest_session = Session.new({:user_id => nil})
+    guest_session.request = Harbor::Test::Request.new()
     assert_equal(3, guest_session.permissions['Photos'].mask)
     assert_equal(0, guest_session.permissions['Money'].mask)
     assert(guest_session['permissions'] =~ /Guest\[#{Regexp.escape(@guest_role.updated_at.to_s)}\]\:.*?Photos=3/)
@@ -75,7 +76,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
   
   def test_guest_authorized_without_cache
     guest_session = Session.new({:user_id => nil})
-    
+    guest_session.request = Harbor::Test::Request.new()
     assert(guest_session.authorized?("Photos", "list"))
     assert(guest_session.authorized?("Photos", "show"))
     assert(!guest_session.authorized?("Photos", "update"))
@@ -86,6 +87,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
     permissions = serialize_permissions('Guest', DateTime.now - 1, 'Photos' => 3, 'Money' => 0)
 
     guest_session = Session.new({:user_id => nil, 'permissions' => permissions})
+    guest_session.request = Harbor::Test::Request.new()    
     assert_equal(3, guest_session.permissions['Photos'].mask)
     assert(guest_session.permissions_loaded)
     assert(guest_session.permissions_loaded_from_guest_role)
@@ -96,6 +98,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
     permissions = serialize_permissions('User', DateTime.now + 1, 'Photos' => 3, 'Money' => 0)
 
     guest_session = Session.new({:user_id => nil, 'permissions' => permissions})
+    guest_session.request = Harbor::Test::Request.new()    
     assert_equal(3, guest_session.permissions['Photos'].mask)
     assert(guest_session.permissions_loaded)
     assert(guest_session.permissions_loaded_from_guest_role)
@@ -106,6 +109,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
     permissions = serialize_permissions('Guest', @guest_role.updated_at + 1, 'Photos=3;Money=0')
 
     guest_session = Session.new({:user_id => nil, 'permissions' => permissions})
+    guest_session.request = Harbor::Test::Request.new()
     assert_equal(3, guest_session.permissions['Photos'].mask)
     assert(guest_session.permissions_loaded)
     assert(!guest_session.permissions_loaded_from_guest_role)
@@ -114,6 +118,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
   
   def test_user_permissions_without_cache
     user_session = Session.new({:user_id => @user.id})
+    user_session.request = Harbor::Test::Request.new()
     assert_equal(nil, user_session['permissions'])
     assert_equal(15, user_session.permissions['Photos'].mask)
     assert_equal(0, user_session.permissions['Money'].mask)
@@ -122,7 +127,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
   
   def test_user_authorized_without_cache
     guest_session = Session.new({:user_id => @user.id})
-    
+    guest_session.request = Harbor::Test::Request.new()
     assert(guest_session.authorized?("Photos", "list"))
     assert(guest_session.authorized?("Photos", "show"))
     assert(guest_session.authorized?("Photos", "update"))
@@ -133,6 +138,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
     permissions = serialize_permissions('User', DateTime.now - 1, 'Photos=15;Money=0')
 
     user_session = Session.new({:user_id => @user.id, 'permissions' => permissions})
+    user_session.request = Harbor::Test::Request.new()
     assert_equal(15, user_session.permissions['Photos'].mask)
     assert(user_session.permissions_loaded)
     assert(user_session.permissions_loaded_from_user)
@@ -143,6 +149,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
     permissions = serialize_permissions('Guest', DateTime.now + 1, 'Photos=15;Money=0')
   
     user_session = Session.new({:user_id => @user.id, 'permissions' => permissions})
+    user_session.request = Harbor::Test::Request.new()
     assert_equal(15, user_session.permissions['Photos'].mask)
     assert(user_session.permissions_loaded)
     assert(user_session.permissions_loaded_from_user)
@@ -153,6 +160,7 @@ class SessionPermissionsTest < Test::Unit::TestCase
     permissions = serialize_permissions('User', @user.updated_at + 1, 'Photos=15;Money=0')
   
     user_session = Session.new({:user_id => @user.id, 'permissions' => permissions})
+    user_session.request = Harbor::Test::Request.new()
     assert_equal(15, user_session.permissions['Photos'].mask)
     assert(user_session.permissions_loaded)
     assert(!user_session.permissions_loaded_from_user)
