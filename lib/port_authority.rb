@@ -176,6 +176,14 @@ class PortAuthority < Harbor::Application
     @@redirect_failed_logins_to_referrer
   end
 
+  def self.account_creation_message
+    @@account_creation_message ||= self.use_approvals? ? "An activation email has been sent to %s, your account will not be up for approval until the directions in that email are followed." : "An activation email has been sent to %s. Follow the directions there to activate your account."
+  end
+  
+  def self.account_creation_message=(value)
+    @@account_creation_message = value
+  end
+
   @@activation_email_subject = "Please verify your email address"
   def self.activation_email_subject=(value)
     @@activation_email_subject = value

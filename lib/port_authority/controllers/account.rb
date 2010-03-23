@@ -102,12 +102,7 @@ class PortAuthority::Account
       mailer.text = Harbor::View.new("mailers/signup_activation.txt.erb", :user => user)
   
       mail_server.deliver(mailer)
-
-      if PortAuthority::use_approvals?
-        message = "An activation email has been sent to #{user.email}, your account will not be up for approval until the directions in that email are followed."
-      else
-        message = "An activation email has been sent to #{user.email}. Follow the directions there to activate your account."
-      end
+      message = PortAuthority::account_creation_message % user.email
   
       response.message("success", message)
       response.redirect!("/")
