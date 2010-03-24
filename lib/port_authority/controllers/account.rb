@@ -102,12 +102,7 @@ class PortAuthority::Account
       mailer.text = Harbor::View.new("mailers/signup_activation.txt.erb", :user => user)
   
       mail_server.deliver(mailer)
-
-      if PortAuthority::use_approvals?
-        message = "An activation email has been sent to #{user.email}, your account will not be up for approval until the directions in that email are followed."
-      else
-        message = "An activation email has been sent to #{user.email}. Follow the directions there to activate your account."
-      end
+      message = PortAuthority::account_creation_message % user.email
   
       response.message("success", message)
       response.redirect!("/")
@@ -142,9 +137,9 @@ class PortAuthority::Account
 
         mail_server.deliver(mailers)
 
-        @response.message("success", "Thank you for confirming your account. You will receive an email when an admin approves your access.")
+        @response.message("success", "Your email address has been successfully verified. You will receive a response after an administrator reviews your account.")
       else
-        @response.message("success", "Your account is still pending approval. You will receive an email when an admin approves your access.")
+        @response.message("success", "Your account is still pending approval. You will receive a response after an administrator reviews your account.")
       end
 
     else

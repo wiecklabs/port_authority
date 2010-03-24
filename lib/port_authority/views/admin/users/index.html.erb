@@ -43,11 +43,11 @@
 
 	<ul class="links" id="tabnav-right">
 		<li>
-      <a id="export" href="/admin/users.vcf" class="preserve_location">Batch Export</a>
+      <a id="export" href="javascript:void(0);">Batch Export</a>
       <ul id="export_options" style="display: none">
         <li>Format:</li>
-        <li><a href="/admin/users.vcf">vCard</a></li>
-        <li><a href="/admin/users.csv">CSV</a></li>
+        <li><a href="<%= @request.path_info %>.vcf" class="preserve_location">vCard</a></li>
+        <li><a href="<%= @request.path_info %>.csv" class="preserve_location">CSV</a></li>
         <li><a href="javascript:void(0)" class="delete">x</a></li>
       </ul>
     </li>
@@ -60,7 +60,7 @@
   <form class="live_search">
     <fieldset>
       <label for="search_query">Live Search</label>
-      <input id="search_query" type="text" name="query">
+      <input id="search_query" type="search" name="query">
       <%= UI::LiveSearchBox.new(self, "users_list").to_s %>
       <img id="spinner" src="<%= UI::Asset.new("images/spinner.gif") %>" style="display: none;">
 
