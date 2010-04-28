@@ -76,12 +76,11 @@
 
     <label for="postal_code">Postal Code</label>
     <input type="text" id="postal_code" name="user[postal_code]" value="<%= @user.postal_code %>">
-		
-		<% if PortAuthority.use_approvals? %>
-			<label for="usage_statement">Usage Statement</label>
-			<textarea name="user[usage_statement]" id="usage_statement"><%= @user.usage_statement %></textarea>
-		<% end%>
+    <% if PortAuthority.use_approvals? %>
+            <label for="usage_statement">Usage Statement</label>
+            <textarea name="user[usage_statement]" id="usage_statement"><%= @user.usage_statement %></textarea>
+    <% end%>
   </fieldset>
-
+  <%= plugin("account/new", :user => @user) %>
   <input type="submit" value="Create Account">
 </form>

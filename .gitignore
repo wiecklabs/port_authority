@@ -7,6 +7,7 @@ users.db
 .DS_Store
 *.gemspec
 *.backup
+*.swp
 index
 Gems
 lib/port_authority/public/images/buttons/*
