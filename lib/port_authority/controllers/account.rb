@@ -86,7 +86,7 @@ class PortAuthority::Account
     clean_params = {}
 
     user_params.each do |k, v|
-      clean_params[k] = Sanitize.clean(v)
+      clean_params[k] = HTMLEntities.decode(Sanitize.clean(v, Sanitize::Config::RESTRICTED))
     end
 
     user = User.new(clean_params)
