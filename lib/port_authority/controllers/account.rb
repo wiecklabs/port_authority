@@ -26,7 +26,7 @@ class PortAuthority::Account
 
     clean_params = {}
     params.reject { |k,v| %w(password password_confirmation).include?(k) && v.blank? }.each do |k, v|
-      clean_params[k] = Sanitize.clean(v)
+      clean_params[k] = HTMLEntities.decode(Sanitize.clean(v, Sanitize::Config::RESTRICTED))
     end
 
     user.attributes = clean_params 
