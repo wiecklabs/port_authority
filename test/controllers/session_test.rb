@@ -14,7 +14,7 @@ class SessionControllerTest < Test::Unit::TestCase
     
     @services = Harbor::Container.new
     @services.register "request", Harbor::Test::Request
-    @services.register "response", Harbor::Test::CookieTrackingResponse
+    @services.register "response", Harbor::Test::Response
     @services.register "mailer", Harbor::Test::Mailer
     @services.register "session", {}
     @services.register PortAuthority::Session, PortAuthority::Session
@@ -29,7 +29,7 @@ class SessionControllerTest < Test::Unit::TestCase
   end
 
   def test_successful_login_with_remember_me_sets_auth_key
-    @session_controller.request.cookies[PortAuthority.auth_key_cookie_name] = WRONG_AUTHKEY
+    @session_controller.request.cookies[PortAuthority.auth_key_cookie_name] = SOME_RANDOM_AUTHKEY
     @session_controller.create(USER_EMAIL, USER_PASSWORD, true)
 
     assert_cookie_set(@session_controller.response, PortAuthority.auth_key_cookie_name, @user.auth_key)
