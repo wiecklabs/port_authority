@@ -419,6 +419,15 @@ class PortAuthority < Harbor::Application
   def self.allow_signup=(value)
     @@allow_signup = value
   end
+  
+  @@auth_key_cookie_name = "harbor.auth_key"
+  def self.auth_key_cookie_name
+    @@auth_key_cookie_name
+  end
+  
+  def self.auth_key_cookie_name=(value)
+    @@auth_key_cookie_name = value
+  end
 
   def self.refresh_user_permissions(role_name)
     role = Role.first(:name => role_name)

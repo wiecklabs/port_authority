@@ -11,7 +11,10 @@ class PortAuthority::Session
   def create(login, password, remember_me)
     if (status = @request.session.authenticate(login, password)).success?
       # audit "Login"
-      unless remember_me.blank?
+
+      if remember_me.blank?
+        @response.delete_cookie("harbor.auth_key")
+      else
         remember_me_cookie = {:value => @request.session.user.auth_key}
         remember_me_cookie[:expires] = Time.now + PortAuthority::remember_me_expires_in if PortAuthority::remember_me_expires_in
         @response.set_cookie("harbor.auth_key", remember_me_cookie)
