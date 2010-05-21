@@ -30,6 +30,7 @@ gem "harbor", ">= 0.18.14"
 require "harbor"
 require "harbor/mailer"
 require "harbor/logging"
+require "harbor/contrib/feature"
 
 gem "ui", ">= 0.6.1"
 require "ui"
@@ -508,6 +509,8 @@ class PortAuthority < Harbor::Application
     raise ArgumentError.new("+services+ must be a Harbor::Container") unless services.is_a?(Harbor::Container)
 
     Harbor::Router.new do
+      merge!(Features::Impersonation.routes(services)) if Features::Impersonation.enabled?
+
       using services, PortAuthority::Admin do
         get("/admin") { |admin| admin.index }
       end
@@ -668,6 +671,8 @@ class PortAuthority < Harbor::Application
     end
   end
 end
+
+require Pathname(__FILE__).dirname + "port_authority" + "features"
 
 require Pathname(__FILE__).dirname + "port_authority" + "authentication"
 require Pathname(__FILE__).dirname + "port_authority" + "authorization"
