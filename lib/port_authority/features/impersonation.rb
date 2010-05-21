@@ -11,7 +11,7 @@ class PortAuthority
         if enabled = super()
           PermissionSet::permissions.merge!(permissions)
           require "port_authority/controllers/impersonation"
-          
+
           builder ? builder.use(ImpersonationUI) : warn("PortAuthority::Features::Impersonation UI not enabled.")
         end
 
@@ -36,9 +36,9 @@ class PortAuthority
 
       def call(env)
         status, headers, body = @app.call(env)
-        return [status, headers, body] unless headers["Set-Cookie"] =~ /harbor.impersonation.session/
+        return [status, headers, body] unless env["rack.request.cookie_hash"]["harbor.original.session"]
         return [status, headers, body] unless (headers["Content-Type"] =~ /html/) && body.is_a?(String)
-
+        
         impersonation_ui = Harbor::View.new("features/impersonation/ui")
 
         body.gsub!("</body>", impersonation_ui.to_s + "</body>")
@@ -48,5 +48,15 @@ class PortAuthority
       end
     end
 
+  end
+end
+
+class Harbor::Session
+  def impersonating?
+    @impersonating ||= self[:impersonating]
+  end
+
+  def return_to
+    @return_to ||= self[:return_to]
   end
 end

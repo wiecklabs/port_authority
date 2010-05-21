@@ -8,26 +8,26 @@ class PortAuthority::Impersonation
     user = User.get(user_id)
     response.abort!(404) unless user
 
-    Harbor::Session.options[:original_key] = Harbor::Session.options[:key]
-    Harbor::Session.options[:key] = 'harbor.impersonation.session'
+    response.set_cookie('harbor.original.session', request.session.save)
+    request.cookies.clear
 
     request.unload_session
     request.session[:user_id] = user.id
+    request.session[:impersonating] = true
+    request.session[:return_to] = request.referrer
     
     response.redirect "/"
   end
 
   def deactivate
-    response.abort!(404) unless Harbor::Session.options[:key] =~ /harbor.impersonation.session/
-
-    request.session.abandon!
-    response.delete_cookie('harbor.impersonation.session')
-
-    Harbor::Session.options[:key] = Harbor::Session.options[:original_key]
+    response.abort!(404) unless request.session.impersonating?
+    return_to = request.session.return_to
 
     request.unload_session
+    response.set_cookie('harbor.session', request.session('harbor.original.session').save)
+    response.delete_cookie('harbor.original.session')
     
-    response.redirect "/"
+    response.redirect return_to.blank? ? "/" : return_to
   end
 
 end
