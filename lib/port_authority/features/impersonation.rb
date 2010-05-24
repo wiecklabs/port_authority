@@ -41,7 +41,7 @@ class PortAuthority
 
       def call(env)
         status, headers, body = @app.call(env)
-        return [status, headers, body] unless env["rack.request.cookie_hash"]["harbor.original.session"]
+        return [status, headers, body] unless env && env["rack.request.cookie_hash"] && env["rack.request.cookie_hash"]["harbor.original.session"]
         return [status, headers, body] unless (headers["Content-Type"] =~ /html/) && body.is_a?(String)
         
         impersonation_ui = Harbor::View.new("features/impersonation/ui")

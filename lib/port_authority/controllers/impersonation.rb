@@ -31,3 +31,14 @@ class PortAuthority::Impersonation
   end
 
 end
+
+class PortAuthority::Session
+  def delete
+    response.redirect! "/impersonation/deactivate" if request.session.impersonating?
+
+    # audit "Logout"
+    request.session.abandon!
+    response.delete_cookie('harbor.auth_key')
+    response.redirect "/session"
+  end
+end
