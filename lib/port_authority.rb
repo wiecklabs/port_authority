@@ -509,8 +509,6 @@ class PortAuthority < Harbor::Application
     raise ArgumentError.new("+services+ must be a Harbor::Container") unless services.is_a?(Harbor::Container)
 
     Harbor::Router.new do
-      merge!(Features::Impersonation.routes(services)) if Features::Impersonation.enabled?
-
       using services, PortAuthority::Admin do
         get("/admin") { |admin| admin.index }
       end
@@ -662,6 +660,8 @@ class PortAuthority < Harbor::Application
       using services, PortAuthority::Admin do
         get("/") { |admin| admin.index }
       end
+      
+      merge!(Features::Impersonation.routes(services)) if Features::Impersonation.enabled?
     end
   end
 

@@ -1,5 +1,7 @@
 class PortAuthority::Session
 
+  include Harbor::Events
+
   attr_accessor :request, :response, :mailer, :logger
 
   def index(message)
@@ -35,6 +37,8 @@ class PortAuthority::Session
   end
 
   def delete
+    raise_event(:user_logging_out, :request => request, :response => response)
+
     # audit "Logout"
     @request.session.abandon!
     @response.delete_cookie('harbor.auth_key')
