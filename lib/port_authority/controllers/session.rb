@@ -50,23 +50,3 @@ class PortAuthority::Session
     end
   end
 end
-
-module Harbor
-  class Response
-    def delete_cookie(key, value={})
-      unless Array === self["Set-Cookie"]
-        self["Set-Cookie"] = [self["Set-Cookie"]].compact
-      end
-
-      self["Set-Cookie"].reject! { |cookie|
-        cookie =~ /\A#{Rack::Utils.escape(key)}=/
-      }
-
-      set_cookie(key,
-                 {:value => '', :path => nil, :domain => nil,
-                   :expires => Time.at(0) }.merge(value))
-    end
-    
-  end
-  
-end
