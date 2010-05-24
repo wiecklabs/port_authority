@@ -12,7 +12,12 @@ class PortAuthority
           PermissionSet::permissions.merge!(permissions)
           require "port_authority/controllers/impersonation"
 
-          builder ? builder.use(ImpersonationUI) : warn("PortAuthority::Features::Impersonation UI not enabled.")
+          if builder.is_a?(Rack::Builder)
+            builder.use(ImpersonationUI)
+          else
+            warn("PortAuthority::Features::Impersonation UI not enabled.")
+            return false
+          end
         end
 
         enabled
