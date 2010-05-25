@@ -57,6 +57,10 @@ class PortAuthority
 end
 
 class Harbor::Session
+  def impersonator
+    @impersonator ||= self[:impersonator_id] && User.get(self[:impersonator_id])
+  end
+
   def impersonating?
     @impersonating ||= self[:impersonating]
   end

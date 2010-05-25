@@ -5,15 +5,18 @@ class PortAuthority::Impersonation
   
   protect "Impersonation", "activate"
   def activate(user_id)
+    impersonator = request.session.user
     user = User.get(user_id)
-    response.abort!(404) unless user
+    response.abort!(404) unless impersonator && user
 
     response.set_cookie('harbor.original.session', request.session.save)
-    request.cookies.clear
 
+    request.cookies.clear
     request.unload_session
-    request.session[:user_id] = user.id
+
     request.session[:impersonating] = true
+    request.session[:impersonator_id] = impersonator.id
+    request.session[:user_id] = user.id
     request.session[:return_to] = request.referrer
     
     response.redirect "/"
@@ -24,6 +27,7 @@ class PortAuthority::Impersonation
     return_to = request.session.return_to
 
     request.unload_session
+
     response.set_cookie('harbor.session', request.session('harbor.original.session').save)
     response.delete_cookie('harbor.original.session')
     
