@@ -88,6 +88,13 @@ class PortAuthority
       @permissions ||= load_permissions
     end
 
+    ##
+    # flushes and reloads the permissions cache for use when automatically authenticating requests
+    ##
+    def flush_permissions!
+      @permissions = load_permissions
+    end
+
     def abandon!
       @user = nil
       self.destroy
