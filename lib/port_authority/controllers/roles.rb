@@ -64,6 +64,7 @@ class PortAuthority::Roles
       @response.render("admin/roles/delete", context)
     when "DELETE"
       role.permission_sets.each { |set| set.destroy }
+      RoleUser.all(:role_id => id).each { |ru| ru.destroy }
       role.destroy
       raise_event(:role_deleted, role)
       @response.redirect("/admin/roles")
