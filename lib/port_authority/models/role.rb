@@ -12,5 +12,9 @@ class Role
 
   has n, :permission_sets, :class_name => "RolePermissionSet"
   has n, :users, :through => Resource
-
+  
+  after :destroy do
+    RoleUser.all(:role_id => self.id).each { |ru| ru.destroy }
+  end
+  
 end
