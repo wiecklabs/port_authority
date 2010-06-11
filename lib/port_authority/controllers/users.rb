@@ -164,14 +164,16 @@ class PortAuthority::Users
   end
 
   protect "Users", "show"
-  def export(format, page, page_size, options, query)
+  def export(format, page, page_size, options, query = nil)
+    users = id ? [User.get(id)] : User::Search.new(nil, nil, request[:options] || {}, request[:query] || {}).users
+
     if role_id_option = options.delete(:role_id)
       options[User.roles.role_id] = role_id_option
     end
     
     total_count = User.count # since there's no way to NOT paginate with User::Search
     users = User::Search.new(page, total_count, options, query).users
-    filename = "user-export"
+    filename = id ? users.first.to_s.gsub(/[^\w-]/, "_") : "user-export"
     case format
     when "vcf" then response.content_type = "text/x-vcard"
     when "csv" then response.content_type = "text/csv"

@@ -11,5 +11,5 @@
   <% end %>
   <td><%= @user.organization %></td>
   <td><%= @user.last_login.strftime "%Y-%m-%d" rescue "-" %></td>
-  <td><a href="/admin/users/<%= @user.id %>.vcf"><img src="<%= UI::Asset.new("images/vcard.png") %>"></a></td>
+  <td><a id="user_<%= @user.id %>_vcf" href="/admin/users/<%= @user.id %>.vcf"><img src="<%= UI::Asset.new("images/vcard.png") %>"></a></td>
 </tr>

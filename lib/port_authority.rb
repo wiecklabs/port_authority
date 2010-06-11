@@ -607,7 +607,7 @@ class PortAuthority < Harbor::Application
         delete("/admin/users/:id")      { |users, params| users.delete(params["id"]) }
 
         get("/admin/users.:format")      { |users, params| users.export(params["format"]) }
-        get("/admin/users/:id.:format")  { |users, params| users.export(params["format"], params["id"]) }
+        get("/admin/users/:id.:format")  { |users, params| users.export(params["format"], 1, 1, {:id => params["id"]}) }
 
         if PortAuthority::use_approvals?
           get("/admin/users/:id/approve") { |users, params| users.approve(params["id"]) }
