@@ -5,7 +5,7 @@ require (Pathname(__FILE__).dirname.parent + "lib/port_authority").expand_path
 require "harbor/test/test"
 
 ENV['ENVIRONMENT'] = "test"
-DataMapper.setup :default, "postgres://#{ENV["USER"]}@localhost/port_authority_test"
+DataMapper.setup :default, "postgres://#{ENV["USER"]}@127.0.0.1/port_authority_test"
 
 module TestHelper
   include Harbor::Test

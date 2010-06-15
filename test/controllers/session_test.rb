@@ -1,4 +1,5 @@
-require File.expand_path(File.dirname(File.dirname(__FILE__))) + "/test_helper"
+require "pathname"
+require Pathname(__FILE__).dirname.parent + "test_helper"
 
 class SessionControllerTest < Test::Unit::TestCase
   
@@ -12,11 +13,17 @@ class SessionControllerTest < Test::Unit::TestCase
     User.auto_migrate!
     @user = User.create!(:email => USER_EMAIL, :password => USER_PASSWORD, :password_confirmation => USER_PASSWORD)
     
+    logger = Logging.logger((Pathname(__FILE__).dirname.parent.parent + "log" + "app.log").to_s)
+    logger.level = ENV["LOG_LEVEL"] || :debug
+    logger.clear_appenders
+    PortAuthority::logger = logger
+    
     @services = Harbor::Container.new
+    @services.register "logger", logger
     @services.register "request", Harbor::Test::Request
     @services.register "response", Harbor::Test::Response
     @services.register "mailer", Harbor::Test::Mailer
-    @services.register "session", {}
+    @services.register "session", {}    
     @services.register PortAuthority::Session, PortAuthority::Session
     @session_controller = @services.get(PortAuthority::Session)
   end

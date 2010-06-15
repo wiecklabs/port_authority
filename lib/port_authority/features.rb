@@ -1,5 +1,6 @@
 class PortAuthority
   module Features
-    require "port_authority/features/impersonation"
   end
 end
+
+require Pathname(__FILE__).dirname + "features" + "impersonation"
