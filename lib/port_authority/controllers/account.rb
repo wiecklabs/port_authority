@@ -1,6 +1,7 @@
 class PortAuthority::Account
 
   include PortAuthority::Authorization
+  include Harbor::Events
 
   attr_accessor :request, :response, :mail_server, :logger
 
@@ -32,6 +33,7 @@ class PortAuthority::Account
     user.attributes = clean_params 
 
     if user.save
+      raise_event(:user_updated, user, request)
       mailer = Harbor::Mailer.new
 
       mailer.to = user.email
@@ -94,6 +96,8 @@ class PortAuthority::Account
     user.active = false
 
     if user.save(:register)
+      raise_event :user_created, user, request
+      raise_event :user_updated, user, request
       mailer = Harbor::Mailer.new
       mailer.to = user.email
       mailer.from = PortAuthority::no_reply_email_address

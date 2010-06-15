@@ -52,7 +52,8 @@ class PortAuthority
               response.unauthorized
               throw :halt, response.render("session/unauthorized")
             else
-              throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(request.env["REQUEST_URI"])}")
+              referrer = request.env["REQUEST_URI"].match(/download/) ? request.referrer : request.env["REQUEST_URI"]
+              throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(referrer)}")
             end
           end
         )

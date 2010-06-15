@@ -167,6 +167,16 @@ class SessionPermissionsTest < Test::Unit::TestCase
     assert_equal(0, user_session.permissions['Money'].mask)
   end
   
+  def test_user_permissions_after_permission_reload
+    permissions = serialize_permissions('Guest', @user.updated_at, 'Photos=15;Money=0')
+    user_session = Session.new({'permissions' => permissions})
+    user_session.request = Harbor::Test::Request.new()
+    user_session[:user_id] = @user.id
+    user_session.flush_permissions!
+    user_role = Role.first(:name => PortAuthority::default_user_role)
+    assert_equal user_session.permissions['Photos'].mask, user_role.permission_sets.detect{|c| c.name == 'Photos'}.mask
+  end
+  
   private
   
   def serialize_permissions(type, date_time, mask_string)
