@@ -28,7 +28,7 @@ class PortAuthority::Roles
 
     #if role.valid? && update_permissions(role, permissions, @request.params["propagate_permissions"] == "1")
     if role.valid? && update_permissions(role, permissions, true)
-      raise_event(:role_updated, role)
+      raise_event(:role_updated, :role => role)
       @response.message("success", "Role was successfully updated.")
       @response.redirect("/admin/roles")
     else
@@ -41,7 +41,7 @@ class PortAuthority::Roles
     role = Role.new(params || {})
 
     if role.save && update_permissions(role, permissions)
-      raise_event(:role_created, role)
+      raise_event(:role_created, :role => role)
       @response.redirect("/admin/roles")
     else
       @response.render("admin/roles/new", :role => role)
@@ -65,7 +65,7 @@ class PortAuthority::Roles
     when "DELETE"
       role.permission_sets.each { |set| set.destroy }
       role.destroy
-      raise_event(:role_deleted, role)
+      raise_event(:role_deleted, :role => role)
       @response.redirect("/admin/roles")
     end
   end

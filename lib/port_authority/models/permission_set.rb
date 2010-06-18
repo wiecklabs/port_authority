@@ -1,5 +1,38 @@
 module PermissionSet
+  
+  def self.included(target)
+    target.extend(ClassMethods)
+  end
+  
+  module ClassMethods
+    # Defeat the chainable nature of DM::Property accessor declarations in DM1.0
+    def overwrite_property!(property)
+      name                   = property.name.to_s
+      reader_visibility      = property.reader_visibility
+      instance_variable_name = property.instance_variable_name
 
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        #{reader_visibility}
+        def #{name}
+          return #{instance_variable_name} if defined?(#{instance_variable_name})
+          property = properties[#{name.inspect}]
+          #{instance_variable_name} = property ? persisted_state.get(property) : nil
+        end
+      RUBY
+
+      boolean_reader_name = "#{name}?"
+
+      if property.kind_of?(DataMapper::Property::Boolean) && !reserved_method?(boolean_reader_name)
+        class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          #{reader_visibility}
+          def #{boolean_reader_name}
+            #{name}
+          end
+        RUBY
+      end  
+    end
+  end
+  
   def self.permissions
     @permissions ||= {}
   end
@@ -89,8 +122,8 @@ class UserPermissionSet
   include PermissionSet
 
   property :user_id, Integer, :key => true
-  property :name, String, :key => true
-  property :mask, Integer, :default => 0
+  overwrite_property!(property(:name, String, :key => true))
+  overwrite_property!(property(:mask, Integer, :default => 0))
 
   belongs_to :user
 end
@@ -100,12 +133,14 @@ class RolePermissionSet
   include PermissionSet
 
   property :role_id, Integer, :key => true
-  property :name, String, :key => true
-  property :mask, Integer, :default => 0
+  overwrite_property!(property(:name, String, :key => true))
+  overwrite_property!(property(:mask, Integer, :default => 0))
 
   belongs_to :role
 
-  after :save do
+  after :save, :conditionally_propagate_permissions
+  
+  def conditionally_propagate_permissions
     # Propagation is disabled, or mask hasn't changed.
     return @old_mask = nil if !@propagate_permissions || @old_mask.nil? || @old_mask == self.mask
 
@@ -123,7 +158,7 @@ class RolePermissionSet
 
     users.each do |user|
 
-      role_permissions = RolePermissionSet.all(:name => self.name, :role_id.in => user.roles.map { |r| r.id }) - [self]
+      role_permissions = RolePermissionSet.all(:name => self.name, :role_id => user.roles.map { |r| r.id }) - [self]
 
       # Calculate a user's total mask inherited from it's roles
       total_role_mask = role_permissions.inject(0) { |mask, set| mask | set.mask } | @old_mask

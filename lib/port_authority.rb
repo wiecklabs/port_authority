@@ -26,7 +26,7 @@ require "fastercsv"
 gem "json"
 require "json"
 
-gem "harbor", ">= 0.18.14"
+gem "harbor", ">= 0.18.30"
 require "harbor"
 require "harbor/mailer"
 require "harbor/logging"
@@ -35,22 +35,22 @@ require "harbor/contrib/feature"
 gem "ui", ">= 0.6.1"
 require "ui"
 
-gem "dm-core", "= 0.9.11"
+gem "dm-core", ">= 1.0"
 require "dm-core"
 
-gem "dm-is-searchable", "= 0.9.11"
-require "dm-is-searchable"
+gem "dm-migrations", ">= 1.0"
+require "dm-migrations"
 
-gem "dm-validations", "= 0.9.11"
+gem "dm-validations", ">= 1.0"
 require "dm-validations"
 
-gem "dm-timestamps", "= 0.9.11"
+gem "dm-timestamps", ">= 1.0"
 require "dm-timestamps"
 
-gem "dm-aggregates", "= 0.9.11"
+gem "dm-aggregates", ">= 1.0"
 require "dm-aggregates"
 
-gem "dm-types", "= 0.9.11"
+gem "dm-types", ">= 1.0"
 require "dm-types"
 
 gem "tmail"
@@ -742,3 +742,5 @@ module Harbor
     end
   end
 end
+
+DataMapper.finalize

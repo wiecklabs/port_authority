@@ -65,9 +65,9 @@ class PortAuthority::Users
 
       User.update_roles(user, roles)
 
-      raise_event(:user_updated, user, request)
+      raise_event(:user_updated, :user => user, :request => request)
 
-      raise_event(:user_roles_changed, user, request)
+      raise_event(:user_roles_changed, :user => user, :request => request)
 
       if PortAuthority::allow_user_specific_permissions?
         update_permissions(user, request.params["permissions"])
@@ -82,7 +82,7 @@ class PortAuthority::Users
         user.roles << role
       end
 
-      raise_event(:user_save_failed, user, request)
+      raise_event(:user_save_failed, :user => user, :request => request)
 
       response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
       response.render "admin/users/edit", :user => user
@@ -121,7 +121,8 @@ class PortAuthority::Users
     user.awaiting_approval = false if PortAuthority::use_approvals?
     user.active = true
     
-    raise_event(:user_will_save, request, response, user, override, options)
+    # FIXME: This event needs to be better defined.
+    raise_event(:user_will_save, :user => user, :request => request, :response => response, :override => override, :options => options)
 
     if user.valid? || (override && request.session.authorized?("Users", "override"))
       user.save!
@@ -146,7 +147,7 @@ class PortAuthority::Users
 
       user.reload
 
-      raise_event(:user_created, user, request, response, options)
+      raise_event(:user_created, :user => user, :request => request)
       response.message("success", "User successfully created.")
       response.redirect("/admin/users/#{user.id}/edit")
     else
@@ -157,7 +158,7 @@ class PortAuthority::Users
       end
 
       response.errors << UI::ErrorMessages::DataMapperErrors.new(user)
-      raise_event(:user_save_failed, user, request, response, options)
+      raise_event(:user_save_failed, :user => user, :request => request)
       response.render "admin/users/new", :user => user, :options => options if response.size == 0
     end
 
@@ -165,7 +166,7 @@ class PortAuthority::Users
 
   protect "Users", "show"
   def export(format, page, page_size, options, query = nil)
-    users = id ? [User.get(id)] : User::Search.new(nil, nil, request[:options] || {}, request[:query] || {}).users
+    users = User::Search.new(nil, nil, request[:options] || {}, request[:query] || {}).users
 
     if role_id_option = options.delete(:role_id)
       options[User.roles.role_id] = role_id_option
@@ -173,7 +174,7 @@ class PortAuthority::Users
     
     total_count = User.count # since there's no way to NOT paginate with User::Search
     users = User::Search.new(page, total_count, options, query).users
-    filename = id ? users.first.to_s.gsub(/[^\w-]/, "_") : "user-export"
+    filename = "user-export"
     case format
     when "vcf" then response.content_type = "text/x-vcard"
     when "csv" then response.content_type = "text/csv"
@@ -223,7 +224,7 @@ class PortAuthority::Users
         #   user.destroy # => user.deleted_at = Time.now; user.save
         #
         user.save!
-        raise_event(:user_deleted, user, request)
+        raise_event(:user_deleted, :user => user, :request => request)
       end
       response.message("success", "User successfully deleted.")
       response.redirect("/admin/users")
@@ -267,7 +268,7 @@ class PortAuthority::Users
 
         mail_server.deliver(mailer)
 
-        raise_event(:user_created, user, request)
+        raise_event(:user_created, :user => user, :request => request)
       else
         response.message("error", "Account could not be updated!")
       end
@@ -278,7 +279,7 @@ class PortAuthority::Users
     def deny(id)
       user = User.get(id)
       user.deny!
-      raise_event(:user_denied, user, request)
+      raise_event(:user_denied, :user => user, :request => request)
       response.message("error", "Account Denied for #{user.email}")
       response.redirect("/admin/users/awaiting")
     end

@@ -38,7 +38,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "dm-core", "= 0.9.11"
   s.add_dependency "dm-is-searchable", "= 0.9.11"
   s.add_dependency "dm-validations", "= 0.9.11"
-  s.add_dependency "dm-timestamps", "= 0.9.11"
+  s.add_dependency "dm-timestamps", ">= 1.0"
   s.add_dependency "dm-aggregates", "= 0.9.11"
   s.add_dependency "dm-types", "= 0.9.11"
   s.add_dependency "mail_builder"

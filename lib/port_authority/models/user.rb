@@ -1,6 +1,6 @@
 class User
   include DataMapper::Resource
-
+  
   def self.is_searchable!
     is :searchable
   end
@@ -19,17 +19,17 @@ class User
 
   property :id, Serial
   property :first_name, String, :length => 50
-  validates_length :first_name, :max => 50, :when => [ :register, :default ]
+  validates_length_of :first_name, :max => 50, :when => [ :register, :default ]
   property :last_name, String, :length => 50
-  validates_length :last_name, :max => 50, :when => [ :register, :default ]
+  validates_length_of :last_name, :max => 50, :when => [ :register, :default ]
   property :organization, String, :length => 80
-  validates_length :organization, :max => 80, :when => [ :register, :default ]
+  validates_length_of :organization, :max => 80, :when => [ :register, :default ]
 
   property :email, String, :length => 100
-  validates_length :email, :max => 100, :when => [ :register, :default ]
+  validates_length_of :email, :max => 100, :when => [ :register, :default ]
   
   property :title, String, :length => 255
-  validates_length :title, :max => 255, :when => [ :register, :default ]
+  validates_length_of :title, :max => 255, :when => [ :register, :default ]
 
   def self.use_crypted_passwords!
     # validators.contexts[:default].reject! {|v| v.field_name == :password }
@@ -53,25 +53,25 @@ class User
   property :active, Boolean, :default => true
 
   property :address, String, :length => 100
-  validates_length :address, :max => 100, :when => [ :register, :default ]
+  validates_length_of :address, :max => 100, :when => [ :register, :default ]
   property :address2, String, :length => 100
-  validates_length :address2, :max => 100, :when => [ :register, :default ]
+  validates_length_of :address2, :max => 100, :when => [ :register, :default ]
   property :city, String, :length => 100
-  validates_length :city, :max => 100, :when => [ :register, :default ]
+  validates_length_of :city, :max => 100, :when => [ :register, :default ]
   property :state, String, :length => 50
-  validates_length :state, :max => 50, :when => [ :register, :default ]
+  validates_length_of :state, :max => 50, :when => [ :register, :default ]
   property :postal_code, String, :length => 20
-  validates_length :postal_code, :max => 20, :when => [ :register, :default ]
+  validates_length_of :postal_code, :max => 20, :when => [ :register, :default ]
   property :country, String, :length => 100
-  validates_length :country, :max => 100, :when => [ :register, :default ]
+  validates_length_of :country, :max => 100, :when => [ :register, :default ]
   property :office_phone, String, :length => 30
-  validates_length :office_phone, :max => 30, :when => [ :register, :default ]
+  validates_length_of :office_phone, :max => 30, :when => [ :register, :default ]
   property :mobile_phone, String, :length => 20
-  validates_length :mobile_phone, :max => 20, :when => [ :register, :default ]
+  validates_length_of :mobile_phone, :max => 20, :when => [ :register, :default ]
   property :fax, String, :length => 20
-  validates_length :fax, :max => 20, :when => [ :register, :default ]
+  validates_length_of :fax, :max => 20, :when => [ :register, :default ]
   property :www, String, :length => 200
-  validates_length :www, :within => 0..200, :when => [ :register, :default ]
+  validates_length_of :www, :within => 0..200, :when => [ :register, :default ]
   property :graphic_content_visible_by_default, Boolean, :default => false
   property :prefers_attachments, Boolean, :default => false
 
@@ -88,7 +88,7 @@ class User
 
   has n, :roles, :through => Resource
   
-  has n, :permission_sets, :class_name => "UserPermissionSet"
+  has n, :permission_sets, :model => "UserPermissionSet"
 
   def self.use_lockouts!
     property :failed_logins, Integer, :default => 0
@@ -145,8 +145,8 @@ class User
 
   def self.use_logins!
     property :login, String
-    validates_length :login, :within => 3..100, :when => [ :register, :default ]
-    validates_is_unique :login, :when => [ :register, :default ]
+    validates_length_of :login, :within => 3..100, :when => [ :register, :default ]
+    validates_uniqueness_of :login, :when => [ :register, :default ]
     
     self.full_text_search_fields << :login
 
@@ -155,8 +155,8 @@ class User
     end
   end
 
-  validates_length :email, :max => 100, :when => [ :register, :default ]
-  validates_is_unique :email, :when => [ :register, :default ], :unless => Proc.new { |user| PortAuthority::use_logins? }
+  validates_length_of :email, :max => 100, :when => [ :register, :default ]
+  validates_uniqueness_of :email, :when => [ :register, :default ], :unless => Proc.new { |user| PortAuthority::use_logins? }
   validates_with_block :email, :when => [ :register, :default ] do
     begin
       TMail::Address.parse(self.email) if self.email
@@ -166,11 +166,11 @@ class User
     end
   end
 
-  validates_present :first_name, :last_name, :when => [ :register, :default ]
+  validates_presence_of :first_name, :last_name, :when => [ :register, :default ]
 
   # Password Validations
-  validates_present :password, :when => [ :register, :default ], :if => :password_needs_validation_and_dissallow_blank_passwords?
-  validates_is_confirmed :password, :when => [ :register, :default ], :if => :password_needs_validation?, :message => "Passwords do not match"
+  validates_presence_of :password, :when => [ :register, :default ], :if => :password_needs_validation_and_dissallow_blank_passwords?
+  validates_confirmation_of :password, :when => [ :register, :default ], :if => :password_needs_validation?, :message => "Passwords do not match"
 
   repository :search do
     property :content, String, :field => "*", :auto_validation => false
@@ -188,7 +188,7 @@ class User
   end
 
   def role_mask_for(name)
-    RolePermissionSet.all(:name => name, :role_id.in => self.roles.map { |r| r.id }).inject(0) { |mask, set| mask | set.mask }
+    RolePermissionSet.all(:name => name, :role_id => self.roles.map { |r| r.id }).inject(0) { |mask, set| mask | set.mask }
   rescue
     0
   end
@@ -241,7 +241,7 @@ class User
     user_role_ids = self.roles.map { |role| role.id }
 
     PermissionSet::permissions.keys.each do |permission_name|
-      role_permissions = RolePermissionSet.all(:name => permission_name, :role_id.in => user_role_ids)
+      role_permissions = RolePermissionSet.all(:name => permission_name, :role_id => user_role_ids)
       role_mask = role_permissions.inject(0) { |mask, set| mask | set.mask }
 
       user_permission_set = UserPermissionSet.first_or_create(:name => permission_name, :user_id => self.id)
@@ -281,7 +281,7 @@ class User
     if PortAuthority::use_crypted_passwords?
       !password.nil?
     else
-      new_record? || attribute_dirty?(:password)
+      new? || attribute_dirty?(:password)
     end
   end
   

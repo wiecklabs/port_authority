@@ -10,7 +10,7 @@ class Role
   property :description, Text
   property :updated_at, DateTime
 
-  has n, :permission_sets, :class_name => "RolePermissionSet"
+  has n, :permission_sets, :model => "RolePermissionSet"
   has n, :users, :through => Resource
   
   after :destroy do
