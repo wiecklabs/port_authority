@@ -169,7 +169,7 @@ class PortAuthority::Users
     users = User::Search.new(nil, nil, request[:options] || {}, request[:query] || {}).users
 
     if role_id_option = options.delete(:role_id)
-      options[User.roles.role_id] = role_id_option
+      options[User.roles.id] = role_id_option
     end
     
     total_count = User.count # since there's no way to NOT paginate with User::Search
@@ -289,7 +289,7 @@ class PortAuthority::Users
 
   def search(page, page_size, options, query)
     if role_id_option = options.delete(:role_id)
-      options[User.roles.role_id] = role_id_option
+      options[User.roles.id] = role_id_option
     end
 
     search = User::Search.new(page, page_size, options, query)

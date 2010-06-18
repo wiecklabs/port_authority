@@ -115,7 +115,7 @@
     <% end %>
   </div>
 
-  <% if @user.new_record? %>
+  <% if @user.new? %>
   <p class="note"><a href="#" id="generate_password">Generate a random password.</a></p>
   <% end %>
 
@@ -176,7 +176,7 @@
   </div>
   <% end %>
 
-  <% unless @user.new_record? -%>
+  <% unless @user.new? -%>
   <div>
     <label>Last Login</label>
     <strong style="color: #999; float: left;"><%= @user.last_login.strftime "%Y-%m-%d" rescue "-" %></strong>

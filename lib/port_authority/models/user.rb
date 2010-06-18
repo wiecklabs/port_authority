@@ -271,7 +271,7 @@ class User
 
   def encrypt_password
     return if PortAuthority::use_crypted_passwords? != true || password.blank?
-    self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{self.send(PortAuthority::login_type)}--") if new_record?
+    self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{self.send(PortAuthority::login_type)}--") if new?
     self.crypted_password = encrypt(password)
   end
 

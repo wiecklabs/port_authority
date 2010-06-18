@@ -35,7 +35,7 @@
 <% end %>
 
 <form action="/admin/users/<%= @user.id %>" method="post">
-	<% unless @user.new_record? %>
+	<% unless @user.new? %>
   	<input type="hidden" name="_method" value="put">
 	<% end %>
 
@@ -83,7 +83,7 @@
     	<label for="override" style="color: #f00; margin-left: 10px; display: inline; float: none;">Override Validation Errors?</label><input type="checkbox" value="true" name="override" id="override">
     <% end %>
 
-		<% if PortAuthority::Features::Impersonation.enabled? && !@user.new_record? %>
+		<% if PortAuthority::Features::Impersonation.enabled? && !@user.new? %>
 			<a href="/impersonation/activate?id=<%= @user.id %>" class="impersonate">Impersonate</a>
 		<% end %>
 
@@ -93,7 +93,7 @@
       <% unless @user.denied_at %><a class="delete" href="/admin/users/<%= @user.id %>/deny">deny</a><% end %>
     <% else %>
       <a href="/admin/users" class="cancel">Cancel</a>
-      <% unless @user.new_record? %>
+      <% unless @user.new? %>
         <a class="modal_link delete" href="/admin/users/<%= @user.id %>/delete"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
       <% end %>
     <% end %>
