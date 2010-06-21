@@ -190,13 +190,14 @@ class PortAuthority::Users
       end
     when "csv"
       properties = User.properties.map { |p| p.name } - User::CSV_IGNORE
-      csv_string = FasterCSV.generate do |csv|
+      file_path = Harbor::FileStore['tmp'].root + "temp_user_export_#{DateTime.now.to_s}.csv"
+      FasterCSV.open(file_path,"w") do |csv|
         csv << properties
         users.each do |user|
           csv << User.properties.collect { |p| p.get(user) || "" if properties.include?(p.name) }.compact
         end
       end
-      response.puts csv_string
+      response.send_file(filename + ".csv", file_path)
     end
   end
 
