@@ -11,9 +11,9 @@ class PortAuthority::Session
   end
 
   def create(login, password, remember_me)
+    raise_event(:user_logging_in, :request => request, :response => response)
+
     if (status = @request.session.authenticate(login, password)).success?
-      raise_event(:user_logging_in, :request => request, :response => response)
-      # audit "Login"
 
       if remember_me.blank?
         @response.delete_cookie("harbor.auth_key")
@@ -23,9 +23,9 @@ class PortAuthority::Session
         @response.set_cookie("harbor.auth_key", remember_me_cookie)
       end
 
+      raise_event(:user_logged_in, :user => request.session.user, :request => request, :response => response)
       @response.redirect(referrer)
     else
-      # audit "FailedLogin", [login, password]
       @users = User.all(:active => true) if @request.environment == "development"
       @request.params["status"] = status
 
@@ -38,11 +38,12 @@ class PortAuthority::Session
   end
 
   def delete
-    raise_event(:user_logging_out, :request => request, :response => response)
+    raise_event(:user_logging_out, :user => request.session.user, :request => request, :response => response)
 
-    # audit "Logout"
     @request.session.abandon!
     @response.delete_cookie('harbor.auth_key')
+    
+    raise_event(:user_logged_out, :user => request.session.user, :request => request, :response => response)
     @response.redirect "/session"
   end
 
