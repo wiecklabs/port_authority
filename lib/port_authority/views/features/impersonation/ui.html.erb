@@ -1,3 +1,5 @@
+{{jquery}}
+
 <style type="text/css" media="screen">
   body:last-child { margin-bottom: 60px; }
 
@@ -45,6 +47,17 @@
 		opacity:0.8;
   }
 </style>
+
+<script type="text/javascript" charset="utf-8">
+  var _body = document.body;
+  var _html = $("html").get(0);
+  $(window).keyup(function(event) {
+    // 'i' toggles impersonation ui
+    if ( event.which == 73 && (event.target == _body || event.target == _html) ) {
+      $("#impersonation_ui").slideToggle();
+    }
+  });
+</script>
 
 <div id="impersonation_ui">
   <ul>

@@ -44,9 +44,15 @@ class PortAuthority
         return [status, headers, body] unless env && env["rack.request.cookie_hash"] && env["rack.request.cookie_hash"]["harbor.original.session"]
         return [status, headers, body] unless (headers["Content-Type"] =~ /html/) && body.is_a?(String)
         
-        impersonation_ui = Harbor::View.new("features/impersonation/ui")
+        impersonation_ui = Harbor::View.new("features/impersonation/ui").to_s
 
-        body.gsub!("</body>", impersonation_ui.to_s + "</body>")
+        if body["jquery"]
+          impersonation_ui.gsub!("{{jquery}}", "")
+        else
+          impersonation_ui.gsub!("{{jquery}}", '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>')
+        end
+
+        body.gsub!("</body>", impersonation_ui + "</body>")
         headers["Content-Length"] = body.length.to_s
 
         [status, headers, body]

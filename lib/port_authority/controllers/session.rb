@@ -12,6 +12,7 @@ class PortAuthority::Session
 
   def create(login, password, remember_me)
     if (status = @request.session.authenticate(login, password)).success?
+      raise_event(:user_logging_in, :request => request, :response => response)
       # audit "Login"
 
       if remember_me.blank?
