@@ -32,5 +32,12 @@ class RoleTest < Test::Unit::TestCase
     
     assert_equal(nil, RoleUser.first(:user_id => @user.id, :role_id => role_id))
   end
+
+  def test_that_roles_must_have_at_least_a_name
+    role = Role.new
+    assert !role.valid?
+    role.name = 'something'
+    assert role.valid?
+  end
   
 end
