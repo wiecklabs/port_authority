@@ -1,4 +1,9 @@
 <form action="/admin/roles" method="post">
+<% if @role.dirty? && !@role.valid? %>
+<ul class="message error">
+  <%= @role.errors.full_messages.map { |message| "<li>#{message}.</li>\n" } %>
+</ul>
+<% end %>
   <div class="column">
     <%= render "admin/roles/_form" %>
 

@@ -34,12 +34,17 @@
 <% end %>
 
 <form action="/admin/roles/<%= @role.id %>" method="post">
+<% if @role.dirty? && !@role.valid? %>
+<ul class="message error">
+  <%= @role.errors.full_messages.map { |message| "<li>#{message}.</li>\n" } %>
+</ul>
+<% end %>
   <input type="hidden" name="_method" value="put">
   <ul class="tabs">
     <li><a href="#role">Role</a></li>
     <li><a href="#permissions">Permissions</a></li>
     <% plugin("role/edit/tabs", :role => @role).each do |tab| %>
-    	<li><%= tab.link %></li>
+      <li><%= tab.link %></li>
     <% end %>
   </ul>
 
