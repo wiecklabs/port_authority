@@ -675,6 +675,8 @@ require Pathname(__FILE__).dirname + "port_authority" + "models" + "user" + "sea
 require Pathname(__FILE__).dirname + "port_authority" + "models" + "role"
 
 require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'user_denied_event'
+require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'user_logged_out_event'
+require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'user_logging_out_event'
 require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'handlers' + 'user_denied_event_handler'
 
 UI::Asset::register("stylesheets/port_authority.css", PortAuthority::asset_path + "stylesheets/port_authority.css")
