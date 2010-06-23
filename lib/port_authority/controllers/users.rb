@@ -165,7 +165,6 @@ class PortAuthority::Users
 
   protect "Users", "show"
   def export(format, page, page_size, options, query = nil)
-    users = id ? [User.get(id)] : User::Search.new(nil, nil, request[:options] || {}, request[:query] || {}).users
 
     if role_id_option = options.delete(:role_id)
       options[User.roles.role_id] = role_id_option
@@ -173,7 +172,7 @@ class PortAuthority::Users
     
     total_count = User.count # since there's no way to NOT paginate with User::Search
     users = User::Search.new(page, total_count, options, query).users
-    filename = id ? users.first.to_s.gsub(/[^\w-]/, "_") : "user-export"
+    filename = options[:id] ? users.first.to_s.gsub(/[^\w-]/, "_") : "user-export"
     case format
     when "vcf" then response.content_type = "text/x-vcard"
     when "csv" then response.content_type = "text/csv"
@@ -191,13 +190,14 @@ class PortAuthority::Users
       end
     when "csv"
       properties = User.properties.map { |p| p.name } - User::CSV_IGNORE
-      csv_string = FasterCSV.generate do |csv|
+      file_path = Harbor::FileStore['tmp'].root + "temp_user_export_#{DateTime.now.to_s}.csv"
+      FasterCSV.open(file_path,"w") do |csv|
         csv << properties
         users.each do |user|
           csv << User.properties.collect { |p| p.get(user) || "" if properties.include?(p.name) }.compact
         end
       end
-      response.puts csv_string
+      response.send_file(filename + ".csv", file_path)
     end
   end
 
