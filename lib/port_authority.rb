@@ -336,17 +336,7 @@ class PortAuthority < Harbor::Application
   
   def self.enable_denial_emails!
     @@denial_emails_enabled = true
-    PortAuthority::Users.register_event(:user_denied) do |user, request|
-      mailer = Harbor::Mailer.new
-      mailer.to = user.email
-      mailer.from = PortAuthority::no_reply_email_address
-      mailer.subject = PortAuthority::user_denied_email_subject
-      mailer.html = Harbor::View.new("mailers/denial.html.erb", :user => user)
-      mailer.text = Harbor::View.new("mailers/denial.txt.erb", :user => user)
-
-      mail_server = $services.get("mail_server")
-      mail_server.deliver(mailer)
-    end
+    PortAuthority::Users.register_event_handler(:user_denied, PortAuthority::Events::Handlers::UserDeniedEventHandler)
   end
 
   @@guest_role = nil
@@ -683,6 +673,9 @@ require Pathname(__FILE__).dirname + "port_authority" + "models" + "permission_s
 require Pathname(__FILE__).dirname + "port_authority" + "models" + "user"
 require Pathname(__FILE__).dirname + "port_authority" + "models" + "user" + "search"
 require Pathname(__FILE__).dirname + "port_authority" + "models" + "role"
+
+require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'user_denied_event'
+require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'handlers' + 'user_denied_event_handler'
 
 UI::Asset::register("stylesheets/port_authority.css", PortAuthority::asset_path + "stylesheets/port_authority.css")
 UI::Asset.register("images/check.png", PortAuthority.asset_path + "images/check.png")
