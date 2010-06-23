@@ -17,6 +17,8 @@ Office Phone: <%= @user.office_phone %>
 Mobile Phone: <%= @user.mobile_phone %>
 Fax: <%= @user.fax %>
 
+Usage Statement: <%= @user.usage_statement %>
+
 ===================================================
 
 To approve this request, log on and visit <%= "http://#{@mailer.host}/admin/users/#{@user.id}/approve" %>

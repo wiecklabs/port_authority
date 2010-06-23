@@ -30,6 +30,7 @@ gem "harbor", ">= 0.18.14"
 require "harbor"
 require "harbor/mailer"
 require "harbor/logging"
+require "harbor/contrib/feature"
 
 gem "ui", ">= 0.6.1"
 require "ui"
@@ -335,17 +336,7 @@ class PortAuthority < Harbor::Application
   
   def self.enable_denial_emails!
     @@denial_emails_enabled = true
-    PortAuthority::Users.register_event(:user_denied) do |user, request|
-      mailer = Harbor::Mailer.new
-      mailer.to = user.email
-      mailer.from = PortAuthority::no_reply_email_address
-      mailer.subject = PortAuthority::user_denied_email_subject
-      mailer.html = Harbor::View.new("mailers/denial.html.erb", :user => user)
-      mailer.text = Harbor::View.new("mailers/denial.txt.erb", :user => user)
-
-      mail_server = $services.get("mail_server")
-      mail_server.deliver(mailer)
-    end
+    PortAuthority::Users.register_event_handler(:user_denied, PortAuthority::Events::Handlers::UserDeniedEventHandler)
   end
 
   @@guest_role = nil
@@ -418,6 +409,15 @@ class PortAuthority < Harbor::Application
   
   def self.allow_signup=(value)
     @@allow_signup = value
+  end
+  
+  @@auth_key_cookie_name = "harbor.auth_key"
+  def self.auth_key_cookie_name
+    @@auth_key_cookie_name
+  end
+  
+  def self.auth_key_cookie_name=(value)
+    @@auth_key_cookie_name = value
   end
 
   def self.refresh_user_permissions(role_name)
@@ -597,7 +597,7 @@ class PortAuthority < Harbor::Application
         delete("/admin/users/:id")      { |users, params| users.delete(params["id"]) }
 
         get("/admin/users.:format")      { |users, params| users.export(params["format"]) }
-        get("/admin/users/:id.:format")  { |users, params| users.export(params["format"], params["id"]) }
+        get("/admin/users/:id.:format")  { |users, params| users.export(params["format"], 1, 1, {:id => params["id"]}) }
 
         if PortAuthority::use_approvals?
           get("/admin/users/:id/approve") { |users, params| users.approve(params["id"]) }
@@ -650,6 +650,8 @@ class PortAuthority < Harbor::Application
       using services, PortAuthority::Admin do
         get("/") { |admin| admin.index }
       end
+      
+      merge!(Features::Impersonation.routes(services)) if Features::Impersonation.enabled?
     end
   end
 
@@ -660,6 +662,8 @@ class PortAuthority < Harbor::Application
   end
 end
 
+require Pathname(__FILE__).dirname + "port_authority" + "features"
+
 require Pathname(__FILE__).dirname + "port_authority" + "authentication"
 require Pathname(__FILE__).dirname + "port_authority" + "authorization"
 require Pathname(__FILE__).dirname + "port_authority" + "vcard"
@@ -669,6 +673,11 @@ require Pathname(__FILE__).dirname + "port_authority" + "models" + "permission_s
 require Pathname(__FILE__).dirname + "port_authority" + "models" + "user"
 require Pathname(__FILE__).dirname + "port_authority" + "models" + "user" + "search"
 require Pathname(__FILE__).dirname + "port_authority" + "models" + "role"
+
+require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'user_denied_event'
+require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'user_logged_out_event'
+require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'user_logging_out_event'
+require Pathname(__FILE__).dirname + 'port_authority' + 'events' + 'handlers' + 'user_denied_event_handler'
 
 UI::Asset::register("stylesheets/port_authority.css", PortAuthority::asset_path + "stylesheets/port_authority.css")
 UI::Asset.register("images/check.png", PortAuthority.asset_path + "images/check.png")

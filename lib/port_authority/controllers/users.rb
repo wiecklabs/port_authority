@@ -164,14 +164,15 @@ class PortAuthority::Users
   end
 
   protect "Users", "show"
-  def export(format, page, page_size, options, query)
+  def export(format, page, page_size, options, query = nil)
+
     if role_id_option = options.delete(:role_id)
       options[User.roles.role_id] = role_id_option
     end
     
     total_count = User.count # since there's no way to NOT paginate with User::Search
     users = User::Search.new(page, total_count, options, query).users
-    filename = "user-export"
+    filename = options[:id] ? users.first.to_s.gsub(/[^\w-]/, "_") : "user-export"
     case format
     when "vcf" then response.content_type = "text/x-vcard"
     when "csv" then response.content_type = "text/csv"
@@ -189,13 +190,14 @@ class PortAuthority::Users
       end
     when "csv"
       properties = User.properties.map { |p| p.name } - User::CSV_IGNORE
-      csv_string = FasterCSV.generate do |csv|
+      file_path = Harbor::FileStore['tmp'].root + "temp_user_export_#{DateTime.now.to_s}.csv"
+      FasterCSV.open(file_path,"w") do |csv|
         csv << properties
         users.each do |user|
           csv << User.properties.collect { |p| p.get(user) || "" if properties.include?(p.name) }.compact
         end
       end
-      response.puts csv_string
+      response.send_file(filename + ".csv", file_path)
     end
   end
 
@@ -276,7 +278,9 @@ class PortAuthority::Users
     def deny(id)
       user = User.get(id)
       user.deny!
-      raise_event(:user_denied, user, request)
+
+      raise_event2(:user_denied, PortAuthority::Events::UserDeniedEvent.new(user, mail_server))
+
       response.message("error", "Account Denied for #{user.email}")
       response.redirect("/admin/users/awaiting")
     end

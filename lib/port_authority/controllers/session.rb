@@ -1,5 +1,7 @@
 class PortAuthority::Session
 
+  include Harbor::Events
+
   attr_accessor :request, :response, :mailer, :logger
 
   def index(message)
@@ -9,17 +11,21 @@ class PortAuthority::Session
   end
 
   def create(login, password, remember_me)
+    raise_event(:user_logging_in, :request => request, :response => response)
+
     if (status = @request.session.authenticate(login, password)).success?
-      # audit "Login"
-      unless remember_me.blank?
+
+      if remember_me.blank?
+        @response.delete_cookie("harbor.auth_key")
+      else
         remember_me_cookie = {:value => @request.session.user.auth_key}
         remember_me_cookie[:expires] = Time.now + PortAuthority::remember_me_expires_in if PortAuthority::remember_me_expires_in
         @response.set_cookie("harbor.auth_key", remember_me_cookie)
       end
 
+      raise_event(:user_logged_in, :user => request.session.user, :request => request, :response => response)
       @response.redirect(referrer)
     else
-      # audit "FailedLogin", [login, password]
       @users = User.all(:active => true) if @request.environment == "development"
       @request.params["status"] = status
 
@@ -32,10 +38,14 @@ class PortAuthority::Session
   end
 
   def delete
-    # audit "Logout"
+    raise_event2(:user_logging_out, PortAuthority::Events::UserLoggingOutEvent.new(request.session.user, request, response))
+
     @request.session.abandon!
     @response.delete_cookie('harbor.auth_key')
-    @response.redirect "/session"
+
+    raise_event2(:user_logged_out, PortAuthority::Events::UserLoggedOutEvent.new(request.session.user, request, response))
+
+    @response.redirect("/session")
   end
 
   private
