@@ -38,12 +38,12 @@ class PortAuthority::Session
   end
 
   def delete
-    raise_event2(:user_logging_out, PortAuthority::Events::UserLoggingOutEvent.new(user, request, response))
+    raise_event2(:user_logging_out, PortAuthority::Events::UserLoggingOutEvent.new(request.session.user, request, response))
 
     @request.session.abandon!
     @response.delete_cookie('harbor.auth_key')
 
-    raise_event2(:user_logged_out, PortAuthority::Events::UserLoggedOutEvent.new(user, request, response))
+    raise_event2(:user_logged_out, PortAuthority::Events::UserLoggedOutEvent.new(request.session.user, request, response))
 
     @response.redirect("/session")
   end
