@@ -16,8 +16,8 @@ gem "sanitize"
 gem "thin"
 gem "tmail"
 
-gem "harbor", "0.18.33", :git => "git@github.com:wiecklabs/harbor.git"
-gem "ui", "0.7.42", :git => "git@github.com:wiecklabs/ui.git"
+gem "harbor", "0.18.3", :git => "git://github.com/wiecklabs/harbor.git"
+gem "ui", "0.7.42", :git => "git://github.com/wiecklabs/ui.git"
 
 group "development" do
   gem "capybara"
