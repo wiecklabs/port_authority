@@ -7,6 +7,7 @@ class Role
 
   property :id, Serial
   property :name, String
+  validates_present :name
   property :description, Text
   property :updated_at, DateTime
 

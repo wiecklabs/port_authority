@@ -32,6 +32,7 @@ class PortAuthority::Roles
       @response.message("success", "Role was successfully updated.")
       @response.redirect("/admin/roles")
     else
+      @response.errors << UI::ErrorMessages::DataMapperErrors.new(role)
       @response.render("admin/roles/edit", :role => role)
     end
   end
@@ -44,6 +45,7 @@ class PortAuthority::Roles
       raise_event(:role_created, role)
       @response.redirect("/admin/roles")
     else
+      @response.errors << UI::ErrorMessages::DataMapperErrors.new(role)
       @response.render("admin/roles/new", :role => role)
     end
   end
