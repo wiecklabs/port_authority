@@ -26,13 +26,13 @@ require "fastercsv"
 gem "json"
 require "json"
 
-gem "harbor", ">= 0.18.14"
+gem "harbor", ">= 0.18.33"
 require "harbor"
 require "harbor/mailer"
 require "harbor/logging"
 require "harbor/contrib/feature"
 
-gem "ui", ">= 0.6.1"
+gem "ui", ">= 0.7.42"
 require "ui"
 
 gem "dm-core", "= 0.9.11"
