@@ -37,5 +37,5 @@ class PortAuthority::Impersonation
 end
 
 PortAuthority::Session.register_event_handler(:user_logging_out) do |event|
-  event.response.redirect!("/impersonation/deactivate" if event.request.session.impersonating?
+  event.response.redirect!("/impersonation/deactivate") if event.request.session.impersonating?
 end

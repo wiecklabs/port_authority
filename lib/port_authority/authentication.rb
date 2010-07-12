@@ -17,11 +17,13 @@ class PortAuthority
     end
 
     def user
-      # authentication via remember-me functionality
-      if auth_key = @request.cookies['harbor.auth_key']
-        @user ||= User.first(:auth_key => auth_key)
-      else
-        @user ||= self[:user_id] && User.get(self[:user_id])
+      @user ||= begin
+        if self[:user_id]
+          @user = User.get(self[:user_id])
+        elsif auth_key = @request.cookies['harbor.auth_key']
+          # authentication via remember-me functionality
+          @user = User.first(:auth_key => auth_key)
+        end
       end
     end
 
