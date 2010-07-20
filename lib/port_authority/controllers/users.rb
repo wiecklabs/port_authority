@@ -35,12 +35,16 @@ class PortAuthority::Users
 
   protect "Users", "update"
   def edit(id)
-    response.render("admin/users/edit", :user => User.get(id))
+    user = User.get(id)
+    response.abort!(404) unless user
+    
+    response.render("admin/users/edit", :user => user)
   end
 
   protect "Users", "update"
   def update(id, params, override = false)
     user = User.get(id)
+    response.abort!(404) unless user
 
     if PortAuthority::allow_multiple_roles?
       roles = request.params["roles"]
@@ -204,7 +208,8 @@ class PortAuthority::Users
   protect "Users", "destroy"
   def delete(id)
     user = User.get(id)
-
+    response.abort!(404) unless user
+    
     case request.request_method
     when "GET"
       context = { :user => user }
@@ -233,7 +238,8 @@ class PortAuthority::Users
   protect "Users", "update"
   def reset_password(id)
     user = User.get(id)
-
+    response.abort!(404) unless user
+    
     #assigns a human-readable password
     user.password = User.random_password
     user.save!
@@ -254,6 +260,8 @@ class PortAuthority::Users
     protect "Users", "update"
     def approve(id)
       user = User.get(id)
+      response.abort!(404) unless user
+      
       if user.approve!
         user.reset_permission_set_from_roles # updating permissions
         response.message("success", "Account was successfully approved.")
@@ -277,6 +285,8 @@ class PortAuthority::Users
     protect "Users", "update"
     def deny(id)
       user = User.get(id)
+      response.abort!(404) unless user
+      
       user.deny!
 
       raise_event2(:user_denied, PortAuthority::Events::UserDeniedEvent.new(user, mail_server))
