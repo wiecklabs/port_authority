@@ -157,7 +157,7 @@ class PortAuthority::Account
     if email_address.blank?
       @response.render "account/forgot_password", :back => referrer
     else
-      user = User.first(:conditions => ["lower(email) = ?", email_address])
+      user = User.first(:conditions => ["lower(email) = ?", email_address.downcase])
 
       # If the user doesn't exist, redirect to /account/password
       if user.nil?
