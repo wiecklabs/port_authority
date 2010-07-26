@@ -153,6 +153,10 @@ class User
     def self.login_is_available?(login)
       (3..100).include?(login.size) && (0 == User.count(:login => login))
     end
+
+    def login=(login)
+      attribute_set(:login, login.strip)
+    end
   end
 
   validates_length :email, :max => 100, :when => [ :register, :default ]
@@ -184,7 +188,7 @@ class User
   alias :to_s :name
   
   def email=(email)
-    attribute_set(:email, email.downcase)
+    attribute_set(:email, email.downcase.strip)
   end
 
   def role_mask_for(name)
