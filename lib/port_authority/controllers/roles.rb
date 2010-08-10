@@ -27,7 +27,7 @@ class PortAuthority::Roles
     role.update_attributes(params)
 
     #if role.valid? && update_permissions(role, permissions, @request.params["propagate_permissions"] == "1")
-    if role.valid? && update_permissions(role, permissions, true)
+    if role.valid? && update_permissions(role, permissions, false)
       raise_event(:role_updated, role)
       @response.message("success", "Role was successfully updated.")
       @response.redirect("/admin/roles")

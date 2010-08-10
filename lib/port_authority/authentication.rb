@@ -111,7 +111,8 @@ class PortAuthority
     ##
     def load_permissions
       permission_data = self['permissions'].to_s
-
+      
+      # Guest = Unauthenticated, User = Authenticated -- maybe...
       if permission_data =~ /(Guest|User)\[([0-9\-:T]{25})\]\:(.*)/
         permission_cache_source = $1
         permission_cache_last_updated = DateTime.parse($2)
@@ -154,7 +155,8 @@ class PortAuthority
     # Returns a self-generating hash that will always return a SessionPermissionSet
     ##
     def load_permissions_from_user
-      user_permission_sets = user.permission_sets.entries
+      # user_permission_sets = user.permission_sets.entries
+      user_permission_sets = user.roles.first ? user.roles.first.permission_sets.entries : []
 
       Hash.new do |h, k|
         h[k] = user_permission_sets.detect { |set| set.name == k } || SessionPermissionSet.new(k, 0)
