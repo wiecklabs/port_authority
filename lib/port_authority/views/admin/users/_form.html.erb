@@ -109,9 +109,9 @@
   <div>
     <label class="required" for="password">Password <em>*</em></label>
     <% if PortAuthority::use_crypted_passwords? %>
-    <input type="password" name="user[password]" id="password">
+      <input type="password" name="user[password]" id="password">
     <% else %>
-    <input type="text" name="user[password]" value="<%= @user.password %>" id="password">
+      <input type="text" name="user[password]" value="<%= @user.password %>" id="password">
     <% end %>
   </div>
 
@@ -132,7 +132,11 @@
 
   <div>
     <label for="password_confirmation">Confirm Password</label>
-    <input type="password" name="user[password_confirmation]" id="password_confirmation">
+    <% if PortAuthority::use_crypted_passwords? %>
+      <input type="password" name="user[password_confirmation]" id="password_confirmation">
+    <% else %>
+      <input type="text" name="user[password_confirmation]" id="password_confirmation">
+    <% end %>
   </div>
 
   <% if PortAuthority::allow_blank_passwords? && authorized?("Users", "override") %>

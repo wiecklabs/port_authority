@@ -43,6 +43,7 @@ class PortAuthority::Roles
 
     if role.save && update_permissions(role, permissions)
       raise_event(:role_created, role)
+      @response.message("success", "Role was successfully created.")
       @response.redirect("/admin/roles")
     else
       @response.errors << UI::ErrorMessages::DataMapperErrors.new(role)
@@ -68,6 +69,7 @@ class PortAuthority::Roles
       role.permission_sets.each { |set| set.destroy }
       role.destroy
       raise_event(:role_deleted, role)
+      @response.message("success", "Role was successfully deleted.")
       @response.redirect("/admin/roles")
     end
   end
