@@ -83,7 +83,7 @@
     	<label for="override" style="color: #f00; margin-left: 10px; display: inline; float: none;">Override Validation Errors?</label><input type="checkbox" value="true" name="override" id="override">
     <% end %>
 
-		<% if PortAuthority::Features::Impersonation.enabled? && !@user.new_record? %>
+		<% if @user.impersonatable? %>
 			<a href="/impersonation/activate?id=<%= @user.id %>" class="impersonate">Impersonate</a>
 		<% end %>
 
