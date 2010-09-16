@@ -71,7 +71,7 @@ class User
   property :fax, String, :length => 20
   validates_length :fax, :max => 20, :when => [ :register, :default ]
   property :www, String, :length => 200
-  validates_length :www, :within => 0..200, :when => [ :register, :default ]
+  validates_length :www, :within => 0..200, :when => [ :register, :default ], :message => "Website must be between 0 and 200 characters long"
   property :graphic_content_visible_by_default, Boolean, :default => false
   property :prefers_attachments, Boolean, :default => false
 
