@@ -5,6 +5,8 @@
   form .tabs { list-style: none; margin: 0 0 1em; padding: 0; }
   form .tabs li { display: inline; font-size: 1.4em; padding: 0 0.75em; }
   form .tabs li.selected a { border-bottom: 1px solid #000; color: #000; }
+  .actions a { margin: 10px; }
+  .actions .approve { color: #0F8805; }
 </style>
 <% end %>
 
@@ -88,11 +90,11 @@
 		<% end %>
 
     <% if PortAuthority::use_approvals? && (@user.awaiting_approval? || @user.denied_at) && !@user.id.nil? %>
-      <a href="/admin/users/<%= @user.id %>/approve">Approve</a>
+      <a href="/admin/users/<%= @user.id %>/approve" class="approve">Approve</a>
       <a href="/admin/users" class="cancel">Cancel</a>
       <% unless @user.denied_at %><a class="delete" href="/admin/users/<%= @user.id %>/deny">deny</a><% end %>
     <% else %>
-      <a href="/admin/users" class="cancel">Cancel</a>
+      <a href="/admin/users">Cancel</a>
       <% unless @user.new_record? %>
         <a class="modal_link delete" href="/admin/users/<%= @user.id %>/delete"><img src="<%= UI::Asset.new("images/delete_big.png") %>"></a>
       <% end %>
