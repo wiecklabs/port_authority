@@ -134,6 +134,10 @@ class User
       save! && approved?
     end
 
+    def denied?
+      !self.denied_at.nil?
+    end
+    
     def deny!
       self.permission_sets.each { |set| set.destroy }
       self.awaiting_approval = self.active = false
@@ -271,6 +275,10 @@ class User
     end
   end
 
+  def impersonatable?
+    PortAuthority::Features::Impersonation.enabled? && !self.new_record? && self.approved? && !self.denied?
+  end
+  
   protected
 
   def encrypt_password

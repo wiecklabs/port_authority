@@ -9,6 +9,11 @@ class PortAuthority::Impersonation
     user = User.get(user_id)
     response.abort!(404) unless impersonator && user
 
+    unless user.impersonatable?
+      response.message('error', "This user isn't impersonatable")
+      response.redirect!(request.referrer)
+    end
+
     response.set_cookie('harbor.original.session', request.session.save)
 
     request.cookies.clear
