@@ -220,6 +220,15 @@ class PortAuthority < Harbor::Application
   def self.user_denied_email_subject
     @@user_denied_email_subject
   end
+  
+  @@user_denied_reply_to_address = 'do-not-reply@example.com'
+  def self.user_denied_reply_to_address
+    @@user_denied_reply_to_address
+  end
+  
+  def self.user_denied_reply_to_address=(value)
+    @@user_denied_reply_to_address = value
+  end
 
   @@forgot_password_email_subject = "Password Reset"
   def self.forgot_password_email_subject=(value)

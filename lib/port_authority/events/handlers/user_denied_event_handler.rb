@@ -14,7 +14,7 @@ class PortAuthority
         def call
           mailer = Harbor::Mailer.new
           mailer.to = @user.email
-          mailer.from = PortAuthority::no_reply_email_address
+          mailer.from = PortAuthority::user_denied_reply_to_address
           mailer.subject = PortAuthority::user_denied_email_subject
           mailer.html = Harbor::View.new("mailers/denial.html.erb", :user => @user)
           mailer.text = Harbor::View.new("mailers/denial.txt.erb", :user => @user)
