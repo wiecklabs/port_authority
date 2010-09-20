@@ -67,7 +67,12 @@ Harbor::View.layouts.map("session/index", "layouts/login")
 Harbor::View.layouts.map("session/unauthorized", "layouts/exception")
 Harbor::View.layouts.map("*", "layouts/application")
 
+require Pathname(__FILE__).dirname + "port_authority" + "models" + "configuration"
+require Pathname(__FILE__).dirname + "port_authority" + "models" + "configuration_set"
+require Pathname(__FILE__).dirname + "port_authority" + "models" + "configurable"
+
 class PortAuthority < Harbor::Application
+  extend Configurable
 
   autoload :Config, (Pathname(__FILE__).dirname + "port_authority" + "controllers" + "config").to_s
   autoload :Admin, (Pathname(__FILE__).dirname + "port_authority" + "controllers" + "admin").to_s
@@ -716,11 +721,11 @@ PermissionSet::permissions["Roles"] = [
   "destroy"
 ]
 
-class Harbor::Application
-  def self.config
-    class_variables.sort.map { |var| [var.sub("@@", ""), class_variable_get(var)] }
-  end
-end
+# class Harbor::Application
+#   def self.config
+#     class_variables.sort.map { |var| [var.sub("@@", ""), class_variable_get(var)] }
+#   end
+# end
 
 module Harbor
   class Session
