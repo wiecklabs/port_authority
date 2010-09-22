@@ -49,8 +49,7 @@ class PortAuthority
                 controller.logger.warn "Authenticated User #{request.session.user.inspect} was denied access to #{permission_category}/[#{permissions.join(' or ')}]"
               end
 
-              response.unauthorized
-              throw :halt, response.render("session/unauthorized")
+              response.unauthorized!
             else
               referrer = request.uri.match(/download/) ? request.referrer : request.uri
               throw :halt, response.redirect("/session?referrer=#{Rack::Utils.escape(referrer)}")
